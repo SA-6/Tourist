@@ -6,7 +6,6 @@ const userData = reactive({
   username:'',
   password:''
 })
-// const visiblel = reactive(true)
 
 function login() {
   router.push("/mainPage");
