@@ -3,11 +3,12 @@ import { h, ref, watch, reactive } from 'vue';
 import {
   MenuFoldOutlined,
   MenuUnfoldOutlined,
-  PieChartOutlined,
-  MailOutlined,
-  DesktopOutlined,
-  InboxOutlined,
-  AppstoreOutlined,
+  HomeOutlined,
+  CarOutlined,
+  BankOutlined,
+  PictureOutlined,
+  DislikeOutlined,
+  ScheduleOutlined
 } from '@ant-design/icons-vue';
 const state = reactive({
   collapsed: false,
@@ -17,85 +18,88 @@ const state = reactive({
 });
 const items = reactive([
   {
-    key: '1',
-    icon: () => h(PieChartOutlined),
-    label: 'Option 1',
-    title: 'Option 1',
+    key: 'option1',
+    icon: () => h(HomeOutlined),
+    label: '主页',
+    title: '主页',
   },
   {
-    key: '2',
-    icon: () => h(DesktopOutlined),
-    label: 'Option 2',
-    title: 'Option 2',
-  },
-  {
-    key: '3',
-    icon: () => h(InboxOutlined),
-    label: 'Option 3',
-    title: 'Option 3',
-  },
-  {
-    key: 'sub1',
-    icon: () => h(MailOutlined),
-    label: 'Navigation One',
-    title: 'Navigation One',
+    key: 'option2',
+    icon: () => h(BankOutlined),
+    label: '酒店',
+    title: '酒店',
     children: [
       {
-        key: '5',
-        label: 'Option 5',
-        title: 'Option 5',
+        key: 'option2-1',
+        label: '预订',
+        title: '预订'
       },
       {
-        key: '6',
-        label: 'Option 6',
-        title: 'Option 6',
+        key: 'option2-2',
+        label: '详情',
+        title: '详情'
+      },
+    ]
+  },
+  {
+    key: 'option3',
+    icon: () => h(PictureOutlined),
+    label: '景区',
+    title: '景区',
+    children: [
+      {
+        key:'option3-1',
+        label:'娱乐',
+        title:'娱乐'
       },
       {
-        key: '7',
-        label: 'Option 7',
-        title: 'Option 7',
+        key:'option3-2',
+        label:'餐饮',
+        title:'餐饮'
+      }
+    ]
+  },
+  {
+    key: 'option4',
+    icon: () => h(CarOutlined),
+    label: '出行',
+    title: '出行',
+    children: [
+      {
+        key: 'option4-1',
+        label: '交通',
+        title: '交通',
       },
       {
-        key: '8',
-        label: 'Option 8',
-        title: 'Option 8',
+        key: 'option4-2',
+        label: '天气',
+        title: '天气',
       },
     ],
   },
   {
-    key: 'sub2',
-    icon: () => h(AppstoreOutlined),
-    label: 'Navigation Two',
-    title: 'Navigation Two',
+    key: 'option5',
+    icon: () => h(DislikeOutlined),
+    label: '投诉',
+    title: '投诉',
     children: [
       {
-        key: '9',
-        label: 'Option 9',
-        title: 'Option 9',
+        key: 'option5-1',
+        label: '记录',
+        title: '记录',
       },
       {
-        key: '10',
-        label: 'Option 10',
-        title: 'Option 10',
-      },
-      {
-        key: 'sub3',
-        label: 'Submenu',
-        title: 'Submenu',
-        children: [
-          {
-            key: '11',
-            label: 'Option 11',
-            title: 'Option 11',
-          },
-          {
-            key: '12',
-            label: 'Option 12',
-            title: 'Option 12',
-          },
-        ],
+        key: 'option5-2',
+        label: '添加',
+        title: '添加',
       },
     ],
+  },
+  {
+    key: 'option6',
+    icon: () => h(ScheduleOutlined),
+    label: '公告',
+    title: '公告',
   },
 ]);
 watch(
@@ -128,17 +132,16 @@ const contentStyle = ref({
 const footerStyle = ref({
   position: 'relative'
 })
-//:inline-collapsed="state.collapsed"
 </script>
 
 <template>
   <!-- 页面整体布局 -->
     <a-layout>
       <a-layout-header :style="headerStyle">
-        Tourist System
+        <h1>Tourist System</h1>
       </a-layout-header>
       <a-layout>
-        <a-layout-sider :style="siderStyle" collapsible=true :collapsed="state.collapsed">
+        <a-layout-sider :style="siderStyle" collapsible= 'true' :collapsed="state.collapsed">
           <div style="width: 100%">
             <a-button type="primary" style="margin-bottom: 16px" @click="toggleCollapsed">
               <MenuUnfoldOutlined v-if="state.collapsed" />
@@ -162,15 +165,5 @@ const footerStyle = ref({
 </template>
 
 <style scoped>
-.themeBtn {
-  margin: 0;
-  padding: 0;
-  position: relative;
-}
-.navBar {
-  margin-top: 30px;
-  padding: 0;
-  position: relative;
-  height: 100vh
-}
+
 </style>
