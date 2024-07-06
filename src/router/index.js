@@ -6,6 +6,7 @@ import {
 //导入组件
 import MainPage from '../components/MainPage.vue'
 import Login from '../components/Login.vue'
+import HotelPage from '../components/Hotel/HotelPage.vue'
 //设置路由
 const routes = [
   {
@@ -21,6 +22,11 @@ const routes = [
     path: '/mainPage',
     name: 'mainPage',
     component: MainPage,
+  },
+  {
+    path: '/hotel/page',
+    name : 'hotelPage',
+    component: HotelPage
   }
 
 ]
