@@ -97,6 +97,19 @@ const items = reactive([
     title: '公告',
   },
 ]);
+//设置内容显示框的上边距
+const contentMargiTop = ref('0')
+//设置内容显示框的样式
+const layoutContentStyle = ref({ 
+  padding: '0 0 0 0', 
+  marginTop: '0',
+  isHeightSet: false
+})
+//设置头部导航栏的背景样式
+const backgroundStyle = ref('transparent');
+//设置登录按钮的背景样式
+const btnStyle = ref('transparent')
+//设置布局的高度
 //选择菜单项后触发的事件
 function selectMenuItem(item) {
   console.log(item.key);
@@ -108,17 +121,36 @@ watchEffect(()=>{
 })
 
 function changeRouterView(key) {
+  if(key != '/overview'){
+    layoutContentStyle.value.marginTop = '80px';
+    btnStyle.value = '#76EEC6'
+    if(!layoutContentStyle.value.isHeightSet){
+      layoutContentStyle.value.isHeightSet = true;
+      layoutContentStyle.value.height = '82vh';
+    }
+  }else{
+    btnStyle.value = 'transparent'
+    layoutContentStyle.value.marginTop = '0'
+    if(layoutContentStyle.value.isHeightSet){
+      delete layoutContentStyle.value.height
+      layoutContentStyle.value.isHeightSet = false
+    }
+  }
   router.push(key);
 }
 
-const backgroundStyle = ref('transparent');
+
 //滚动条监听事件
 window.addEventListener('scroll',function(){
-  const distance = this.document.documentElement.scrollTop;
-  if(distance > 200 ){
-    backgroundStyle.value = '#fff'
-  }else{
-    backgroundStyle.value = 'transparent'
+  if(current.value[0] == '/overview'){
+    const distance = this.document.documentElement.scrollTop;
+    if(distance > 200 ){
+      backgroundStyle.value = '#fff'
+      btnStyle.value = '#76EEC6'
+    }else{
+      backgroundStyle.value = 'transparent'
+      btnStyle.value = 'transparent'
+    }
   }
 })
 </script>
@@ -131,13 +163,18 @@ window.addEventListener('scroll',function(){
       <div class="logo">
         <img src="../../src/assets/image/mtfy.jpg" />
       </div>
+      <div class="name">
+        <h2>TouristSystem</h2>
+      </div>
       <!-- 菜单栏 -->
-      <a-menu v-model:selectedKeys="current" mode="horizontal" :items="items" style="height: 80px; background: transparent; width: 80%" @click="selectMenuItem"/>
+      <a-menu v-model:selectedKeys="current" mode="horizontal" :items="items" style="height: 80px; background: transparent; backdrop-filter: blur(10px);width: 80%" @click="selectMenuItem"/>
       <!-- 登录按钮 -->
-      <a-button ghost style="padding: 0; margin: 0; width: 80px; height: 60px; position: relative; margin-top: 5px;">Sign In</a-button>
+      <a-button ghost :style="{padding: '0', margin: '0', width: '80px', height: '60px', position: 'relative', margiTop: '5px', background:btnStyle}">
+        Sign In
+      </a-button>
     </a-layout-header>
-    <a-layout-content :style="{ padding: '0 0 0 0', marginTop: '0' }">
-      <div :style="{ background: '#fff', padding: '0', minHeight: '100%' }">
+    <a-layout-content :style="layoutContentStyle">
+      <div :style="{ background: '#fff', padding: '0', minHeight: '100%'}">
         <router-view></router-view>
       </div>
     </a-layout-content>
@@ -177,4 +214,7 @@ window.addEventListener('scroll',function(){
   background: transparent;
 }
 
+.name {
+  font-family:'Times New Roman', Times, serif;
+}
 </style>

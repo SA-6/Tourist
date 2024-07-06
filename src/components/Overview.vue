@@ -12,8 +12,9 @@ import router from '../router'
     </a-carousel>
   <!-- 相关简介以及推荐 -->
   <div id="components-grid-demo-flex-align">
+    <!-- 系统介绍 -->
     <a-divider orientation="center" class="divider">
-      <h1>About Us</h1>
+      <h1 class="headerTitle">About Us</h1>
     </a-divider>
     <a-row justify="center" align="top" class="row">
       <a-col :span="4">
@@ -32,47 +33,103 @@ import router from '../router'
       <a-col :span="4">
         <p class="height-50">col-4</p>
       </a-col>
-      <a-col :span="6">
+      <a-col :span="7">
         <img src="../../src/assets/image/package1.jpg">
       </a-col>
       <a-col :span="4">
         <p class="height-80">col-4</p>
       </a-col>
     </a-row>
-
-    <a-divider orientation="left" class="divider">
-      <h1>Hotel</h1>
+    <!-- 酒店推荐 -->
+    <a-divider orientation="center" class="divider">
+      <h1 class="headerTitle">Hotel</h1>
     </a-divider>
     <a-row justify="space-around" align="middle" class="row">
       <a-col :span="4">
-        <p class="height-100">col-4</p>
+          <a-card hoverable style="width: 240px">
+            <template #cover>
+              <img alt="example" src="https://os.alipayobjects.com/rmsportal/QBnOOoLaAfKPirc.png" />
+            </template>
+            <a-card-meta title="Europe Street beat">
+              <template #description>路易十三</template>
+            </a-card-meta>
+          </a-card>
       </a-col>
       <a-col :span="4">
-        <p class="height-50">col-4</p>
+        <a-card hoverable style="width: 240px">
+            <template #cover>
+              <img alt="example" src="https://os.alipayobjects.com/rmsportal/QBnOOoLaAfKPirc.png" />
+            </template>
+            <a-card-meta title="Europe Street beat">
+              <template #description>七天快捷酒店</template>
+            </a-card-meta>
+          </a-card>
       </a-col>
       <a-col :span="4">
-        <p class="height-120">col-4</p>
+        <a-card hoverable style="width: 240px">
+            <template #cover>
+              <img alt="example" src="https://os.alipayobjects.com/rmsportal/QBnOOoLaAfKPirc.png" />
+            </template>
+            <a-card-meta title="Europe Street beat">
+              <template #description>麓枫酒店</template>
+            </a-card-meta>
+          </a-card>
       </a-col>
       <a-col :span="4">
-        <p class="height-80">col-4</p>
+        <a-card hoverable style="width: 240px">
+            <template #cover>
+              <img alt="example" src="https://os.alipayobjects.com/rmsportal/QBnOOoLaAfKPirc.png" />
+            </template>
+            <a-card-meta title="Europe Street beat">
+              <template #description>维也纳国际酒店</template>
+            </a-card-meta>
+          </a-card>
       </a-col>
     </a-row>
-
-    <a-divider orientation="left" class="divider">
-      <h1>Scene</h1>
+    <!-- 景点推荐 -->
+    <a-divider orientation="center" class="divider">
+      <h1 class="headerTitle">Scene</h1>
     </a-divider>
     <a-row justify="space-between" align="bottom" class="row">
       <a-col :span="4">
-        <p class="height-100">col-4</p>
+        <a-card hoverable style="width: 240px">
+            <template #cover>
+              <img alt="example" src="https://os.alipayobjects.com/rmsportal/QBnOOoLaAfKPirc.png" />
+            </template>
+            <a-card-meta title="Europe Street beat">
+              <template #description>www.instagram.com</template>
+            </a-card-meta>
+          </a-card>
       </a-col>
       <a-col :span="4">
-        <p class="height-50">col-4</p>
+        <a-card hoverable style="width: 240px">
+            <template #cover>
+              <img alt="example" src="https://os.alipayobjects.com/rmsportal/QBnOOoLaAfKPirc.png" />
+            </template>
+            <a-card-meta title="Europe Street beat">
+              <template #description>www.instagram.com</template>
+            </a-card-meta>
+          </a-card>
       </a-col>
       <a-col :span="4">
-        <p class="height-120">col-4</p>
+        <a-card hoverable style="width: 240px">
+            <template #cover>
+              <img alt="example" src="https://os.alipayobjects.com/rmsportal/QBnOOoLaAfKPirc.png" />
+            </template>
+            <a-card-meta title="Europe Street beat">
+              <template #description>www.instagram.com</template>
+            </a-card-meta>
+          </a-card>
       </a-col>
       <a-col :span="4">
-        <p class="height-80">col-4</p>
+        <a-card hoverable style="width: 240px">
+            <template #cover>
+              <img alt="example" src="https://os.alipayobjects.com/rmsportal/QBnOOoLaAfKPirc.png" />
+            </template>
+            <a-card-meta title="Europe Street beat">
+              <template #description>www.instagram.com</template>
+            </a-card-meta>
+          </a-card>
       </a-col>
     </a-row>
   </div>
@@ -129,4 +186,9 @@ import router from '../router'
 .row {
   background: #fff;
 }
+.headerTitle {
+  /* font-size: 2em; */
+  color: #fff;
+}
+
 </style>
