@@ -1,7 +1,7 @@
 <script setup>
 import { h, ref, reactive, watchEffect } from 'vue';
 import { HomeOutlined,
-  CarOutlined,
+  EnvironmentOutlined,
   BankOutlined,
   PictureOutlined,
   DislikeOutlined,
@@ -9,11 +9,11 @@ import { HomeOutlined,
  } from '@ant-design/icons-vue';
  import router from '../router'
 //选中的菜单项
-const current = ref(['/overview']);
+const current = ref(['/mainPage/overview']);
 //定义菜单项
 const items = reactive([
   {
-    key: '/overview',
+    key: '/mainPage/overview',
     icon: () => h(HomeOutlined),
     label: '主页',
     title: '主页',
@@ -25,12 +25,12 @@ const items = reactive([
     title: '酒店',
     children: [
       {
-        key: '/hotelReserve',
+        key: '/mainPage/hotelReserve',
         label: '预订',
         title: '预订'
       },
       {
-        key: '/hotelDetail',
+        key: '/mainPage/hotelDetail',
         label: '详情',
         title: '详情'
       },
@@ -43,12 +43,12 @@ const items = reactive([
     title: '景区',
     children: [
       {
-        key:'/scenePlay',
+        key:'/mainPage/scenePlay',
         label:'娱乐',
         title:'娱乐'
       },
       {
-        key:'/sceneEat',
+        key:'/mainPage/sceneEat',
         label:'餐饮',
         title:'餐饮'
       }
@@ -56,17 +56,17 @@ const items = reactive([
   },
   {
     key: 'option4',
-    icon: () => h(CarOutlined),
-    label: '出行',
-    title: '出行',
+    icon: () => h(EnvironmentOutlined),
+    label: '城市',
+    title: '城市',
     children: [
       {
-        key: '/tripTraffic',
+        key: '/mainPage/tripTraffic',
         label: '交通',
         title: '交通',
       },
       {
-        key: '/tripWeather',
+        key: '/mainPage/tripWeather',
         label: '天气',
         title: '天气',
       },
@@ -79,26 +79,24 @@ const items = reactive([
     title: '投诉',
     children: [
       {
-        key: '/complainRecord',
+        key: '/mainPage/complainRecord',
         label: '记录',
         title: '记录',
       },
       {
-        key: '/complainAdd',
+        key: '/mainPage/complainAdd',
         label: '添加',
         title: '添加',
       },
     ],
   },
   {
-    key: '/notice',
+    key: '/mainPage/notice',
     icon: () => h(ScheduleOutlined),
     label: '公告',
     title: '公告',
   },
 ]);
-//设置内容显示框的上边距
-const contentMargiTop = ref('0')
 //设置内容显示框的样式
 const layoutContentStyle = ref({ 
   padding: '0 0 0 0', 
@@ -110,6 +108,7 @@ const backgroundStyle = ref('transparent');
 //设置登录按钮的背景样式
 const btnStyle = ref('transparent')
 //设置布局的高度
+const ALayOutHeight = ref('300%')
 //选择菜单项后触发的事件
 function selectMenuItem(item) {
   console.log(item.key);
@@ -121,16 +120,19 @@ watchEffect(()=>{
 })
 
 function changeRouterView(key) {
-  if(key != '/overview'){
+  if(['/mainPage/complainRecord', '/mainPage/complainAdd', '/mainPage/notice'].includes(key)){
+    console.log("进入判断，调整高度");
     layoutContentStyle.value.marginTop = '80px';
+    ALayOutHeight.value = '100%';
     btnStyle.value = '#76EEC6'
     if(!layoutContentStyle.value.isHeightSet){
       layoutContentStyle.value.isHeightSet = true;
-      layoutContentStyle.value.height = '82vh';
+      layoutContentStyle.value.height = '90%';
     }
   }else{
-    btnStyle.value = 'transparent'
-    layoutContentStyle.value.marginTop = '0'
+    btnStyle.value = 'transparent';
+    layoutContentStyle.value.marginTop = '0';
+    ALayOutHeight.value = '800%'
     if(layoutContentStyle.value.isHeightSet){
       delete layoutContentStyle.value.height
       layoutContentStyle.value.isHeightSet = false
@@ -139,26 +141,30 @@ function changeRouterView(key) {
   router.push(key);
 }
 
-
 //滚动条监听事件
-window.addEventListener('scroll',function(){
-  if(current.value[0] == '/overview'){
-    const distance = this.document.documentElement.scrollTop;
-    if(distance > 200 ){
-      backgroundStyle.value = '#fff'
-      btnStyle.value = '#76EEC6'
-    }else{
-      backgroundStyle.value = 'transparent'
-      btnStyle.value = 'transparent'
-    }
-  }
-})
+// window.addEventListener('scroll',function(){
+//   if(current.value[0] == '/mainPage/overview'){
+//     const distance = this.document.documentElement.scrollTop;
+//     if(distance > 200 ){
+//       console.log(current.value[0]);
+//       backgroundStyle.value = '#fff'
+//       btnStyle.value = '#76EEC6'
+//     }else{
+//       backgroundStyle.value = 'transparent'
+//       btnStyle.value = 'transparent'
+//     }
+//   }
+// })
+//登录
+function login() {
+  router.push("/login")
+}
 </script>
 
 <template>
   <!-- 页面整体布局 -->
-  <a-layout>
-    <a-layout-header :style="{ position: 'fixed', zIndex: 1, width: '100%', height: '80px', background: backgroundStyle, padding: '0 0 0 0', display: 'flex'}">
+  <a-layout :style="{height: ALayOutHeight}">
+    <a-layout-header :style="{ position: 'fixed', zIndex: 10, width: '100%', height: '80px', background: 'transparent', padding: '0 0 0 0', display: 'flex', background: 'transparent', backdropFilter: 'blur(10px)'}">
       <!-- LOGO -->
       <div class="logo">
         <img src="../../src/assets/image/mtfy.jpg" />
@@ -167,9 +173,9 @@ window.addEventListener('scroll',function(){
         <h2>TouristSystem</h2>
       </div>
       <!-- 菜单栏 -->
-      <a-menu v-model:selectedKeys="current" mode="horizontal" :items="items" style="height: 80px; background: transparent; backdrop-filter: blur(10px);width: 80%" @click="selectMenuItem"/>
+      <a-menu v-model:selectedKeys="current" mode="horizontal" :items="items" style="height: 80px; background: transparent; backdrop-filter: blur(10px); width: 80%" @click="selectMenuItem"/>
       <!-- 登录按钮 -->
-      <a-button ghost :style="{padding: '0', margin: '0', width: '80px', height: '60px', position: 'relative', margiTop: '5px', background:btnStyle}">
+      <a-button ghost :style="{padding: '0', margin: '0', width: '80px', height: '60px', position: 'relative', marginTop: '8px', background:btnStyle}" @click="login">
         Sign In
       </a-button>
     </a-layout-header>

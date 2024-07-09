@@ -22,7 +22,7 @@ import Notice from '../components/Notice.vue'
 const routes = [
   {
     path: '/',
-    redirect: '/login'
+    redirect: '/mainPage'
   },
   {
     path: '/login',
@@ -40,58 +40,57 @@ const routes = [
     component: MainPage,
     children: [
       {
-        path: '/overview',
+        path: 'overview',
         name: 'overview',
         component: Overview
       },
       {
-        path: '/hotelReserve',
+        path: 'hotelReserve',
         name: 'hotelReserve',
         component: HotelReserve
       },
       {
-        path: '/hotelDetail',
+        path: 'hotelDetail',
         name: 'hotelDetail',
         component: HotelDetail
       },
       {
-        path: '/scenePlay',
+        path: 'scenePlay',
         name: 'scenePlay',
         component: ScenePlay
       },
       {
-        path: '/sceneEat',
+        path: 'sceneEat',
         name: 'sceneEat',
         component: SceneEat
       },
       {
-        path: '/tripTraffic',
+        path: 'tripTraffic',
         name: 'tripTraffic',
         component: TripTraffic
       },
       {
-        path: '/tripWeather',
+        path: 'tripWeather',
         name: 'tripWeather',
         component: TripWeather
       },
       {
-        path: '/notice',
+        path: 'notice',
         name: 'notice',
         component: Notice
       },
       {
-        path: '/complainRecord',
+        path: 'complainRecord',
         name: 'complainRecord',
         component: ComplainRecord
       },
       {
-        path: '/complainAdd',
+        path: 'complainAdd',
         name: 'complainAdd',
         component: ComplainAdd
       },
     ]
   }
-
 ]
 
 const router = createRouter({

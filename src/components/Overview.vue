@@ -1,15 +1,39 @@
 <script setup>
 import router from '../router'
+import { onBeforeMount } from 'vue';
+function getHotelInfo(e) {
+  console.log(e.target.src);
+}
+//请求服务器资源地址
+// const serverURL = ''
+// onBeforeMount(()=>{
+//   axios({
+//     method: 'get',
+//     url: serverURL,
+//     header: {
+//       'Content-Type': 'application/json',
+//       'Authorization': `${localStorage.getItem("token")}`
+//     }
+//   }).then((result)=>{
+//     //获取推荐的酒店和景点信息
+//     console.log(result.data);
+//   }).catch(function(error){
+//     console.log(error);
+//   })
+// })
 </script>
 
 <template>
-  <!-- 走马灯 -->
+  <div class="pictureShow">
+    <!-- 走马灯 -->
     <a-carousel autoplay effect="fade">
-      <div><img src="../../src/assets/image/s1.jpg" /></div>
-      <div><img src="../../src/assets/image/s2.jpg" /></div>
-      <div><img src="../../src/assets/image/s3.jpg" /></div>
-      <div><img src="../../src/assets/image/s4.jpg" /></div>
+      <div><img src="../../src/assets/image/s1.jpg" style="object-fit: fill; width: 100%;"/></div>
+      <div><img src="../../src/assets/image/s2.jpg" style="object-fit: fill; width: 100%;"/></div>
+      <div><img src="../../src/assets/image/s3.jpg" style="object-fit: fill; width: 100%;"/></div>
+      <div><img src="../../src/assets/image/s4.jpg" style="object-fit: fill; width: 100%;"/></div>
     </a-carousel>
+  </div>
+  
   <!-- 相关简介以及推荐 -->
   <div id="components-grid-demo-flex-align">
     <!-- 系统介绍 -->
@@ -18,7 +42,6 @@ import router from '../router'
     </a-divider>
     <a-row justify="center" align="top" class="row">
       <a-col :span="4">
-        <!-- <p class="height-100"> -->
           <h3 class="title">Welcome to Tourist System</h3>
           <h5 class="viceTitle">Tourist System</h5>
           <p> 
@@ -28,7 +51,6 @@ import router from '../router'
             sodales blan urna sodales vitaePellentesque accumsan cursus dui, 
             sodales blan sodales vitae.
           </p>
-        <!-- </p> -->
       </a-col>
       <a-col :span="4">
         <p class="height-50">col-4</p>
@@ -46,7 +68,7 @@ import router from '../router'
     </a-divider>
     <a-row justify="space-around" align="middle" class="row">
       <a-col :span="4">
-          <a-card hoverable style="width: 240px">
+          <a-card hoverable style="width: 240px" @click="getHotelInfo">
             <template #cover>
               <img alt="example" src="https://os.alipayobjects.com/rmsportal/QBnOOoLaAfKPirc.png" />
             </template>
@@ -87,7 +109,7 @@ import router from '../router'
       </a-col>
     </a-row>
     <!-- 景点推荐 -->
-    <a-divider orientation="center" class="divider">
+    <a-divider orientation="center" class="divider" id="dividerHeader">
       <h1 class="headerTitle">Scene</h1>
     </a-divider>
     <a-row justify="space-between" align="bottom" class="row">
@@ -137,10 +159,13 @@ import router from '../router'
 </template>
 
 <style scoped>
-/* For demo */
+.pictureShow {
+  width: 100%;
+  height: 50%;
+}
 :deep(.slick-slide) {
   text-align: center;
-  height: 90vh;
+  height: 100%;
   line-height: 160px;
   background: #364d79;
   overflow: hidden;
@@ -174,21 +199,25 @@ import router from '../router'
 }
 #components-grid-demo-flex-align {
   width: 100%;
-  object-fit: cover;
   background: url(../../src/assets/image/stats.jpg) no-repeat;
   background-attachment: fixed;
   z-index: -1;
+  background-size: cover;
 }
 .divider {
+  margin-top: 0px;
   background: transparent;
-  height:80px;
+  height: 80px;
+  width: 100%s
+}
+#dividerHeader {
+  margin-top: 0px;
 }
 .row {
   background: #fff;
 }
 .headerTitle {
-  /* font-size: 2em; */
+  margin-top: 25px;
   color: #fff;
 }
-
 </style>

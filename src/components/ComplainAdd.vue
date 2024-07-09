@@ -18,7 +18,8 @@ const formState = reactive({
   attachment: '',
   date: new Date().toISOString(),
   content: '',
-  status: 'unfinished'
+  status: 'unfinished',
+  upload: [],
 });
 const onFinish = values => {
   console.log('Success:', values);
@@ -35,17 +36,18 @@ const onFinishFailed = errorInfo => {
     v-bind="formItemLayout"
     @finishFailed="onFinishFailed"
     @finish="onFinish"
+    style="padding-top: 30px;"
   >
   <!-- 显示投诉日期，数据为静态地获取当前时间 -->
     <a-form-item label="当前日期" class="ant-form-item-style">
       <span class="ant-form-text">{{ formState.date }}</span>
     </a-form-item>
   <!-- 上传附件 -->
-    <a-form-item name="upload" label="Upload" extra="longgggggggggggggggggggggggggggggggggg" class="ant-form-item-style">
+    <a-form-item name="upload" label="上传附件" extra="longgggggggggggggggggggggggggggggggggg" class="ant-form-item-style">
       <a-upload
         v-model:fileList="formState.upload"
         name="logo"
-        action="/upload.do"
+        
         list-type="picture"
       >
         <a-button>
@@ -55,7 +57,7 @@ const onFinishFailed = errorInfo => {
       </a-upload>
     </a-form-item>
 
-    <a-form-item label="Dragger" class="ant-form-item-style">
+    <!-- <a-form-item label="Dragger" class="ant-form-item-style">
       <a-form-item name="dragger" no-style>
         <a-upload-dragger v-model:fileList="formState.dragger" name="files" action="/upload.do">
           <p class="ant-upload-drag-icon">
@@ -65,10 +67,10 @@ const onFinishFailed = errorInfo => {
           <p class="ant-upload-hint">Support for a single or bulk upload.</p>
         </a-upload-dragger>
       </a-form-item>
-    </a-form-item>
+    </a-form-item> -->
     <!-- 投诉内容 -->
     <a-form-item label="投诉内容" class="ant-form-item-style">
-      <a-textarea v-model:value="formState.content" placeholder="请输入投诉内容" :rows="4" />
+      <a-textarea v-model:value="formState.content" placeholder="请输入投诉内容" :rows="10" />
     </a-form-item>
     <!-- 提交投诉按钮 -->
     <a-form-item :wrapper-col="{ span: 12, offset: 6 }">
@@ -83,5 +85,7 @@ const onFinishFailed = errorInfo => {
 }
 .ant-form-item-style {
   text-align: left;
+  margin-bottom: 30px;
+  margin-top: 50px;
 }
 </style>

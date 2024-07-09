@@ -1,14 +1,56 @@
 <script setup>
 import { icons } from 'ant-design-vue/es/image/PreviewGroup';
 import { reactive } from 'vue';
+import { message } from 'ant-design-vue';
+import axios from 'axios';
 import router from "../router"
 const userData = reactive({
   username:'',
   password:''
 })
-
+const serverURL = ''
+//登录
 function login() {
-  router.push("/mainPage");
+  axios({
+    //请求的相关配置
+    method: 'post',
+    url: serverURL,
+    headers: {  
+      'Content-Type': 'application/json'  
+    },
+    data: JSON.stringify(userData.value)
+  }).then((result)=>{
+    //登录成功
+    if(result.data.stateCode === '200'){
+      message.success({
+        content: ()=> '登录成功',
+        style: {
+          marginTop: '10vh',
+        }
+      })
+      router.push("/mainPage");
+    }else{
+      //登录失败
+      message.error({
+        content:()=> '登录失败',
+        style: {
+          marginTop: '10vh',
+        }
+      })
+    }
+  }).catch(function (error){
+    console.log(error);
+  })
+}
+//注册
+function registerUser(e){
+  e.preventDefault();
+  router.push("/register")
+}
+//重置密码
+function resetPassword(e){
+  e.preventDefault();
+  router.push("/mainPage/notice")
 }
 </script>
 
@@ -21,13 +63,18 @@ function login() {
       <h2>Sign In</h2>
       <h3>用户名</h3>
       <div class="inputbox">
-        <input type="text" placeholder="Phone Number" v-model="userData.username">
+        <input type="text" placeholder="Username" v-model="userData.username">
       </div>
       <h3>密码</h3>
       <div class="inputbox">
-        <input type="password" placeholder="Password" v-model="userData.password">
-        <!-- <font-awesome-icon :icon="['far', 'eye']" :hidden="visible"/>
-        <font-awesome-icon :icon="['far', 'eye-slash']" :hidden="!visible"/> -->
+        <a-input-password
+          class="passwordInput"
+          v-model:value="userData.password"
+          placeholder="Input Password"
+          :visibility-toggle="true"
+          font-size="1.25em"
+          color="#8f2c24"
+        />
       </div>
       
       <div class="inputbox">
@@ -35,8 +82,8 @@ function login() {
       </div>
       <!-- 额外选项 -->
       <div class="options">
-        <a href="" @click="resetPassword()">忘记密码</a> | 
-        <a href="" @click="registerUser()">注册新用户</a>
+        <a href="" @click="resetPassword">忘记密码</a> | 
+        <a href="" @click="registerUser">注册新用户</a>
       </div>
     </div>
   </section>
@@ -97,8 +144,19 @@ section .bg {
   color: #8f2c24;
   margin-bottom: 1px;
 }
-.login .inputbox {
+
+.login .passwordInput {
+  height: 80%;
   position: relative;
+  width: 100%;
+  padding: 15px 20px;
+  outline: none;
+  font-size:1.25em;
+  color:#8f2c24;
+  border-radius: 5px;
+  background: #fff;
+  border:none;
+  margin-bottom: 20px;
 }
 .login .inputbox input {
   position: relative;
@@ -114,12 +172,5 @@ section .bg {
 }
 .login .option {
   position: relative;
-}
-
-
-.navbar {
-  position: relative;
-  width:500px;
-  height:500px;
 }
 </style>
