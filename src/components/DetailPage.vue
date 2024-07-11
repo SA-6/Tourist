@@ -101,9 +101,17 @@ function getStatusDescription() {
 
 
 // 游玩攻略部分
-// customStyle = {
-//     ''
-// }
+let travelTactics = []
+travelTactics.push({
+    "cityName": "成都",
+    "attractionName": "都江堰",
+    "guideContent": "都江堰是世界文化遗产，是古代中国的一项伟大水利工程。除了参观水利工程，还可以欣赏到青城山的自然风光。",
+    "recommendation": "4.8",
+    "imageUrl": "http://image.com/dujiangyan-guide.jpg",
+    "days": 1,
+    "avgCost": 300,
+    "tags": "文化遗产, 自然风光"
+})
 function getTravelTactics() {
     return ;
 }
@@ -340,14 +348,10 @@ hotels.push({
                             <template #expandIcon="{ isActive }">
                                 <RightCircleOutlined :rotate="isActive ? 90 : 0"/>
                             </template>
-                            <a-collapse-panel key="1" header="This is panel header 1" :style="customStyle">
-                                <p>{{ text }}</p>
-                            </a-collapse-panel>
-                            <a-collapse-panel key="2" header="This is panel header 2" :style="customStyle">
-                                <p>{{ text }}</p>
-                            </a-collapse-panel>
-                            <a-collapse-panel key="3" header="This is panel header 3" :style="customStyle">
-                                <p>{{ text }}</p>
+                            <a-collapse-panel key="1" v-for="tacticsItem in travelTactics" :key="tacticsItem.id" :header="tacticsItem.attractionName">
+                                <div >
+
+                                </div>
                             </a-collapse-panel>
                         </a-collapse>
                     </div>
