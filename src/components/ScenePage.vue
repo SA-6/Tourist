@@ -1,6 +1,8 @@
 <script setup>
 import { LeftCircleOutlined, RightCircleOutlined } from '@ant-design/icons-vue';
-import { ref } from 'vue';
+import { ref, onBeforeMount } from 'vue';
+import router from '../router';
+import { message } from 'ant-design-vue';
 const items = ref([
   {
     title: 'Finished',
@@ -15,14 +17,63 @@ const items = ref([
     description: 'This is a description.',
   },
 ]);
-const destinationCity = ref('');
+//搜索目的景区
+const destinationScene = ref('');
 function onSearch(){
   console.log("Search");
 }
-const rateList = ref([4,3,5]);
-const desc = ref(['terrible', 'bad', 'normal', 'good', 'wonderful']);
-console.log(rateList.value);
-console.log(rateList.value[0]);
+//推荐景区相关信息
+//背景图
+const imgList = ref([])
+//评分
+const rateList = ref([3.5, 4.5,4.0]);
+// const desc = ref(['terrible', 'bad', 'normal', 'good', 'wonderful']);
+//跳转景区详情页
+function showDetail() {
+  console.log("跳转前");
+  router.push("/mainPage/scenePage/sceneDetail")
+  console.log("跳转后");
+}
+//接收到的数据
+const recommandData = ref({
+  msg: '',
+  data: []
+})
+//计算三个随机数
+function getRandomNumbers() {
+  const uniqueNumbers = new Set();
+  while (uniqueNumbers.size < 3) {
+    uniqueNumbers.add(Math.floor(Math.random() * 21));
+  }
+  return Array.from(uniqueNumbers);
+}
+//请求服务器地址
+const serverURL = 'http://192.168.0.1:8080/travelGuides'
+// onBeforeMount(()=>{
+//   //发送异步请求获取数据
+//   axios({
+//     method: 'get',
+//     url: serverURL
+//   }).then((result)=>{
+//     if(result.status === '0'){
+//       //请求成功
+//       const randomNumbers = getRandomNumbers();
+//       recommandData.value.data = result.data;
+//       imgList.value = [result.data[randomNumbers[0]].imageUrl, result.data[randomNumbers[1]].imageUrl, result.data[randomNumbers[2]].imageUrl]
+//       rateList.value = [result.data[randomNumbers[0]].recommandation, result.data[randomNumbers[1]].recommandation, result.data[randomNumbers[2]].recommandation]
+//     }else{
+//       //请求失败
+//       message.error({
+//         content: ()=> `${recommandData.value.msg}`,
+//         style: {
+//           marginTop: '10vh',
+//         }
+//       })
+//     }
+//   }).catch(function(error){
+//     console.log(error);
+//   })
+// })
 </script>
 
 <template>
@@ -46,10 +97,10 @@ console.log(rateList.value[0]);
     </a-carousel>
   </div>
   <div style="display: flex;margin-top: 10px;">
-    <p style="margin-left: 38%; margin-top: 5px;font-size: 1.5em;">目的城市</p>
+    <p style="margin-left: 38%; margin-top: 5px;font-size: 1.5em;">目的景点</p>
     <a-input-search
-      v-model:value=destinationCity
-      placeholder="输入目的城市"
+      v-model:value="destinationScene"
+      placeholder="输入目的景点"
       enter-button
       @search="onSearch"
       style="width: 20%;margin-left: 20px;margin-top: 8px;"
@@ -66,8 +117,10 @@ console.log(rateList.value[0]);
         <a-card-meta title="Europe Street beat">
           <template #description>
             <span>
-              <a-rate v-model:value="rateList[0]" :tooltips="desc" />
-              <span class="ant-rate-text">{{ desc[rateList[0] - 1] }}</span>
+              <a-rate v-model:value="rateList[0]"  disabled allow-half/>
+              <span class="ant-rate-text">{{ rateList[0] }}</span>
+              <br/>
+              <a @click="showDetail" preventDefault>查看详情</a>
             </span>
           </template>
         </a-card-meta>
@@ -81,10 +134,12 @@ console.log(rateList.value[0]);
         马谡哭着表示自己死而无怨。李严与廖立，两人都是被诸葛亮削职流放的罪人，但他们也自甘服罪。
         当他们得知诸葛亮病逝，“闻之痛之，或泣或绝”。这些均属史实，裴度据史褒评，令人信服碑文通篇辞句甚切，文笔酣畅，
         使人百读不厌。诸葛亮之所以为后人所敬仰，还因为他有着高尚的思想和作风，不利用职权谋私。
+        <!-- {{recommandData.data[0].guideContent}} -->
       </p>
     </div>
     <div class="recommandDiv">
       <p class="recommandStyle2">
+        <!-- {{recommandData.data[0].guideContent}} -->
         匾额为“汉昭烈庙”。大门内浓荫丛中，矗立着六通石碑  成都武侯祠，两侧各有一碑廊，其中最大的一通在东侧碑廊内，
         唐代“蜀汉丞相诸葛武侯祠堂碑”，唐宪宗元和四年（公元809年）立，有很高的文物价值，为国家一级文物，
         因文章、书法、刻技俱精被称为“三绝碑”。唐朝著名宰相裴度撰碑文，书法家柳公绰（柳公权之兄）书写，名匠鲁建刻字，
@@ -102,8 +157,8 @@ console.log(rateList.value[0]);
         <a-card-meta title="Europe Street beat">
           <template #description>
             <span>
-              <a-rate v-model:value="rateList[1]" :tooltips="desc" />
-              <span class="ant-rate-text">{{ desc[rateList[1] - 1] }}</span>
+              <a-rate v-model:value="rateList[1]"  disabled allow-half/>
+              <span class="ant-rate-text">{{ rateList[1] }}</span>
             </span>
           </template>
         </a-card-meta>
@@ -118,13 +173,14 @@ console.log(rateList.value[0]);
         <a-card-meta title="Europe Street beat">
           <template #description>
             <span>
-              <a-rate v-model:value="rateList[2]" :tooltips="desc" />
-              <span class="ant-rate-text">{{ desc[rateList[2] - 1] }}</span>
+              <a-rate v-model:value="rateList[2]"  disabled allow-half/>
+              <span class="ant-rate-text">{{ rateList[2] }}</span>
             </span>
           </template>
         </a-card-meta>
       </a-card>
       <p class="recommandStyle1">
+        <!-- {{recommandData.data[0].guideContent}} -->
         匾额为“汉昭烈庙”。大门内浓荫丛中，矗立着六通石碑  成都武侯祠，两侧各有一碑廊，其中最大的一通在东侧碑廊内，
         唐代“蜀汉丞相诸葛武侯祠堂碑”，唐宪宗元和四年（公元809年）立，有很高的文物价值，为国家一级文物，
         因文章、书法、刻技俱精被称为“三绝碑”。唐朝著名宰相裴度撰碑文，书法家柳公绰（柳公权之兄）书写，名匠鲁建刻字，
@@ -174,7 +230,7 @@ console.log(rateList.value[0]);
   <div>
     <p style="font-size: 1.5em;margin-top: 20px;">附近美食</p>
     <div>
-      <a-card title="Card Title">
+      <a-card title="Delicacies">
         <a-card-grid style="width: 25%; text-align: center;">
           <img src="../../src/assets/image/hotpot.jpg" style="width: 100%; height: 100%;">
         </a-card-grid>

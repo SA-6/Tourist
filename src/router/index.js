@@ -10,14 +10,13 @@ import Register from '../components/Register.vue'
 import Overview from '../components/Overview.vue'
 import HotelReserve from '../components/HotelReserve.vue'
 import HotelDetail from '../components/HotelDetail.vue'
-import ScenePlay from '../components/ScenePlay.vue'
-import SceneEat from '../components/SceneEat.vue'
+import ScenePage from '../components/ScenePage.vue'
+import SceneDetail from '../components/SceneDetail.vue'
 import ComplainRecord from '../components/ComplainRecord.vue'
 import ComplainAdd from '../components/ComplainAdd.vue'
-import TripTraffic from '../components/TripTraffic.vue'
-import TripWeather from '../components/TripWeather.vue'
+import CityPage from '../components/CityPage.vue'
 import Notice from '../components/Notice.vue'
-
+import UserInfo from '../components/UserInfo.vue'
 //设置路由
 const routes = [
   {
@@ -55,24 +54,19 @@ const routes = [
         component: HotelDetail
       },
       {
-        path: 'scenePlay',
-        name: 'scenePlay',
-        component: ScenePlay
+        path: 'scenePage',
+        name: 'scenePage',
+        component: ScenePage,
       },
       {
-        path: 'sceneEat',
-        name: 'sceneEat',
-        component: SceneEat
+        path: 'sceneDetail',
+        name: 'sceneDetail',
+        component: SceneDetail
       },
       {
-        path: 'tripTraffic',
-        name: 'tripTraffic',
-        component: TripTraffic
-      },
-      {
-        path: 'tripWeather',
-        name: 'tripWeather',
-        component: TripWeather
+        path: 'cityPage',
+        name: 'cityPage',
+        component: CityPage
       },
       {
         path: 'notice',
@@ -89,6 +83,11 @@ const routes = [
         name: 'complainAdd',
         component: ComplainAdd
       },
+      {
+        path: 'userInfo',
+        name: 'userInfo',
+        component: UserInfo
+      }
     ]
   }
 ]

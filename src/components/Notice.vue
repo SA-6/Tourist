@@ -21,7 +21,7 @@ const noticeList = ref([
 ])
 //在挂载组件之前获取数据
 //请求服务器的路径
-const serverURL = '';
+const serverURL = 'http://192.168.0.1:8080/EmergencyInfos';
 
 // onBeforeMount(()=>{
 //   //发送异步请求

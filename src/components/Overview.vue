@@ -1,26 +1,50 @@
 <script setup>
 import router from '../router'
-import { onBeforeMount } from 'vue';
+import { onBeforeMount, ref, onMounted } from 'vue';
+import axios from 'axios';
 function getHotelInfo(e) {
   console.log(e.target.src);
 }
-//请求服务器资源地址
-// const serverURL = ''
-// onBeforeMount(()=>{
-//   axios({
-//     method: 'get',
-//     url: serverURL,
-//     header: {
-//       'Content-Type': 'application/json',
-//       'Authorization': `${localStorage.getItem("token")}`
-//     }
-//   }).then((result)=>{
-//     //获取推荐的酒店和景点信息
-//     console.log(result.data);
-//   }).catch(function(error){
-//     console.log(error);
-//   })
-// })
+const rateList = ref([4,3,5]);
+const desc = ref(['terrible', 'bad', 'normal', 'good', 'wonderful']);
+// 推荐城市
+const recommendCity = ref([])
+// 推荐景点
+const recommendScene = ref([])
+// 推荐酒店
+const recommendHotel = ref([])
+// 服务器请求路径
+const serverURL = 'http://192.168.104.72:8080'
+//获取推荐信息
+function getRecommendInfo() {
+  axios({
+    method: 'get',
+    url: serverURL+'/cities/recommendations',
+    header: {
+      'Content-Type':'application/json'
+    },
+  }).then((result)=>{
+    console.log(result);
+    if(result.data.status === 0){
+      recommendCity.value = result.data.data.popularCitiesList;
+      recommendScene.value = result.data.data.scenicSpotsList;
+      recommendHotel.value = result.data.data.hotelsList
+    }else{
+      message.error({
+        content: ()=> '获取失败',
+        style: {
+          marginTop: '10vh'
+        }
+      })
+    }
+  }).catch(function(error){
+    console.log(error);
+  })
+}
+
+onMounted(()=>{
+  getRecommendInfo();
+})
 </script>
 
 <template>
@@ -53,106 +77,68 @@ function getHotelInfo(e) {
           </p>
       </a-col>
       <a-col :span="4">
-        <p class="height-50">col-4</p>
+        <!-- <p class="height-50">col-4</p> -->
       </a-col>
       <a-col :span="7">
         <img src="../../src/assets/image/package1.jpg">
       </a-col>
-      <a-col :span="4">
+      <!-- <a-col :span="4">
         <p class="height-80">col-4</p>
-      </a-col>
+      </a-col> -->
+    </a-row>
+    <!-- 城市推荐 -->
+    <a-divider orientation="center" class="divider">
+      <h1 class="headerTitle">热门城市</h1>
+    </a-divider>
+    <a-row justify="space-around" align="middle" class="row">
+      <div v-for="(item,index) in recommendCity" :key="index" class="hotel-card-wrapper">
+        <a-col :span="4">
+          <a-card hoverable style="width: 240px" @click="getCityInfo(item.cityId)">
+            <template #cover>
+              <img alt="example" src="https://os.alipayobjects.com/rmsportal/QBnOOoLaAfKPirc.png" />
+            </template>
+            <a-card-meta :title="item.name">
+              <template #description>{{item.description}}</template>
+            </a-card-meta>
+          </a-card>
+        </a-col>
+      </div>
     </a-row>
     <!-- 酒店推荐 -->
     <a-divider orientation="center" class="divider">
-      <h1 class="headerTitle">Hotel</h1>
+      <h1 class="headerTitle">推荐酒店</h1>
     </a-divider>
     <a-row justify="space-around" align="middle" class="row">
-      <a-col :span="4">
-          <a-card hoverable style="width: 240px" @click="getHotelInfo">
+      <div v-for="(item,index) in recommendHotel" :key="index" class="hotel-card-wrapper">
+        <a-col :span="4">
+          <a-card hoverable style="width: 240px" @click="getHotelInfo(item.hotelId)">
             <template #cover>
-              <img alt="example" src="https://os.alipayobjects.com/rmsportal/QBnOOoLaAfKPirc.png" />
+              <img alt="example" :src="item.imageUrl" />
             </template>
-            <a-card-meta title="Europe Street beat">
-              <template #description>路易十三</template>
+            <a-card-meta :title="item.name">
+              <template #description>{{item.description}}</template>
             </a-card-meta>
           </a-card>
-      </a-col>
-      <a-col :span="4">
-        <a-card hoverable style="width: 240px">
-            <template #cover>
-              <img alt="example" src="https://os.alipayobjects.com/rmsportal/QBnOOoLaAfKPirc.png" />
-            </template>
-            <a-card-meta title="Europe Street beat">
-              <template #description>七天快捷酒店</template>
-            </a-card-meta>
-          </a-card>
-      </a-col>
-      <a-col :span="4">
-        <a-card hoverable style="width: 240px">
-            <template #cover>
-              <img alt="example" src="https://os.alipayobjects.com/rmsportal/QBnOOoLaAfKPirc.png" />
-            </template>
-            <a-card-meta title="Europe Street beat">
-              <template #description>麓枫酒店</template>
-            </a-card-meta>
-          </a-card>
-      </a-col>
-      <a-col :span="4">
-        <a-card hoverable style="width: 240px">
-            <template #cover>
-              <img alt="example" src="https://os.alipayobjects.com/rmsportal/QBnOOoLaAfKPirc.png" />
-            </template>
-            <a-card-meta title="Europe Street beat">
-              <template #description>维也纳国际酒店</template>
-            </a-card-meta>
-          </a-card>
-      </a-col>
+        </a-col>
+      </div>
     </a-row>
     <!-- 景点推荐 -->
     <a-divider orientation="center" class="divider" id="dividerHeader">
-      <h1 class="headerTitle">Scene</h1>
+      <h1 class="headerTitle">热门景点</h1>
     </a-divider>
     <a-row justify="space-between" align="bottom" class="row">
-      <a-col :span="4">
-        <a-card hoverable style="width: 240px">
+      <div v-for="(item,index) in recommendScene" :key="index" class="hotel-card-wrapper">
+        <a-col :span="4">
+          <a-card hoverable style="width: 240px" @click="getSceneInfo(item.scenicSpotId)">
             <template #cover>
-              <img alt="example" src="https://os.alipayobjects.com/rmsportal/QBnOOoLaAfKPirc.png" />
+              <img alt="example" :src="item.imageUrl" />
             </template>
-            <a-card-meta title="Europe Street beat">
-              <template #description>www.instagram.com</template>
+            <a-card-meta :title="item.name">
+              <template #description>{{item.description}}</template>
             </a-card-meta>
           </a-card>
-      </a-col>
-      <a-col :span="4">
-        <a-card hoverable style="width: 240px">
-            <template #cover>
-              <img alt="example" src="https://os.alipayobjects.com/rmsportal/QBnOOoLaAfKPirc.png" />
-            </template>
-            <a-card-meta title="Europe Street beat">
-              <template #description>www.instagram.com</template>
-            </a-card-meta>
-          </a-card>
-      </a-col>
-      <a-col :span="4">
-        <a-card hoverable style="width: 240px">
-            <template #cover>
-              <img alt="example" src="https://os.alipayobjects.com/rmsportal/QBnOOoLaAfKPirc.png" />
-            </template>
-            <a-card-meta title="Europe Street beat">
-              <template #description>www.instagram.com</template>
-            </a-card-meta>
-          </a-card>
-      </a-col>
-      <a-col :span="4">
-        <a-card hoverable style="width: 240px">
-            <template #cover>
-              <img alt="example" src="https://os.alipayobjects.com/rmsportal/QBnOOoLaAfKPirc.png" />
-            </template>
-            <a-card-meta title="Europe Street beat">
-              <template #description>www.instagram.com</template>
-            </a-card-meta>
-          </a-card>
-      </a-col>
+        </a-col>
+      </div>
     </a-row>
   </div>
   <!--  -->
@@ -175,19 +161,7 @@ function getHotelInfo(e) {
 }
 .height-50 {
   height: 70px;
-  background-color: #1bf3cb;
-}
-.height-80 {
-  height: 100px;
-  background-color: #1bf3cb;
-}
-.height-100 {
-  height: 120px;
-  background-color: #1bf3cb;
-}
-.height-120 {
-  height: 140px;
-  background-color: #1bf3cb;
+  background-color: #fff;
 }
 .title {
   font-family: Georgia, 'Times New Roman', Times, serif;
@@ -207,7 +181,7 @@ function getHotelInfo(e) {
 .divider {
   margin-top: 0px;
   background: transparent;
-  height: 80px;
+  height: 150px;
   width: 100%s
 }
 #dividerHeader {
@@ -215,9 +189,31 @@ function getHotelInfo(e) {
 }
 .row {
   background: #fff;
+  height:500px;
+  margin-top: 20px;
+  padding-top: 50px;
 }
 .headerTitle {
   margin-top: 25px;
   color: #fff;
+}
+.recommandDiv {
+  display: flex;
+  margin-top: 10px;
+  max-height: 100%;
+}
+.recommandStyle1 {
+  width: 50%;
+  font-family: "Arial", sans-serif;
+  line-height: 3;
+  margin-left: 40px;
+  padding-top: 30px;
+}
+.recommandStyle2 {
+  width: 50%;
+  font-family: "Arial", sans-serif;
+  line-height: 3;
+  margin-left: 15%;
+  padding-top: 30px;
 }
 </style>
