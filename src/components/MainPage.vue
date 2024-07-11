@@ -103,7 +103,7 @@ function selectMenuItem(item) {
   current.value = [item.key];
 }
 
-watchEffect(()=>{
+watchEffect(() => {
   changeRouterView(current.value[0])
 })
 
@@ -224,7 +224,6 @@ const handleMenuClick = e => {
     </a-layout-footer>
   </a-layout>
 </template>
-
 <style scoped>
 .logo {
   position: relative;
