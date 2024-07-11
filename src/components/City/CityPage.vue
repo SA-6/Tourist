@@ -1,5 +1,5 @@
 <script setup>
-import MapContainer from './MapContainer.vue';
+import MapContainer from '../MapContainer.vue';
 import { computed, ref, watch} from 'vue';
 const provinceData = ['Zhejiang', 'Jiangsu'];
 const cityData = {

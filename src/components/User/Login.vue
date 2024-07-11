@@ -3,9 +3,9 @@ import { icons } from 'ant-design-vue/es/image/PreviewGroup';
 import { reactive } from 'vue';
 import { message } from 'ant-design-vue';
 import axios from 'axios';
-import router from "../router"
+import router from "../../router"
 
-import { useUserStore } from '../store/userStore'
+import { useUserStore } from '../../store/userStore'
 const userData = reactive({
   username: '',
   password: '',

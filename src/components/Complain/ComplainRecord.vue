@@ -2,7 +2,7 @@
 import { cloneDeep } from 'lodash-es';
 import { reactive, ref, onBeforeMount } from 'vue';
 import axios from 'axios';
-import { useUserStore } from '../store/userStore'
+import { useUserStore } from '../../store/userStore'
 const userInfo = useUserStore();
 const columns = [
   {
@@ -43,7 +43,7 @@ const columns = [
     width: '150px'
   },
 ];
-const data = [];
+let data = ref([]);
 for (let i = 0; i < 100; i++) {
   data.push({
     key: i.toString(),
@@ -70,7 +70,7 @@ onBeforeMount(()=>{
     }
   }).then((result)=>{
     console.log(result.data);
-    data = result.data.data;
+    data.value = result.data.data;
   }).catch(function(error){
     console.log(error);
   })

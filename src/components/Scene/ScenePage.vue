@@ -2,9 +2,9 @@
 import { LeftCircleOutlined, RightCircleOutlined } from '@ant-design/icons-vue';
 import { ref, onBeforeMount } from 'vue';
 import { message } from 'ant-design-vue';
-import router from '../router';
+import router from '../../router';
 import axios from 'axios';
-import { useRecommendDataStore } from '../store/recommendDataStore';
+import { useRecommendDataStore } from '../../store/recommendDataStore';
 const items = ref([
   {
     title: 'Finished',

@@ -89,9 +89,9 @@ function backToTop() {
     placement="right"
     @after-open-change="afterOpenChange"
   >
-    <p>Some contents...</p>
-    <p>Some contents...</p>
-    <p>Some contents...</p>
+    <div>
+      
+    </div>
   </a-drawer>
   <div class="pictureShow">
     <!-- 走马灯 -->

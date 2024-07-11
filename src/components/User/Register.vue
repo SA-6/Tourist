@@ -1,6 +1,6 @@
 <script setup>
 import { reactive, ref } from 'vue';
-import router from "../router"
+import router from "../../router"
 import { message } from 'ant-design-vue';
 import { LoadingOutlined } from '@ant-design/icons-vue'
 import axios from 'axios'

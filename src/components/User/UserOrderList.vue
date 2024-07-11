@@ -2,7 +2,7 @@
 import { cloneDeep } from 'lodash-es';
 import { reactive, ref, onBeforeMount } from 'vue';
 import axios from 'axios';
-import { useUserStore } from '../store/userStore'
+import { useUserStore } from '../../store/userStore'
 const userInfo = useUserStore();
 const columns = [
   {

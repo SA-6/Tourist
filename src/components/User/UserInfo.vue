@@ -1,6 +1,6 @@
 <script setup>
   import { ref, reactive } from 'vue';
-  import { useUserStore } from '../store/userStore'
+  import { useUserStore } from '../../store/userStore'
   import { PlusOutlined } from '@ant-design/icons-vue'
   const userStore =  useUserStore();
   const componentDisabled = ref(true);
