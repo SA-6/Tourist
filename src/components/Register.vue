@@ -515,7 +515,7 @@ const registerUserData = reactive({
   bio: '',
   address: '北京',
   phone: '',
-  // avatar: '',
+  phone: '',
   validateCode: ''
 })
 const usernameMsg = ref('')
@@ -523,30 +523,43 @@ const passwordMsg = ref('')
 const validateCodeMsg = ref('')
 const emailMsg = ref('')
 //请求服务器地址
-const serverURL = 'http://192.168.104.72:8080'
+const serverURL = 'http://192.168.40.121:8080'
 //注册
 function register() {
+  const params = {
+    username: registerUserData.username,
+    nickname: registerUserData.nickname,
+    password: registerUserData.password,
+    gender: registerUserData.gender,
+    age: registerUserData.age,
+    email: registerUserData.email,
+    bio: registerUserData.bio,
+    address: registerUserData.address,
+    phone: registerUserData.phone,
+    verifyCode: registerUserData.validateCode 
+  }
   axios({
     method: 'post',
     url: serverURL+'/user/register',
     headers: {
-      'Content-Type': 'application/json'
+      'Content-Type': 'application/x-www-form-urlencoded'
     },
-    data: JSON.stringify(registerUserData)
+    data: new URLSearchParams(params).toString(),
   }).then((result)=>{
+    console.log(result);
     //注册成功
-    if(result.data.status === '200'){
+    if(result.data.status === 0){
       message.success({
-        content: () => '登录成功',
+        content: () => `${result.data.msg}`,
         style: {
           marginTop: '10vh',
         }
       })
-      router.push("/mainPage");
+      router.push("/login");
     }else{
       //注册失败
       message.error({
-        content:()=> '验证码错误',
+        content:()=> `${result.data.msg}`,
         style: {
           marginTop: '10vh',
         }
@@ -587,7 +600,7 @@ function isUsernameExit() {
 }
 //检查两次密码是否一致
 function checkPassword() {
-  if(registerUserData.value.password !== registerUserData.value.confirmPassword){
+  if(registerUserData.password !== registerUserData.confirmPassword){
     passwordMsg.value = '两次输入密码不一致'
   }
 }
@@ -778,6 +791,10 @@ const layout = {
         <a-form-item ref="name" label="邮箱" name="name" class="formitemStyle">
           <a-input v-model:value="registerUserData.email" size="large" placeholder="请输入邮箱" style="height: 40px;"/>
           <div><p style="color: #f51427;">{{ emailMsg }}</p></div>
+        </a-form-item>
+
+        <a-form-item ref="name" label="电话" name="name" class="formitemStyle">
+          <a-input v-model:value="registerUserData.phone"  placeholder="请输入电话号码" style="height: 40px;"/>
         </a-form-item>
 
         <a-form-item label="验证码" class="formitemStyle">

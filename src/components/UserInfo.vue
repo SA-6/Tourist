@@ -542,10 +542,10 @@
     style="max-width: 600px"
   >
     <a-form-item label="用户名">
-      <a-input v-model:value="userInfo.username"/>
+      <a-input v-model:value="userInfo.username" />
     </a-form-item>
     <a-form-item label="昵称">
-      <a-input />
+      <a-input v-model:value="userInfo.nickname" />
     </a-form-item>
     <a-form-item label="性别">
       <a-radio-group v-model:value="userInfo.gender">
@@ -554,13 +554,13 @@
       </a-radio-group>
     </a-form-item>
     <a-form-item label="年龄">
-      <a-input />
+      <a-input v-model:value="userInfo.age" />
     </a-form-item>
-    <a-form-item label="邮箱">
-      <a-input />
+    <a-form-item label="电话号码">
+      <a-input v-model:value="userInfo.phone" />
     </a-form-item>
-    <a-form-item label="年龄">
-      <a-input />
+    <a-form-item label="描述">
+      <a-input v-model:value="userInfo.bio" />
     </a-form-item>
     <a-form-item label="地区">
       <a-cascader
@@ -571,8 +571,8 @@
         placeholder="请选择地区"
       />
     </a-form-item>
-    <a-form-item>
-      <a-textarea :rows="4" />
+    <a-form-item label="描述">
+      <a-textarea :rows="4" v-model:value="userInfo.bio"/>
     </a-form-item>
     
     <a-form-item label="Upload">

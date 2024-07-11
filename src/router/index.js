@@ -17,6 +17,7 @@ import ComplainAdd from '../components/ComplainAdd.vue'
 import CityPage from '../components/CityPage.vue'
 import Notice from '../components/Notice.vue'
 import UserInfo from '../components/UserInfo.vue'
+import Test from '../components/Test.vue'
 //设置路由
 const routes = [
   {
@@ -87,6 +88,11 @@ const routes = [
         path: 'userInfo',
         name: 'userInfo',
         component: UserInfo
+      },
+      {
+        path: 'test',
+        name: 'test',
+        component: Test
       }
     ]
   }

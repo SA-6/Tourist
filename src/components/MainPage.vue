@@ -7,7 +7,8 @@ import {
   PictureOutlined,
   DislikeOutlined,
   ScheduleOutlined,
-  UserOutlined
+  UserOutlined,
+  ContactsOutlined
  } from '@ant-design/icons-vue';
 import router from '../router'
 import { useUserStore } from '../store/userStore'
@@ -95,7 +96,7 @@ const btnStyle = ref('transparent')
 //设置布局的高度
 const ALayOutHeight = ref('300%')
 // 服务器请求路径
-const serverURL = 'http://192.168.104.72:8080'
+const serverURL = 'http://192.168.40.121:8080'
 //选择菜单项后触发的事件
 function selectMenuItem(item) {
   console.log(item.key);
@@ -153,11 +154,14 @@ onMounted(()=>{
 })
 const handleMenuClick = e => {
   console.log(e);
-  if(e.key === '1'){
+  if(e.key === '0'){
+    console.log("跳转登录页面");
+    router.push("/login")
+  }else if(e.key === '1'){
     //跳转个人信息页面
     console.log("跳转个人信息页面");
     router.push("/mainPage/userInfo")
-  }else {
+  }else{
     //退出登录 清空用户信息
     userStore.clearUserInfo()
   }
@@ -176,12 +180,9 @@ const handleMenuClick = e => {
         <h2>TouristSystem</h2>
       </div>
       <!-- 菜单栏 -->
-      <a-menu v-model:selectedKeys="current" mode="horizontal" :items="items" style="height: 80px; background: transparent; backdrop-filter: blur(10px); width: 75%" @click="selectMenuItem"/>
-      <!-- 登录按钮 -->
-      <!-- <a-button ghost :style="{padding: '0', margin: '0', width: '80px', height: '60px', position: 'relative', marginTop: '8px', background:btnStyle}" @click="login">
-        Sign In
-      </a-button> -->
-      <!-- 用户头像 -->
+      <a-menu v-model:selectedKeys="current" mode="horizontal" :items="items" 
+        style="height: 80px; background: transparent; backdrop-filter: blur(10px); width: 75%" 
+        @click="selectMenuItem"/>
       <a-dropdown-button 
         class="avatarBtn"
         >
@@ -195,6 +196,7 @@ const handleMenuClick = e => {
         <template #overlay>
           <a-menu @click="handleMenuClick">
             <a-menu-item key="0">
+              <ContactsOutlined />
               登录
             </a-menu-item>
             <template v-if="userInfo.username !== '' ? true : false">

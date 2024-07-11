@@ -1,5 +1,6 @@
 <script setup>
 import { onBeforeMount, ref } from 'vue';
+import axios from 'axios';
 const activeKey = ref([]);
 const noticeList = ref([
   {
@@ -21,31 +22,32 @@ const noticeList = ref([
 ])
 //在挂载组件之前获取数据
 //请求服务器的路径
-const serverURL = 'http://192.168.0.1:8080/EmergencyInfos';
+const serverURL = 'http://192.168.40.121:8080/EmergencyInfos';
 
-// onBeforeMount(()=>{
-//   //发送异步请求
-//   axios({
-//     method: 'get',
-//     url: serverURL,
-//     headers: {
-//       'Content-Type': 'application/json',
-//       'Authorization': `${localStorage.getItem("token")}`
-//     }
-//   }).then((result)=>{
-//     //读取响应中携带的数据
-//     noticeList.value = result.data
-//   }).catch(function(error){
-//     //打印错误信息
-//     console.log(error);
-//   })
-// })
+onBeforeMount(()=>{
+  //发送异步请求
+  axios({
+    method: 'get',
+    url: serverURL,
+    headers: {
+      'Content-Type': 'application/json',
+    }
+  }).then((result)=>{
+    console.log(result);
+    //读取响应中携带的数据
+    noticeList.value = result.data.data
+  }).catch(function(error){
+    //打印错误信息
+    console.log(error);
+  })
+})
 </script>
 
 <template>
   <a-collapse v-model:activeKey="activeKey" accordion>
-    <a-collapse-panel v-for="(item,index) in noticeList" :key="index" :header="item.header">
-      <p>{{item.content}}</p>
+    <a-collapse-panel v-for="(item,index) in noticeList" :key="index" :header="item.title">
+      <p>{{ item.content }}</p>
+      <p>{{ item.date }}</p>
     </a-collapse-panel>
   </a-collapse>
 </template>

@@ -1,8 +1,10 @@
 <script setup>
 import { LeftCircleOutlined, RightCircleOutlined } from '@ant-design/icons-vue';
 import { ref, onBeforeMount } from 'vue';
-import router from '../router';
 import { message } from 'ant-design-vue';
+import router from '../router';
+import axios from 'axios';
+import { useRecommendDataStore } from '../store/recommendDataStore';
 const items = ref([
   {
     title: 'Finished',
@@ -22,47 +24,42 @@ const destinationScene = ref('');
 function onSearch(){
   console.log("Search");
 }
-//推荐景区相关信息
-//背景图
+// 推荐景区相关信息
+const recommendData = useRecommendDataStore.recommendDataInfo
+// 背景图
 const imgList = ref([])
-//评分
+// 评分
 const rateList = ref([3.5, 4.5,4.0]);
-// const desc = ref(['terrible', 'bad', 'normal', 'good', 'wonderful']);
-//跳转景区详情页
+// 跳转景区详情页
 function showDetail() {
   console.log("跳转前");
   router.push("/mainPage/scenePage/sceneDetail")
   console.log("跳转后");
 }
-//接收到的数据
-const recommandData = ref({
-  msg: '',
-  data: []
-})
-//计算三个随机数
-function getRandomNumbers() {
-  const uniqueNumbers = new Set();
-  while (uniqueNumbers.size < 3) {
-    uniqueNumbers.add(Math.floor(Math.random() * 21));
-  }
-  return Array.from(uniqueNumbers);
-}
-//请求服务器地址
-const serverURL = 'http://192.168.0.1:8080/travelGuides'
+// 计算三个随机数
+// function getRandomNumbers() {
+//   const uniqueNumbers = new Set();
+//   while (uniqueNumbers.size < 3) {
+//     uniqueNumbers.add(Math.floor(Math.random() * 21));
+//   }
+//   return Array.from(uniqueNumbers);
+// }
+// 请求服务器地址
+// const serverURL = 'http://192.168.0.1:8080/travelGuides'
 // onBeforeMount(()=>{
-//   //发送异步请求获取数据
+//   // 发送异步请求获取数据
 //   axios({
 //     method: 'get',
 //     url: serverURL
 //   }).then((result)=>{
 //     if(result.status === '0'){
-//       //请求成功
+//       // 请求成功
 //       const randomNumbers = getRandomNumbers();
 //       recommandData.value.data = result.data;
 //       imgList.value = [result.data[randomNumbers[0]].imageUrl, result.data[randomNumbers[1]].imageUrl, result.data[randomNumbers[2]].imageUrl]
 //       rateList.value = [result.data[randomNumbers[0]].recommandation, result.data[randomNumbers[1]].recommandation, result.data[randomNumbers[2]].recommandation]
 //     }else{
-//       //请求失败
+//       // 请求失败
 //       message.error({
 //         content: ()=> `${recommandData.value.msg}`,
 //         style: {
@@ -108,90 +105,48 @@ const serverURL = 'http://192.168.0.1:8080/travelGuides'
   </div>
   <div>
     <p style="font-size: 1.5em;margin-top: 20px;">景区推荐及相关攻略</p>
-    <div class="recommandDiv">
-      <!-- <img src="../../src/assets/image/package1.jpg" style="margin-left: 20%; margin-top: 10px;"> -->
-      <a-card hoverable style="width: 20%;margin-left: 15%;">
-        <template #cover>
-          <img alt="example" src="https://os.alipayobjects.com/rmsportal/QBnOOoLaAfKPirc.png" />
-        </template>
-        <a-card-meta title="Europe Street beat">
-          <template #description>
-            <span>
-              <a-rate v-model:value="rateList[0]"  disabled allow-half/>
-              <span class="ant-rate-text">{{ rateList[0] }}</span>
-              <br/>
-              <a @click="showDetail" preventDefault>查看详情</a>
-            </span>
+    <div v-for="(item,index) in recommendData.recommendScene" :key="index">
+      <div class="recommendDiv" v-if="index%2===0?true:false">
+        <a-card hoverable style="width: 20%;margin-left: 15%;" >
+          <template #cover>
+            <img alt="example" :src="item.imageUrl" />
           </template>
-        </a-card-meta>
-      </a-card>
-      <p class="recommandStyle1">
-        匾额为“汉昭烈庙”。大门内浓荫丛中，矗立着六通石碑  成都武侯祠，两侧各有一碑廊，其中最大的一通在东侧碑廊内，
-        唐代“蜀汉丞相诸葛武侯祠堂碑”，唐宪宗元和四年（公元809年）立，有很高的文物价值，为国家一级文物，
-        因文章、书法、刻技俱精被称为“三绝碑”。唐朝著名宰相裴度撰碑文，书法家柳公绰（柳公权之兄）书写，名匠鲁建刻字，
-        都出自名家，因此被后世称为三绝碑。 碑文对诸葛亮的一生，作了重点褒评；竭力赞颂诸葛亮的高风亮节，文治武功，
-        并以此激励唐代的执政者。碑文特别褒奖诸葛亮的法治思想，马谡因失街亭被诸葛亮依法处斩，临刑，
-        马谡哭着表示自己死而无怨。李严与廖立，两人都是被诸葛亮削职流放的罪人，但他们也自甘服罪。
-        当他们得知诸葛亮病逝，“闻之痛之，或泣或绝”。这些均属史实，裴度据史褒评，令人信服碑文通篇辞句甚切，文笔酣畅，
-        使人百读不厌。诸葛亮之所以为后人所敬仰，还因为他有着高尚的思想和作风，不利用职权谋私。
-        <!-- {{recommandData.data[0].guideContent}} -->
-      </p>
-    </div>
-    <div class="recommandDiv">
-      <p class="recommandStyle2">
-        <!-- {{recommandData.data[0].guideContent}} -->
-        匾额为“汉昭烈庙”。大门内浓荫丛中，矗立着六通石碑  成都武侯祠，两侧各有一碑廊，其中最大的一通在东侧碑廊内，
-        唐代“蜀汉丞相诸葛武侯祠堂碑”，唐宪宗元和四年（公元809年）立，有很高的文物价值，为国家一级文物，
-        因文章、书法、刻技俱精被称为“三绝碑”。唐朝著名宰相裴度撰碑文，书法家柳公绰（柳公权之兄）书写，名匠鲁建刻字，
-        都出自名家，因此被后世称为三绝碑。 碑文对诸葛亮的一生，作了重点褒评；竭力赞颂诸葛亮的高风亮节，文治武功，
-        并以此激励唐代的执政者。碑文特别褒奖诸葛亮的法治思想，马谡因失街亭被诸葛亮依法处斩，临刑，
-        马谡哭着表示自己死而无怨。李严与廖立，两人都是被诸葛亮削职流放的罪人，但他们也自甘服罪。
-        当他们得知诸葛亮病逝，“闻之痛之，或泣或绝”。这些均属史实，裴度据史褒评，令人信服碑文通篇辞句甚切，文笔酣畅，
-        使人百读不厌。诸葛亮之所以为后人所敬仰，还因为他有着高尚的思想和作风，不利用职权谋私。
-      </p>
-      <!-- <img src="../../src/assets/image/package1.jpg" style="margin-left: 20px; margin-top: 10px;"> -->
-      <a-card hoverable style="width: 20%;margin-left: 40px;">
-        <template #cover>
-          <img alt="example" src="https://os.alipayobjects.com/rmsportal/QBnOOoLaAfKPirc.png" />
-        </template>
-        <a-card-meta title="Europe Street beat">
-          <template #description>
-            <span>
-              <a-rate v-model:value="rateList[1]"  disabled allow-half/>
-              <span class="ant-rate-text">{{ rateList[1] }}</span>
-            </span>
+          <a-card-meta :title="item.name">
+            <template #description>
+              <span>
+                <a-rate :value="item.rating"  disabled allow-half/>
+                <span class="ant-rate-text">{{ item.rating }}</span>
+                <br/>
+                <a @click="showDetail()" preventDefault>查看详情</a>
+              </span>
+            </template>
+          </a-card-meta>
+        </a-card>
+        <p class="recommandStyle1">
+          {{ item.description }}
+        </p>
+      </div>
+      <div class="recommandDiv" v-else>
+        <p class="recommandStyle2">
+          {{ item.description }}
+        </p>
+        <a-card hoverable style="width: 20%;margin-left: 40px;">
+          <template #cover>
+            <img alt="example" :src="item.imageUrl" />
           </template>
-        </a-card-meta>
-      </a-card>
-    </div>
-    <div class="recommandDiv">
-      <!-- <img src="../../src/assets/image/package1.jpg" style="margin-left: 20%; margin-top: 10px;"> -->
-      <a-card hoverable style="width: 20%;margin-left: 15%;">
-        <template #cover>
-          <img alt="example" src="https://os.alipayobjects.com/rmsportal/QBnOOoLaAfKPirc.png" />
-        </template>
-        <a-card-meta title="Europe Street beat">
-          <template #description>
-            <span>
-              <a-rate v-model:value="rateList[2]"  disabled allow-half/>
-              <span class="ant-rate-text">{{ rateList[2] }}</span>
-            </span>
-          </template>
-        </a-card-meta>
-      </a-card>
-      <p class="recommandStyle1">
-        <!-- {{recommandData.data[0].guideContent}} -->
-        匾额为“汉昭烈庙”。大门内浓荫丛中，矗立着六通石碑  成都武侯祠，两侧各有一碑廊，其中最大的一通在东侧碑廊内，
-        唐代“蜀汉丞相诸葛武侯祠堂碑”，唐宪宗元和四年（公元809年）立，有很高的文物价值，为国家一级文物，
-        因文章、书法、刻技俱精被称为“三绝碑”。唐朝著名宰相裴度撰碑文，书法家柳公绰（柳公权之兄）书写，名匠鲁建刻字，
-        都出自名家，因此被后世称为三绝碑。 碑文对诸葛亮的一生，作了重点褒评；竭力赞颂诸葛亮的高风亮节，文治武功，
-        并以此激励唐代的执政者。碑文特别褒奖诸葛亮的法治思想，马谡因失街亭被诸葛亮依法处斩，临刑，
-        马谡哭着表示自己死而无怨。李严与廖立，两人都是被诸葛亮削职流放的罪人，但他们也自甘服罪。
-        当他们得知诸葛亮病逝，“闻之痛之，或泣或绝”。这些均属史实，裴度据史褒评，令人信服碑文通篇辞句甚切，文笔酣畅，
-        使人百读不厌。诸葛亮之所以为后人所敬仰，还因为他有着高尚的思想和作风，不利用职权谋私。
-      </p>
+          <a-card-meta :title="item.name">
+            <template #description>
+              <span>
+                <a-rate :value="item.rating"  disabled allow-half/>
+                <span class="ant-rate-text">{{ item.rating }}</span>
+              </span>
+            </template>
+          </a-card-meta>
+        </a-card>
+      </div>
     </div>
   </div>
+
   <div>
     <p style="font-size: 1.5em;margin-top: 20px;">路线推荐</p>
     <div>

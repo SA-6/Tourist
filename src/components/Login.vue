@@ -6,7 +6,6 @@ import axios from 'axios';
 import router from "../router"
 
 import { useUserStore } from '../store/userStore'
-import { storeToRefs } from 'pinia';
 const userData = reactive({
   username: '',
   password: '',
@@ -14,7 +13,7 @@ const userData = reactive({
 })
 const userStore = useUserStore()
 
-const serverURL = `http://192.168.104.72:8080`
+const serverURL = `http://192.168.40.121:8080`
 //登录
 function login() {
   console.log(userData);
@@ -194,7 +193,7 @@ section .bg {
   font-size: 2.5em;
   font-weight:600;
   color:#8f2c24;
-  margin-bottom: 10px;
+  margin-bottom: 0px;
 }
 .login h3 {
   position: relative;
@@ -210,7 +209,7 @@ section .bg {
   height: 80%;
   position: relative;
   width: 100%;
-  padding: 15px 20px;
+  padding: 10px 20px;
   outline: none;
   font-size:1.25em;
   color:#8f2c24;
@@ -234,4 +233,34 @@ section .bg {
 .login .option {
   position: relative;
 }
+
+.validateCodeInput {
+  height: 70%;
+  position: relative;
+  width: 100%;
+  padding: 0px 20px;
+  outline: none;
+  font-size:1.25em;
+  color:#8f2c24;
+  border-radius: 5px;
+  background: #fff;
+  border:none;
+  margin-bottom: 20px;
+}
+
+.inputbox :deep(span) {
+  height: 100%
+}
+
+.validateCodeInput :deep(.ant-input-group) {
+  height: 50px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+}
+.validateCodeInput :deep(.ant-input-group :deep(input)) {
+  height: 60px;
+}
+
 </style>

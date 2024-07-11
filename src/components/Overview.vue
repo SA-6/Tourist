@@ -1,12 +1,13 @@
 <script setup>
 import router from '../router'
 import { onBeforeMount, ref, onMounted } from 'vue';
+import { useRecommendDataStore } from '../store/recommendDataStore'
 import axios from 'axios';
 function getHotelInfo(e) {
   console.log(e.target.src);
 }
-const rateList = ref([4,3,5]);
-const desc = ref(['terrible', 'bad', 'normal', 'good', 'wonderful']);
+// 推荐信息存储
+const recommendInfoStore = useRecommendDataStore
 // 推荐城市
 const recommendCity = ref([])
 // 推荐景点
@@ -14,8 +15,8 @@ const recommendScene = ref([])
 // 推荐酒店
 const recommendHotel = ref([])
 // 服务器请求路径
-const serverURL = 'http://192.168.104.72:8080'
-//获取推荐信息
+const serverURL = 'http://192.168.40.121:8080'
+//获取推荐信息并将信息存入store
 function getRecommendInfo() {
   axios({
     method: 'get',
@@ -28,7 +29,8 @@ function getRecommendInfo() {
     if(result.data.status === 0){
       recommendCity.value = result.data.data.popularCitiesList;
       recommendScene.value = result.data.data.scenicSpotsList;
-      recommendHotel.value = result.data.data.hotelsList
+      recommendHotel.value = result.data.data.hotelsList;
+      recommendInfoStore.setRecommendDataInfo(result.data.data)
     }else{
       message.error({
         content: ()=> '获取失败',
