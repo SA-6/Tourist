@@ -6,13 +6,21 @@ import {
 //导入组件
 import MainPage from '../components/MainPage.vue'
 import Login from '../components/Login.vue'
-import HotelPage from '../components/Hotel/HotelPage.vue'
 import Register from '../components/Register.vue'
 import Overview from '../components/Overview.vue'
-import HotelReserve from '../components/HotelReserve.vue'
-import HotelDetail from '../components/HotelDetail.vue'
+
+import HotelPage from '../components/Hotel/HotelPage.vue'
+import HotelReserve from '../components/Hotel/HotelReserve.vue'
+// import HotelDetail from '../components/Hotel/HotelDetail.vue'
+
+import ScenePage  from '../components/Scene/ScenePage.vue'
 import ScenePlay from '../components/ScenePlay.vue'
 import SceneEat from '../components/SceneEat.vue'
+
+import CityPage from '../components/City/CityPage.vue'
+
+import DetailPage from '../components/DetailPage.vue'
+
 import ComplainRecord from '../components/ComplainRecord.vue'
 import ComplainAdd from '../components/ComplainAdd.vue'
 import TripTraffic from '../components/TripTraffic.vue'
@@ -36,6 +44,31 @@ const routes = [
     component: Register
   },
   {
+    path: '/hotelPage',
+    name : 'hotelPage',
+    component: HotelPage
+  },
+  {
+    path: '/hotelReserve',
+    name: 'hotelReserve',
+    component: HotelReserve
+  },
+  {
+    path: '/scenePage',
+    name: 'scenePage',
+    component: ScenePage
+  },
+  {
+    path: '/cityPage',
+    name: 'cityPage',
+    component: CityPage
+  },
+  {
+    path: '/DetailPage',
+    name: 'detailPage',
+    component: DetailPage
+  },
+  {
     path: '/mainPage',
     name: 'mainPage',
     component: MainPage,
@@ -45,16 +78,16 @@ const routes = [
         name: 'overview',
         component: Overview
       },
-      {
-        path: '/hotelReserve',
-        name: 'hotelReserve',
-        component: HotelReserve
-      },
-      {
-        path: '/hotelDetail',
-        name: 'hotelDetail',
-        component: HotelDetail
-      },
+      // {
+      //   path: '/hotelReserve',
+      //   name: 'hotelReserve',
+      //   component: HotelReserve
+      // },
+      // {
+      //   path: '/hotelDetail',
+      //   name: 'hotelDetail',
+      //   component: HotelDetail
+      // },
       {
         path: '/scenePlay',
         name: 'scenePlay',
@@ -92,13 +125,7 @@ const routes = [
       },
     ]
   },
-  {
-    path: '/hotel/page',
-    name : 'hotelPage',
-    component: HotelPage
-    
-  }
-
+  
 ]
 
 const router = createRouter({

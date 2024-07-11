@@ -11,6 +11,6 @@ import router from './router'
 
 createApp(App).use(router).mount('#app')
 
-// App.use(Icon);
+
 
 
