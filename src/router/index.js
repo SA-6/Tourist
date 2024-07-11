@@ -6,6 +6,7 @@ import {
 //导入组件
 import MainPage from '../components/MainPage.vue'
 import Login from '../components/Login.vue'
+import HotelPage from '../components/Hotel/HotelPage.vue'
 import Register from '../components/Register.vue'
 import Overview from '../components/Overview.vue'
 import HotelReserve from '../components/HotelReserve.vue'
@@ -95,6 +96,12 @@ const routes = [
         component: Test
       }
     ]
+  },
+  {
+    path: '/hotel/page',
+    name : 'hotelPage',
+    component: HotelPage
+    
   }
 ]
 
