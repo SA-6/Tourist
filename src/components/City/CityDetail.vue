@@ -74,23 +74,13 @@ const navLast = {
 let detailInstance = {}
 const navContent = detailInstance.name;
 detailInstance = {
-    "id": 1,
-    "name": "故宫博物院",
-    "type": "文化古迹类",
-    "description": "中国古代宫廷建筑的精华，世界文化遗产",
-    "level": 5,
-    "rating": 4.9,
-    "nearbyFoods": "1,2,3",
-    "ticketPrice": "60.00",
-    "contactNumber": "10-12345678",
-    "imageUrl": "[https://dimg04.c-ctrip.com/images/0100j1200046x94ebB936_R_1600_10000.jpg,https://dimg04.c-ctrip.com/images/100k0q000000gqnh8EE78_R_1600_10000.jpg,https://dimg04.c-ctrip.com/images/100g0x000000let3k0858_R_1600_10000.jpg]",
-    "features": "导游服务, 停车场, 免费Wi-Fi",
-    "routeInfo": "通畅",
-    "openTime": {
-      "openHours": "08:30-17:00",
-      "openDays": "全年不开放"
-    }
+    "cityId": 2,
+    "name": "北京",
+    "imageUrl": "[https://dimg04.c-ctrip.com/images/0100j1200046x94ebB936_R_1600_10000.jpg]",
+    "description": "北京是一座迷人的城市，既有古典风韵，又具时尚气息。小胡同、老茶馆、新潮酒吧街、繁华商业区，无限的摩登元素与老北京地道的京味儿相互交融，构筑了北京城博大精深的文化底蕴和正统而不失清雅的生活方式。",
+    "mustVisit": "[1,3,6,2,8]"
 }
+detailInstance.mustVisit=detailInstance.mustVisit.replace(/[\[\]]/,'').split(/[,，]/)
 
 // 图片展示处理
 let pattern = /[\]\[]*/
@@ -115,22 +105,21 @@ function getStatusDescription() {
 let travelRoutes = []
 travelRoutes.push({
     "cityName": "成都",
-    "involvedAttractions": "武侯祠, 锦里古街, 人民公园",
-    "description": "深入了解成都的三国文化和市民生活。",
-    "content": "上午：参观武侯祠，了解三国历史；中午：锦里古街用餐；下午：人民公园体验成都市民的休闲方式，如喝茶、打麻将;",
-    "recommendation": 4.6,
-    "imageUrl": "http://image.com/chengdu-culture-park-tour.jpg",
+    "involvedAttractions": "成都大熊猫基地, 宽窄巷子, 锦里古街",
+    "description": "成都经典一日游，从大熊猫的憨态可掬到古街的历史韵味。",
+    "content": "上午：参观成都大熊猫基地，看大熊猫和小熊猫。中午：宽窄巷子品尝成都小吃。下午：锦里古街体验三国文化和购物。",
+    "recommendation": 4.9,
+    "imageUrl": "http://image.com/chengdu-classic-tour.jpg",
     "days": 1
 })
 travelRoutes.push({
     "cityName": "成都",
-    "involvedAttractions": "武侯祠, 都江堰, 九寨沟",
-    "description": "我也不知道这是啥路线，成都我就知道这几个地",
-    "content": "上午:睡觉;中午:睡觉;晚上:睡觉;",
-    "recommendation": 999999,
-    "imageUrl": null,
+    "involvedAttractions": "都江堰, 青城山",
+    "description": "探索世界文化遗产，感受古代中国的智慧和自然美景。",
+    "content": "上午：游览都江堰，了解古代水利工程。下午：青城山徒步，探访道教名山。",
+    "recommendation": 4.8,
+    "imageUrl": "http://image.com/dujiangyan-qingchengshan-tour.jpg",
     "days": 1
-    
 })
 for(const route of travelRoutes) {
     route.routes = []
@@ -149,27 +138,25 @@ for(const route of travelRoutes) {
 let travelTactics = []
 travelTactics.push({
     "guideId": 1,
-    "title" : "都江堰游玩攻略",
-    "cityName": "成都",
-    "attractionName": "都江堰",
-    "guideContent": "都江堰是世界文化遗产，是古代中国的一项伟大水利工程。除了参观水利工程，还可以欣赏到青城山的自然风光。",
-    "recommendation": "4.8",
-    "imageUrl": "http://image.com/dujiangyan-guide.jpg",
+    "attractionName": "故宫博物院",
+    "title": "故宫一日游",
+    "guideContent": "故宫，又称紫禁城，是明、清两代的皇宫，拥有丰富的文化遗产和建筑艺术。建议游客从午门进入，依次参观太和殿、中和殿、保和殿等主要建筑，体验皇家气派。",
+    "recommendation": "4.9",
+    "imageUrl": "http://image.com/forbidden-city-guide.jpg",
     "days": 1,
     "avgCost": 300,
-    "tags": "文化遗产, 自然风光"
+    "tags": "文化古迹, 历史建筑"
 })
 travelTactics.push({
     "guideId": 2,
-    "title" : "都江堰游玩攻略",
-    "cityName": "成都",
-    "attractionName": "都江堰",
-    "guideContent": "都江堰是世界文化遗产，是古代中国的一项伟大水利工程。除了参观水利工程，还可以欣赏到青城山的自然风光。",
+    "attractionName": "长城（八达岭段）",
+    "title": "不到长城非好汉",
+    "guideContent": "八达岭长城是万里长城中最为壮观的一段，也是最具代表性的景点之一。游客可以选择缆车或徒步攀登，欣赏长城的雄伟壮观和周围山峦的自然美景。",
     "recommendation": "4.8",
-    "imageUrl": "http://image.com/dujiangyan-guide.jpg",
+    "imageUrl": "http://image.com/badaling-greatwall-guide.jpg",
     "days": 1,
-    "avgCost": 300,
-    "tags": "文化遗产, 自然风光"
+    "avgCost": 200,
+    "tags": "自然风光, 历史文化"
 })
 for(const item of travelTactics) {
     item.tags = item.tags.split(/[,，]/)
@@ -240,44 +227,74 @@ const handleSubmit = () => {
 };
 const rating = ref(2.5);
 
-// 观光车列表
-let trafficCars = []
-trafficCars.push({
-    "transportId": 2,
-    "vehicleType": "叮叮車",
-    "price": 0.01,
-    "serviceTime": "夜间"
-})
+// 城市推荐景区
+let sceneList = []
+sceneList.push(
+    {
+        "id": 34,
+        "name": "维多利亚港",
+        "type": "旅游景区",
+        "description": "世界著名的海港，享有‘东方之珠’的美誉",
+        "level": 5,
+        "rating": 4.9,
+        "ticketPrice": "80.00",
+        "contactNumber": "00852-12345678",
+        "imageUrl": "[https://dimg04.c-ctrip.com/images/10020y000000m5j4vCC02_C_1600_1200.jpg,https://dimg04.c-ctrip.com/images/100d0z000000naxy05131_R_1600_10000.jpg,https://dimg04.c-ctrip.com/images/100g0z000000mjpqy60D9_R_1600_10000.jpg]",
+        "features": "夜景, 灯光音乐汇演",
+        "routeInfo": "通畅",
+        "openTime": {
+          "openHours": "全天开放",
+          "openDays": "全年开放"
+        }
+    },
+    {
+        "id": 35,
+        "name": "香港迪士尼乐园",
+        "type": "旅游景区",
+        "description": "迪士尼主题乐园，提供超过百项的游乐设施及娱乐体验",
+        "level": 5,
+        "rating": 4.8,
+        "ticketPrice": "80.00",
+        "contactNumber": "00852-23456789",
+        "imageUrl": "[https://dimg04.c-ctrip.com/images/01004120009xe630d8500_R_1600_10000.jpg,https://dimg04.c-ctrip.com/images/0EQ2f12000cbrtpxh6E10_R_1600_10000.jpg,https://dimg04.c-ctrip.com/images/01014120009xe4p8lAD77_R_1600_10000.jpg]",
+        "features": "亲子活动, 娱乐设施",
+        "routeInfo": "拥挤",
+        "openTime": {
+          "openHours": "全天开放",
+          "openDays": "1月1日不开放"
+        }
+    }
+)
 
 // 食物列表
 let foods = []
 foods.push({
-    "foodId": 1,
-    "name": "北京烤鸭",
-    "type": "特色美食",
-    "cuisine": "北京菜",
-    "description": "皮脆肉嫩，色泽金黄，风味独特",
-    "priceRange": "高",
-    "rating": 4.8,
-    "number": 3,
-    "address": "北京市烤鸭店",
-    "openingHours": "每日 10:00-22:00",
-    "contactNumber": "010-12345678",
-    "imageUrl": "https://n.sinaimg.cn/sinakd10117/732/w2048h1084/20200627/086d-ivmqpck3629916.jpg",
-    "averageCost": 200,
-    "features": "享誉世界的传统美食"
+    "foodId": 9,
+    "name": "沙茶面",
+    "type": "面食",
+    "cuisine": "闽南菜",
+    "description": "香辣可口，搭配丰富的海鲜和肉类",
+    "priceRange": "低",
+    "rating": 4.6,
+    "address": "厦门市思明区",
+    "openingHours": "全周 08:00-22:00",
+    "contactNumber": "0592-12345678",
+    "imageUrl": "https://img1.fjdaily.com/app/images/2022-11/14/0f6e280a-a5f0-465c-ae9a-6c69dad7141f.jpg.2",
+    "averageCost": 30,
+    "features": "闽南特色，香辣美味",
+    "number": 2
 })
 // 附近演出列表
 let shows = []
 shows.push({
-    "eventId": 1,
-    "name": "春之韵音乐会",
-    "type": "音乐会",
-    "description": "一场庆祝春天到来的户外音乐会，由著名指挥家和交响乐团演出。",
-    "location": "北京中山公园音乐堂",
-    "time": "2024-07-20 19:30:00",
-    "ticketPrice": 480,
-    "imageUrl": "http://image.com/spring-concert.jpg"
+    "eventId": 3,
+      "name": "国际艺术节开幕式",
+      "type": "艺术节",
+      "description": "汇聚世界各地艺术家的艺术节开幕式，包含多种艺术形式的表演。",
+      "location": "上海东方艺术中心",
+      "time": "2024-07-20 19:30:00",
+      "ticketPrice": 680,
+      "imageUrl": "https://dimg04.c-ctrip.com/images/100l1f000001gqe13EF30_C_1600_1200.jpg"
 })
 
 // 附近酒店列表
@@ -341,46 +358,30 @@ hotels.push({
                         <div style="position: absolute;right: 0;">
                             <!-- <img src="" alt=""> -->
                         </div>
+                    </div>
 
-                    </div>
-                    <div style="display: flex;margin: 10px 0;">
-                        <div style="margin-right: 30px;">
-                            <span>{{ detailInstance.rating }}</span>
-                            /5分
-                        </div>
-                        <a href="">{{ getCommentCount() }}条点评</a>
-                    </div>
                     <div style="text-align: left;margin: 10px 0;">
-                        <span style="margin-right: 20px;width: 80px;display: inline-block;">地址</span>
-                        <span>{{ detailInstance.address }}</span>
+                        <!-- <span style="margin-right: 20px;width: 80px;display: inline-block;">地址</span> -->
+                        <span>{{ detailInstance.description }}</span>
                     </div>
+
                     <div style="text-align: left;margin: 10px 0;">
-                        <span style="margin-right: 20px;width: 80px;display: inline-block;">开放时间</span>
-                        <span :style="{color : status?'green' : 'black'}"> {{ getStatusDescription() }} </span>
-                        <span>{{ detailInstance.openTime.openHours }}</span>
+                        <span style="margin-right: 20px;width: 80px;display: inline-block;">必逛景点:</span>
+                        <span v-for="(mustItem,index) of detailInstance.mustVisit" :key="index">{{ mustItem[index]
+                            }}</span>
                     </div>
-                    <div style="text-align: left;margin: 10px 0;">
-                        <span style="margin-right: 20px;width: 80px;display: inline-block;">票价</span>
-                        <span>{{ detailInstance.ticketPrice }}</span>
-                    </div>
-                    <div style="text-align: left;margin: 10px 0;">
-                        <span style="margin-right: 20px;width: 80px;display: inline-block;">联系方式</span>
-                        <span>{{ detailInstance.contactNumber }}</span>
-                    </div>
-                    <div style="text-align: left;margin: 10px 0;">
-                        <span style="margin-right: 20px;width: 80px;display: inline-block;">特色</span>
-                        <span>{{ detailInstance.features }}</span>
-                    </div>
+
                     <div style="position: absolute;bottom: 0;">
                         打分
                     </div>
                 </div>
+
             </section>
 
             <!-- 左部区域 -->
             <section class="left-area-wrapper">
                 <!-- 描述信息 -->
-                <section class="description-wrapper">
+                <!-- <section class="description-wrapper">
                     <div class="description-container">
                         <div class="introduction-container">
                             <h2>介绍</h2>
@@ -392,7 +393,7 @@ hotels.push({
                                 detailInstance.openTime.openHours }}</p>
                         </div>
                     </div>
-                </section>
+                </section> -->
 
                 <!-- 游玩线路 -->
                 <section class="route-wrapper">
@@ -405,14 +406,17 @@ hotels.push({
                             </template>
                             <a-collapse-panel v-for="routeItem in travelRoutes" :key="routeItem.id"
                                 :header="routeItem.involvedAttractions" style="position: relative;">
-                                <a-tag color="#f50" style="height: 20px;line-height: 20px;position: absolute;right: 10px;top: 13px;">{{ routeItem.days }}天</a-tag>
+                                <a-tag color="#f50"
+                                    style="height: 20px;line-height: 20px;position: absolute;right: 10px;top: 13px;">{{
+                                    routeItem.days }}天</a-tag>
                                 <div class="route-content" style="height: 100%;width: 100%;display: flex;">
                                     <div style="width: 20%;height: 100%;">
                                         {{ routeItem.description }}
                                     </div>
                                     <div>
                                         <a-timeline mode="alternate">
-                                            <a-timeline-item v-for="route of routeItem.routes">{{ route.timing }}:{{ route.content }}</a-timeline-item>
+                                            <a-timeline-item v-for="route of routeItem.routes">{{ route.timing }}:{{
+                                                route.content }}</a-timeline-item>
                                             <!-- <a-timeline-item color="green">Solve initial network problems
                                                 2015-09-01</a-timeline-item>
                                             <a-timeline-item>
@@ -454,7 +458,7 @@ hotels.push({
                             <template #expandIcon="{ isActive }">
                                 <RightCircleOutlined :rotate="isActive ? 90 : 0" />
                             </template>
-                            <a-collapse-panel v-for="tacticsItem in travelTactics" :key="tacticsItem.guideId"
+                            <a-collapse-panel v-for="tacticsItem in travelTactics" :key="tacticsItem.id"
                                 :header="tacticsItem.attractionName">
                                 <div class="tactics-content">
                                     <div
@@ -642,24 +646,35 @@ hotels.push({
 
             <!-- 右部区域 -->
             <section class="right-area-wrapper">
-                <!-- 景区内部交通车 -->
-                <section class="traffic-wrapper">
-                    <h2 style="margin: 0;text-align: left;padding: 20px;padding-bottom: 0;">景区交通</h2>
-                    <div class="traffic-container">
-                        <div v-for="trafficCar in trafficCars" :key="trafficCar.transportId"
-                            style="display: flex;height: 10vh;width: 100%;margin-bottom: 10px;color: #000;">
-                            <img :src="trafficCar.imageUrl" alt="" style="width: 10vh;height: 100%;object-fit: fill;">
+                <!-- 城市著名景点推荐 -->
+                <section class="scene-wrapper">
+                    <h2 style="margin: 0;text-align: left;padding: 20px;padding-bottom: 0;">著名景点</h2>
+                    <div class="scene-container">
+                        <a href="" class="scene-item" v-for="scene in sceneList" :key="scene.id"
+                            style="display: flex;height: 12vh;width: 100%;margin-bottom: 10px;color: #000;">
+                            <img :src="scene.imageUrl[0]" alt="" style="width: 12vh;height: 100%;object-fit: fill;">
                             <div
-                                style="width: calc(100% - 10vh);height: 100%;padding-left: 10px;text-align: left;display: flex;flex-direction: column;">
-                                <h2>{{ trafficCar.vehicleType }}</h2>
-                                <div>
-                                    <span>￥{{ trafficCar.price }}/人</span>
+                                style="width: calc(100% - 12vh);height: 100%;padding-left: 10px;text-align: left;display: flex;flex-direction: column;">
+                                <h2>{{ scene.name }}</h2>
+                                <div style="display: flex;width: 100%;justify-content: space-between;">
+                                    <div>
+                                        <span>{{ scene.type }}</span>&nbsp;
+                                        <span>{{ scene.features }}</span>
+                                    </div>
+                                    <div>
+                                        <span>￥{{ scene.ticketPrice }}/人</span>&nbsp;
+                                        <span>{{ scene.priceRange }}</span>
+                                    </div>
                                 </div>
-                                <div>
-                                    <span>服务时间:{{ trafficCar.serviceTime }}</span>
+                                <div style="display: flex;justify-content: space-between;width: 100%;">
+                                    <span class="score">{{ scene.rating }}分</span>
+                                    <span style="padding-right: 20px;">{{ scene.number }}条点评</span>
+                                </div>
+                                <div style="display: flex;width: 100%;">
+                                    <span>营业时间: {{ scene.openTime.openingHours }}</span>
                                 </div>
                             </div>
-                        </div>
+                        </a>
                     </div>
                 </section>
                 <!-- 食物推荐 -->
@@ -953,7 +968,6 @@ nav li {
 }
 /* 游玩线路 */
 .route-wrapper {
-    margin-top: 4vh;
     width: 100%;
     min-height: 40vh;
     background-color: #fff;
@@ -1004,17 +1018,20 @@ nav li {
     margin-top: 4vh;
 }
 /* 景区内部观光车 */
-.traffic-wrapper {
+.scene-wrapper {
     /* display: inline-block; */
     width: 100%;
     height: 50vh;
     background-color: #fff;
 }
-.traffic-container {
+.scene-container {
     width: 100%;
     height: 100%;
     padding: 20px;
     padding-top: 10px;
+}
+.scene-item:hover {
+    cursor: pointer;
 }
 
 /* 食物推荐 */

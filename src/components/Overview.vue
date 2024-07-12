@@ -2,11 +2,6 @@
 import router from '../router'
 import { onBeforeMount, ref, onMounted } from 'vue';
 import { useRecommendDataStore } from '../store/recommendDataStore'
-import {
-  BarsOutlined,
-  VerticalAlignTopOutlined,
-  CommentOutlined
-} from '@ant-design/icons-vue'
 import axios from 'axios';
 function getHotelInfo(e) {
   console.log(e.target.src);
@@ -51,48 +46,10 @@ function getRecommendInfo() {
 onMounted(()=>{
   getRecommendInfo();
 })
-// 显示聊天机器人
-const open = ref(false)
-function showChatBot() {
-  open.value = true
-}
-function backToTop() {
 
-}
 </script>
 
 <template>
-  <!-- 悬浮按钮 -->
-  <a-float-button-group trigger="hover" type="primary" :style="{ right: '24px' }">
-    <template #icon>
-      <BarsOutlined />
-    </template>
-    <a-float-button @click="backToTop">
-      <template #icon>
-        <VerticalAlignTopOutlined />
-      </template>
-    </a-float-button>
-    <a-float-button @click="showChatBot">
-      <template #icon>
-        <CommentOutlined />
-      </template>
-    </a-float-button>
-  </a-float-button-group>
-  <!-- 抽屉 -->
-  <a-drawer
-    v-model:open="open"
-    class="custom-class"
-    root-class-name="root-class-name"
-    :root-style="{ color: 'blue' }"
-    style="color: red"
-    title="旅游推荐助手"
-    placement="right"
-    @after-open-change="afterOpenChange"
-  >
-    <div>
-      
-    </div>
-  </a-drawer>
   <div class="pictureShow">
     <!-- 走马灯 -->
     <a-carousel autoplay effect="fade">

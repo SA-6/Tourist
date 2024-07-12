@@ -528,12 +528,28 @@
   const wrapperCol = {
     span: 14,
   };
+  // 提交修改个人信息
+function submitModifyInfo() {
+  const serverURL = 'http://192.168.0.1/modifyUserInfo'
+  axios({
+    method: 'post',
+    url: serverURL,
+    headers: {
+      'Content-Type': 'application/x-www-form-urlencoded'
+    },
+    data: new URLSearchParams(params).toString(),
+  }).then((result) => {
+    console.log(result);
+  }).catch(function(error){
+    console.log(error);
+  })
+}
 </script>
 
 <template>
-  <a-checkbox :checked="componentDisabled" @change="e => (componentDisabled = e.target.checked)">
+  <!-- <a-checkbox :checked="componentDisabled" @change="e => (componentDisabled = e.target.checked)">
     Form disabled
-  </a-checkbox>
+  </a-checkbox> -->
   <a-form
     :label-col="labelCol"
     :wrapper-col="wrapperCol"
@@ -575,7 +591,7 @@
       <a-textarea :rows="4" v-model:value="userInfo.bio"/>
     </a-form-item>
     
-    <a-form-item label="Upload">
+    <a-form-item label="上传头像">
       <a-upload action="/upload.do" list-type="picture-card">
         <div>
           <PlusOutlined />
@@ -583,11 +599,9 @@
         </div>
       </a-upload>
     </a-form-item>
-    <a-form-item label="Button">
-      <a-button>Button</a-button>
-    </a-form-item>
   </a-form>
-  <a-button>修改信息</a-button>
+  <a-button @click="componentDisabled ? false : true" v-if="!componentDisabled">修改信息</a-button>
+  <a-button @click="submitModifyInfo" v-else>提交修改</a-button>
 </template>
 
 <style scoped>

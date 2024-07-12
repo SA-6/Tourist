@@ -604,7 +604,6 @@ function checkPassword() {
     passwordMsg.value = '两次输入密码不一致'
   }
 }
-
 //重置表单信息
 function resetForm() {
   registerUserData.value.username = '';
@@ -690,7 +689,6 @@ const beforeUpload = file => {
   }
   return isJpgOrPng && isLt2M;
 };
-
 //表单布局
 const layout = {
   labelCol: {
@@ -705,7 +703,7 @@ const layout = {
 <template>
   <section style="height: 150%">
     <!-- 背景图片 -->
-    <img src="../../src/assets/image/bg1.jpg" class="bg">
+    <img src="../../assets/image/bg1.jpg" class="bg">
     <!-- 注册框 -->
     <div class="login">
       <h2>注册</h2>

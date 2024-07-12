@@ -8,18 +8,25 @@ import {
   DislikeOutlined,
   ScheduleOutlined,
   UserOutlined,
-  ContactsOutlined
+  ContactsOutlined,
+  BarsOutlined,
+  VerticalAlignTopOutlined,
+  CommentOutlined
  } from '@ant-design/icons-vue';
 import router from '../router'
 import { useUserStore } from '../store/userStore'
 import { message } from 'ant-design-vue';
 import axios from 'axios';
-
+//使用pinia中定义的store
 const userStore = useUserStore()
 //读取用户数据
 const userInfo = userStore.userInfo
 // 选中的菜单项
 const current = ref(['/mainPage/overview']);
+// 用户输入的消息
+const question = ref('')
+// 存储消息记录
+const infoList = ref([])
 // 定义菜单项
 const items = reactive([
   {
@@ -29,22 +36,10 @@ const items = reactive([
     title: '主页',
   },
   {
-    key: 'option2',
+    key: '/mainPage/hotelPage',
     icon: () => h(BankOutlined),
     label: '酒店',
     title: '酒店',
-    children: [
-      {
-        key: '/mainPage/hotelReserve',
-        label: '预订',
-        title: '预订'
-      },
-      {
-        key: '/mainPage/hotelDetail',
-        label: '详情',
-        title: '详情'
-      },
-    ]
   },
   {
     key: '/mainPage/scenePage',
@@ -166,6 +161,41 @@ const handleMenuClick = e => {
     userStore.clearUserInfo()
   }
 };
+// 显示聊天机器人
+const open = ref(false)
+function showChatBot() {
+  open.value = true
+}
+//回到顶部
+function backToTop() {
+  window.scrollTo({
+    top: 0,
+    behavior: 'smooth'
+  })
+}
+// 发送问题给chatGPT
+async function query(data) {
+  const response = await fetch(
+      "https://api-inference.huggingface.co/models/meta-llama/Meta-Llama-3-8B",
+      {
+          headers: {
+              Authorization: "Bearer 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",
+              "Content-Type": "application/json",
+          },
+          method: "POST",
+          body: JSON.stringify(data),
+      }
+  );
+  const result = await response.json();
+  return result;
+}
+function sendInfoToBot() {
+  infoList.value.push(question.value)
+  question.value = ''
+  query({"inputs": question.value}).then((response) => {
+      console.log(JSON.stringify(response));
+  });
+}
 </script>
 
 <template>
@@ -217,6 +247,43 @@ const handleMenuClick = e => {
     <a-layout-content :style="layoutContentStyle">
       <div :style="{ background: '#fff', padding: '0', minHeight: '100%'}">
         <router-view></router-view>
+        <!-- 悬浮按钮 -->
+        <a-float-button-group trigger="hover" type="primary" :style="{ right: '24px' }">
+          <template #icon>
+            <BarsOutlined />
+          </template>
+          <a-float-button @click="backToTop">
+            <template #icon>
+              <VerticalAlignTopOutlined />
+            </template>
+          </a-float-button>
+          <a-float-button @click="showChatBot">
+            <template #icon>
+              <CommentOutlined />
+            </template>
+          </a-float-button>
+        </a-float-button-group>
+        <!-- 抽屉 -->
+        <a-drawer
+          v-model:open="open"
+          class="custom-class"
+          root-class-name="root-class-name"
+          :root-style="{ color: 'blue' }"
+          style="color: red"
+          title="旅游推荐助手"
+          placement="right"
+          @after-open-change="afterOpenChange"
+        >
+          <div class="chatBox">
+            <div class="infoBox">
+
+            </div>
+            <div class="btnBox">
+              <input v-model="question">
+              <button @click="sendInfoToBot">发送</button>
+            </div>
+          </div>
+        </a-drawer>
       </div>
     </a-layout-content>
     <a-layout-footer :style="{ textAlign: 'center' }">
@@ -273,5 +340,25 @@ const handleMenuClick = e => {
 
 .avatarBtn :deep(.ant-dropdown-trigger) {
   width: 50px;
+}
+
+.chatBox {
+  height: 100%;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+}
+.infoBox {
+  height:95%;
+  width:90%
+}
+.btnBox {
+  display: inline-block;
+  width: 100%
+}
+.btnBox input {
+  width: 80%;
+  height: 100%;
+  margin-right: 3px;
 }
 </style>

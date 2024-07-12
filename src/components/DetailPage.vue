@@ -67,7 +67,6 @@ const navLast = {
     name : '景区'
 }
 
-
 // 详情展示
 let detailInstance = {}
 const navContent = detailInstance.name;
@@ -621,7 +620,6 @@ hotels.push({
 </template>
 
 <style scoped>
-
 .detail-header {
     padding: 0 150px 0 100px;
     position: relative;

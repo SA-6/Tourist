@@ -43,7 +43,7 @@ const columns = [
     width: '150px'
   },
 ];
-let data = ref([]);
+const data = [];
 for (let i = 0; i < 100; i++) {
   data.push({
     key: i.toString(),
@@ -60,21 +60,21 @@ for (let i = 0; i < 100; i++) {
 }
 //获取投诉记录信息
 //请求服务器资源的路径
-const serverURL = 'http://192.168.0.1:8080'
-onBeforeMount(()=>{
-  axios({
-    method: 'get',
-    headers: {
-      'Content-Type': 'application/json',
-      'Authorization': `${userInfo.token}`
-    }
-  }).then((result)=>{
-    console.log(result.data);
-    data.value = result.data.data;
-  }).catch(function(error){
-    console.log(error);
-  })
-})
+// const serverURL = 'http://192.168.0.1:8080'
+// onBeforeMount(()=>{
+//   axios({
+//     method: 'get',
+//     headers: {
+//       'Content-Type': 'application/json',
+//       'Authorization': `${userInfo.token}`
+//     }
+//   }).then((result)=>{
+//     console.log(result.data);
+//     data.value = result.data.data;
+//   }).catch(function(error){
+//     console.log(error);
+//   })
+// })
 const dataSource = ref(data);
 const editableData = reactive({});
 const edit = key => {
