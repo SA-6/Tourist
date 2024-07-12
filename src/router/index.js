@@ -18,8 +18,9 @@ import ScenePlay from '../components/ScenePlay.vue'
 import SceneEat from '../components/SceneEat.vue'
 
 import CityPage from '../components/City/CityPage.vue'
+import CityDetail from '../components/City/CityDetail.vue'
 
-import DetailPage from '../components/DetailPage.vue'
+import SceneDetail from '../components/Scene/SceneDetail.vue'
 
 import ComplainRecord from '../components/ComplainRecord.vue'
 import ComplainAdd from '../components/ComplainAdd.vue'
@@ -64,9 +65,14 @@ const routes = [
     component: CityPage
   },
   {
-    path: '/DetailPage',
-    name: 'detailPage',
-    component: DetailPage
+    path: '/sceneDetail',
+    name: 'sceneDetail',
+    component: SceneDetail
+  },
+  {
+    path: '/cityDetail',
+    name: 'cityDetail',
+    component: CityDetail
   },
   {
     path: '/mainPage',
@@ -78,16 +84,6 @@ const routes = [
         name: 'overview',
         component: Overview
       },
-      // {
-      //   path: '/hotelReserve',
-      //   name: 'hotelReserve',
-      //   component: HotelReserve
-      // },
-      // {
-      //   path: '/hotelDetail',
-      //   name: 'hotelDetail',
-      //   component: HotelDetail
-      // },
       {
         path: '/scenePlay',
         name: 'scenePlay',

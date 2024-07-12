@@ -15,7 +15,8 @@ import {
     DislikeFilled, 
     DislikeOutlined,
     RightSquareOutlined,
-    RightCircleOutlined
+    RightCircleOutlined,
+    ClockCircleOutlined
 } from '@ant-design/icons-vue';
 import { styleProviderProps } from 'ant-design-vue/es/_util/cssinjs/StyleContext';
 const navItems = ref([
@@ -61,6 +62,7 @@ const navItems = ref([
   },
 ]);
 
+
 // 面包屑导航
 const navLast = {
     URL : '',
@@ -71,23 +73,34 @@ const navLast = {
 // 详情展示
 let detailInstance = {}
 const navContent = detailInstance.name;
-// 图片展示
-detailInstance.imageUrl = [
-    'https://raw.githubusercontent.com/vueComponent/ant-design-vue/main/components/carousel/demo/abstract01.jpg',
-    'https://raw.githubusercontent.com/vueComponent/ant-design-vue/main/components/carousel/demo/abstract02.jpg',
-    'https://raw.githubusercontent.com/vueComponent/ant-design-vue/main/components/carousel/demo/abstract03.jpg',
-    'https://raw.githubusercontent.com/vueComponent/ant-design-vue/main/components/carousel/demo/abstract04.jpg',
-]
+detailInstance = {
+    "id": 1,
+    "name": "故宫博物院",
+    "type": "文化古迹类",
+    "description": "中国古代宫廷建筑的精华，世界文化遗产",
+    "level": 5,
+    "rating": 4.9,
+    "nearbyFoods": "1,2,3",
+    "ticketPrice": "60.00",
+    "contactNumber": "10-12345678",
+    "imageUrl": "[https://dimg04.c-ctrip.com/images/0100j1200046x94ebB936_R_1600_10000.jpg,https://dimg04.c-ctrip.com/images/100k0q000000gqnh8EE78_R_1600_10000.jpg,https://dimg04.c-ctrip.com/images/100g0x000000let3k0858_R_1600_10000.jpg]",
+    "features": "导游服务, 停车场, 免费Wi-Fi",
+    "routeInfo": "通畅",
+    "openTime": {
+      "openHours": "08:30-17:00",
+      "openDays": "全年不开放"
+    }
+}
+
+// 图片展示处理
+let pattern = /[\]\[]*/
+detailInstance.imageUrl = detailInstance.imageUrl.replace(pattern,'').split(',')
+
 function getImgUrl(i){
     return detailInstance.imageUrl[i];
 }
 const visible = ref(false);
 
-// 开放时间
-detailInstance.openTime = {
-    date: '',
-    clock: ''
-}
 
 // 获取评论数量
 function getCommentCount() {
@@ -98,11 +111,45 @@ function getStatusDescription() {
     return ;
 }
 
+// 游玩线路部分
+let travelRoutes = []
+travelRoutes.push({
+    "cityName": "成都",
+    "involvedAttractions": "武侯祠, 锦里古街, 人民公园",
+    "description": "深入了解成都的三国文化和市民生活。",
+    "content": "上午：参观武侯祠，了解三国历史；中午：锦里古街用餐；下午：人民公园体验成都市民的休闲方式，如喝茶、打麻将;",
+    "recommendation": 4.6,
+    "imageUrl": "http://image.com/chengdu-culture-park-tour.jpg",
+    "days": 1
+})
+travelRoutes.push({
+    "cityName": "成都",
+    "involvedAttractions": "武侯祠, 都江堰, 九寨沟",
+    "description": "我也不知道这是啥路线，成都我就知道这几个地",
+    "content": "上午:睡觉;中午:睡觉;晚上:睡觉;",
+    "recommendation": 999999,
+    "imageUrl": null,
+    "days": 1
+    
+})
+for(const route of travelRoutes) {
+    route.routes = []
+    let sections = route.content.split(/[;；]/).filter(item => item !== '')
+    for(const section of sections) {
+        let [ timing , content ] = section.split(/[:：]/);
+        route.routes.push({
+            'timing'  : timing,
+            'content' : content
+        })
+    }
+}
 
 
 // 游玩攻略部分
 let travelTactics = []
 travelTactics.push({
+    "guideId": 1,
+    "title" : "都江堰游玩攻略",
     "cityName": "成都",
     "attractionName": "都江堰",
     "guideContent": "都江堰是世界文化遗产，是古代中国的一项伟大水利工程。除了参观水利工程，还可以欣赏到青城山的自然风光。",
@@ -112,6 +159,21 @@ travelTactics.push({
     "avgCost": 300,
     "tags": "文化遗产, 自然风光"
 })
+travelTactics.push({
+    "guideId": 2,
+    "title" : "都江堰游玩攻略",
+    "cityName": "成都",
+    "attractionName": "都江堰",
+    "guideContent": "都江堰是世界文化遗产，是古代中国的一项伟大水利工程。除了参观水利工程，还可以欣赏到青城山的自然风光。",
+    "recommendation": "4.8",
+    "imageUrl": "http://image.com/dujiangyan-guide.jpg",
+    "days": 1,
+    "avgCost": 300,
+    "tags": "文化遗产, 自然风光"
+})
+for(const item of travelTactics) {
+    item.tags = item.tags.split(/[,，]/)
+}
 function getTravelTactics() {
     return ;
 }
@@ -294,8 +356,8 @@ hotels.push({
                     </div>
                     <div style="text-align: left;margin: 10px 0;">
                         <span style="margin-right: 20px;width: 80px;display: inline-block;">开放时间</span>
-                        <span :style="{color : status?'green' : 'black'}"> {{ getStatusDescription() }} 111</span>
-                        <span>{{ detailInstance.openTime.clock }}</span>
+                        <span :style="{color : status?'green' : 'black'}"> {{ getStatusDescription() }} </span>
+                        <span>{{ detailInstance.openTime.openHours }}</span>
                     </div>
                     <div style="text-align: left;margin: 10px 0;">
                         <span style="margin-right: 20px;width: 80px;display: inline-block;">票价</span>
@@ -326,16 +388,60 @@ hotels.push({
                         </div>
                         <div class="time-container">
                             <h2>开放时间</h2>
-                            <p style="min-height: 4vh;margin: 0;">{{ detailInstance.openTime.date }} &nbsp; {{
-                                detailInstance.openTime.clock }}</p>
+                            <p style="min-height: 4vh;margin: 0;">{{ detailInstance.openTime.openDays }} &nbsp; {{
+                                detailInstance.openTime.openHours }}</p>
                         </div>
                     </div>
                 </section>
 
                 <!-- 游玩线路 -->
                 <section class="route-wrapper">
+                    <h2 style="margin: 0;text-align: left;padding: 20px;padding-bottom: 0;">相关游玩路线</h2>
                     <div class="route-container">
-
+                        <a-collapse v-model:activeKey="activeKey" :bordered="false"
+                            style="background: rgb(255, 255, 255)">
+                            <template #expandIcon="{ isActive }">
+                                <RightCircleOutlined :rotate="isActive ? 90 : 0" />
+                            </template>
+                            <a-collapse-panel v-for="routeItem in travelRoutes" :key="routeItem.id"
+                                :header="routeItem.involvedAttractions" style="position: relative;">
+                                <a-tag color="#f50" style="height: 20px;line-height: 20px;position: absolute;right: 10px;top: 13px;">{{ routeItem.days }}天</a-tag>
+                                <div class="route-content" style="height: 100%;width: 100%;display: flex;">
+                                    <div style="width: 20%;height: 100%;">
+                                        {{ routeItem.description }}
+                                    </div>
+                                    <div>
+                                        <a-timeline mode="alternate">
+                                            <a-timeline-item v-for="route of routeItem.routes">{{ route.timing }}:{{ route.content }}</a-timeline-item>
+                                            <!-- <a-timeline-item color="green">Solve initial network problems
+                                                2015-09-01</a-timeline-item>
+                                            <a-timeline-item>
+                                                <template #dot>
+                                                    <ClockCircleOutlined style="font-size: 16px" />
+                                                </template>
+                                                Sed ut perspiciatis unde omnis iste natus error sit voluptatem
+                                                accusantium
+                                                doloremque
+                                                laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore
+                                                veritatis
+                                                et
+                                                quasi architecto
+                                                beatae vitae dicta sunt explicabo.
+                                            </a-timeline-item>
+                                            <a-timeline-item color="red">Network problems being solved
+                                                2015-09-01</a-timeline-item>
+                                            <a-timeline-item>Create a services site 2015-09-01</a-timeline-item>
+                                            <a-timeline-item>
+                                                <template #dot>
+                                                    <ClockCircleOutlined style="font-size: 16px" />
+                                                </template>
+                                                Technical testing 2015-09-01
+                                            </a-timeline-item> -->
+                                        </a-timeline>
+                                    </div>
+                                </div>
+                            </a-collapse-panel>
+                        </a-collapse>
                     </div>
                 </section>
 
@@ -346,12 +452,38 @@ hotels.push({
                         <a-collapse v-model:activeKey="activeKey" :bordered="false"
                             style="background: rgb(255, 255, 255)">
                             <template #expandIcon="{ isActive }">
-                                <RightCircleOutlined :rotate="isActive ? 90 : 0"/>
+                                <RightCircleOutlined :rotate="isActive ? 90 : 0" />
                             </template>
-                            <a-collapse-panel key="1" v-for="tacticsItem in travelTactics" :key="tacticsItem.id" :header="tacticsItem.attractionName">
-                                <div >
-
+                            <a-collapse-panel v-for="tacticsItem in travelTactics" :key="tacticsItem.guideId"
+                                :header="tacticsItem.attractionName">
+                                <div class="tactics-content">
+                                    <div
+                                        style="height: 10vh;width: calc(60% - 20px - 0.5em);display: inline-block;margin-right: 20px;">
+                                        <div
+                                            style="height: 50%;width: 100%;display: flex;justify-content: space-between;">
+                                            <h2>{{ tacticsItem.title }}</h2>
+                                            <div style="padding-top: 5px;">
+                                                <a-tag color="#f50" v-for="tag in tacticsItem.tags"
+                                                    style="height: 25px;line-height: 25px;">{{ tag }}</a-tag>
+                                            </div>
+                                        </div>
+                                        <div
+                                            style="height: 10%;width: 100%;display: flex;justify-content: space-between;">
+                                            <span>共计{{ tacticsItem.days }}天</span>
+                                            <span>￥{{ tacticsItem.avgCost }}/人</span>
+                                            <span style="padding-right: 30px;">推荐程度:{{ tacticsItem.recommendation
+                                                }}</span>
+                                        </div>
+                                    </div>
+                                    <img :src="tacticsItem.imageUrl" alt=""
+                                        style="height: 20vh;width: 40%;float: right;margin-left: 0.5em;">
+                                    <div class="tactics-description">
+                                        {{ tacticsItem.guideContent }}{{ tacticsItem.guideContent }}
+                                        {{ tacticsItem.guideContent }}{{ tacticsItem.guideContent }}
+                                        {{ tacticsItem.guideContent }}{{ tacticsItem.guideContent }}
+                                    </div>
                                 </div>
+
                             </a-collapse-panel>
                         </a-collapse>
                     </div>
@@ -511,7 +643,7 @@ hotels.push({
             <!-- 右部区域 -->
             <section class="right-area-wrapper">
                 <!-- 景区内部交通车 -->
-                <section v-if="displayer='scene'" class="traffic-wrapper">
+                <section class="traffic-wrapper">
                     <h2 style="margin: 0;text-align: left;padding: 20px;padding-bottom: 0;">景区交通</h2>
                     <div class="traffic-container">
                         <div v-for="trafficCar in trafficCars" :key="trafficCar.transportId"
@@ -823,7 +955,7 @@ nav li {
 .route-wrapper {
     margin-top: 4vh;
     width: 100%;
-    height: 80vh;
+    min-height: 40vh;
     background-color: #fff;
 }
 .route-container {
@@ -846,7 +978,9 @@ nav li {
     padding: 20px;
     text-align: left;
 }
-
+.tactics-description::first-letter {
+    font-size: 40px;
+}
 /* 用户评论 */
 .comment-wrapper {
     margin-top: 4vh;
