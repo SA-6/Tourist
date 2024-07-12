@@ -3,7 +3,13 @@ import {
     LeftCircleOutlined,
     RightCircleOutlined
  } from '@ant-design/icons-vue';
-
+import router from '../../router';
+function goToTest() {
+    console.log('跳转前');
+    //router.push('/mainPage/test')
+    window.location.assign('http://localhost:5173/#/test')
+    console.log('跳转后');
+}
 </script>
 
 <template>
@@ -54,11 +60,50 @@ import {
         <h2 class="hot-city-title">
             热门城市推荐
         </h2>
-        <div class="hot-city-container">
-            <div class="hot-city-content">
+        <!-- <div v-for="(index,item) in recommendCityList" :key="index">
+            <div class="hot-city-content" v-if="index%2===0">
                 <div
                     style="width: 40%;height: 100%;margin-left: 20px;margin-right: 30px;box-sizing: border-box;overflow: hidden;">
                     <a class="hot-city-image" style="background-image: url('/src/assets/image/city/city1.png');">
+                    </a>
+                </div>
+                <div class="hot-city-description">
+                    <h4 class="hot-city-name">
+                        上海
+                    </h4>
+                    <p class="hot-city-introduction">
+                        <span>l</span>orem ipsum dolor sit amet, consectetur adipiscing elit. Duis blandit et nunc id
+                        pulvinar. Praesent eleifend, diam id venenatis commodo, orci mi molestie tortor, ac facilisis
+                        odio magna non tortor. Nunc odio dui, fermentum vel fringilla vitae, facilisis at risus. Integer
+                        eget pellentesque enim, ac laoreet dolor. Ut in lectus et risus sollicitudin convallis. Nullam
+                        at vulputate tortor, quis suscipit ex. Donec nec ipsum sit amet orci blandit auctor.
+                    </p>
+                </div>
+            </div>
+            <div class="hot-city-content" v-else>
+                <div class="hot-city-description">
+                    <h4 class="hot-city-name" style="float: right;">
+                        上海
+                    </h4>
+                    <p class="hot-city-introduction" style="float: right;">
+                        <span>l</span>orem ipsum dolor sit amet, consectetur adipiscing elit. Duis blandit et nunc id
+                        pulvinar. Praesent eleifend, diam id venenatis commodo, orci mi molestie tortor, ac facilisis
+                        odio magna non tortor. Nunc odio dui, fermentum vel fringilla vitae, facilisis at risus. Integer
+                        eget pellentesque enim, ac laoreet dolor. Ut in lectus et risus sollicitudin convallis. Nullam
+                        at vulputate tortor, quis suscipit ex. Donec nec ipsum sit amet orci blandit auctor.
+                    </p>
+                </div>
+                <div
+                    style="width: 40%;height: 100%;margin-left: 30px;margin-right: 20px;box-sizing: border-box;overflow: hidden;">
+                    <a class="hot-city-image" style="background-image: url('/src/assets/image/city/city1.png');">
+                    </a>
+                </div>
+            </div>
+        </div> -->
+            <div class="hot-city-content">
+                <div
+                    style="width: 40%;height: 100%;margin-left: 20px;margin-right: 30px;box-sizing: border-box;overflow: hidden;">
+                    <a class="hot-city-image" style="background-image: url('/src/assets/image/city/city1.png');" @click="goToTest">
                     </a>
                 </div>
                 <div class="hot-city-description">
@@ -112,7 +157,7 @@ import {
                     </p>
                 </div>
             </div>
-        </div>
+        <!-- </div> -->
     </section>
 
     <!-- 城市热门景点 -->

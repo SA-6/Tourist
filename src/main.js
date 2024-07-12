@@ -8,9 +8,7 @@ import 'font-awesome/css/font-awesome.min.css'
 
 //使用路由
 import router from './router'
-
-createApp(App).use(router).mount('#app')
-
-
-
-
+//使用pinia
+import { createPinia } from 'pinia'
+const pinia = createPinia()
+createApp(App).use(router).use(pinia).mount('#app')

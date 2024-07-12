@@ -5,34 +5,28 @@ import {
 } from 'vue-router'
 //导入组件
 import MainPage from '../components/MainPage.vue'
-import Login from '../components/Login.vue'
-import Register from '../components/Register.vue'
-import Overview from '../components/Overview.vue'
-
+import Login from '../components/User/Login.vue'
 import HotelPage from '../components/Hotel/HotelPage.vue'
+import Register from '../components/User/Register.vue'
+import Overview from '../components/Overview.vue'
 import HotelReserve from '../components/Hotel/HotelReserve.vue'
-// import HotelDetail from '../components/Hotel/HotelDetail.vue'
-
-import ScenePage  from '../components/Scene/ScenePage.vue'
-import ScenePlay from '../components/ScenePlay.vue'
-import SceneEat from '../components/SceneEat.vue'
-
+import HotelDetail from '../components/Hotel/HotelDetail.vue'
+import ScenePage from '../components/Scene/ScenePage.vue'
+import SceneDetail from '../components/Scene/SceneDetail.vue'
+import ComplainRecord from '../components/Complain/ComplainRecord.vue'
+import ComplainAdd from '../components/Complain/ComplainAdd.vue'
 import CityPage from '../components/City/CityPage.vue'
 import CityDetail from '../components/City/CityDetail.vue'
-
-import SceneDetail from '../components/Scene/SceneDetail.vue'
-
-import ComplainRecord from '../components/ComplainRecord.vue'
-import ComplainAdd from '../components/ComplainAdd.vue'
-import TripTraffic from '../components/TripTraffic.vue'
-import TripWeather from '../components/TripWeather.vue'
-import Notice from '../components/Notice.vue'
-
+import Notice from '../components/Notice/Notice.vue'
+import UserInfo from '../components/User/UserInfo.vue'
+import Test from '../components/Test.vue'
+import DetailPage from '../components/DetailPage.vue'
+import ResetPassword from '../components/User/ResetPassword.vue'
 //设置路由
 const routes = [
   {
     path: '/',
-    redirect: '/login'
+    redirect: '/mainPage'
   },
   {
     path: '/login',
@@ -45,34 +39,15 @@ const routes = [
     component: Register
   },
   {
-    path: '/hotelPage',
-    name : 'hotelPage',
-    component: HotelPage
+    path: '/resetPassword',
+    name: 'resetPassword',
+    component: ResetPassword
   },
+  // 将test换成detailPage  显示酒店、景区或城市的详情页
   {
-    path: '/hotelReserve',
-    name: 'hotelReserve',
-    component: HotelReserve
-  },
-  {
-    path: '/scenePage',
-    name: 'scenePage',
-    component: ScenePage
-  },
-  {
-    path: '/cityPage',
-    name: 'cityPage',
-    component: CityPage
-  },
-  {
-    path: '/sceneDetail',
-    name: 'sceneDetail',
-    component: SceneDetail
-  },
-  {
-    path: '/cityDetail',
-    name: 'cityDetail',
-    component: CityDetail
+      path: '/test',
+      name: 'test',
+      component: Test
   },
   {
     path: '/mainPage',
@@ -80,48 +55,67 @@ const routes = [
     component: MainPage,
     children: [
       {
-        path: '/overview',
+        path: 'overview',
         name: 'overview',
         component: Overview
       },
       {
-        path: '/scenePlay',
-        name: 'scenePlay',
-        component: ScenePlay
+        path: 'scenePage',
+        name: 'scenePage',
+        component: ScenePage,
       },
       {
-        path: '/sceneEat',
-        name: 'sceneEat',
-        component: SceneEat
+        path: 'sceneDetail',
+        name: 'sceneDetail',
+        component: SceneDetail
       },
       {
-        path: '/tripTraffic',
-        name: 'tripTraffic',
-        component: TripTraffic
+        path: 'cityPage',
+        name: 'cityPage',
+        component: CityPage
       },
       {
-        path: '/tripWeather',
-        name: 'tripWeather',
-        component: TripWeather
+        path: 'cityDetail',
+        name: 'cityDetail',
+        component: CityDetail
       },
       {
-        path: '/notice',
+        path: 'notice',
         name: 'notice',
         component: Notice
       },
       {
-        path: '/complainRecord',
+        path: 'complainRecord',
         name: 'complainRecord',
         component: ComplainRecord
       },
       {
-        path: '/complainAdd',
+        path: 'complainAdd',
         name: 'complainAdd',
         component: ComplainAdd
       },
+      {
+        path: 'userInfo',
+        name: 'userInfo',
+        component: UserInfo
+      },
+      {
+        path: 'hotelPage',
+        name : 'hotelPage',
+        component: HotelPage
+      },
+      {
+        path: 'hotelReserve',
+        name: 'hotelReserve',
+        component: HotelReserve
+      },
+      {
+        path: 'DetailPage',
+        name: 'detailPage',
+        component: DetailPage
+      },
     ]
   },
-  
 ]
 
 const router = createRouter({

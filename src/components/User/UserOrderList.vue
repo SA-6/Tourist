@@ -1,6 +1,9 @@
 <script setup>
 import { cloneDeep } from 'lodash-es';
-import { reactive, ref } from 'vue';
+import { reactive, ref, onBeforeMount } from 'vue';
+import axios from 'axios';
+import { useUserStore } from '../../store/userStore'
+const userInfo = useUserStore();
 const columns = [
   {
     title: '序号',
@@ -55,6 +58,23 @@ for (let i = 0; i < 100; i++) {
     status: 'finished'
   });
 }
+//获取投诉记录信息
+//请求服务器资源的路径
+const serverURL = 'http://192.168.0.1:8080'
+onBeforeMount(()=>{
+  axios({
+    method: 'get',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `${userInfo.token}`
+    }
+  }).then((result)=>{
+    console.log(result.data);
+    data = result.data.data;
+  }).catch(function(error){
+    console.log(error);
+  })
+})
 const dataSource = ref(data);
 const editableData = reactive({});
 const edit = key => {
@@ -75,7 +95,8 @@ const cancel = key => {
   <!-- columns属性设置表格的列的相关信息 -->
   <!-- data-source属性设置表格中的数据 -->
   <!-- bordered属性设置表格的边框是否显示 -->
-  <a-table :columns="columns" :data-source="dataSource" :scroll="{ x:1300, y:520 }" bordered>
+  <div class="tableDiv">
+    <a-table :columns="columns" :data-source="dataSource" :scroll="{ x:1300, y:520 }" bordered>
     <template #bodyCell="{ column, text, record }">
       <template v-if="['attachment', 'content'].includes(column.dataIndex)">
         <div>
@@ -104,6 +125,7 @@ const cancel = key => {
       </template>
     </template>
   </a-table>
+  </div>
 </template>
 
 <style scoped>
