@@ -14,6 +14,49 @@ import {
     DislikeOutlined,
 
 } from  '@ant-design/icons-vue';
+
+const navItems = ref([
+  {
+    key: 'user',
+    icon: () => h(UserOutlined),
+    label: '用户',
+    title: '用户',
+    children: [
+      {
+        type: 'group',
+        // label: 'Item 1',
+        children: [
+          {
+            label: '个人信息',
+            key: 'info',
+          },
+          {
+            label: '账户余额',
+            key: 'account',
+          },
+        ],
+      },
+    ],
+  },
+  {
+    key: 'order',
+    icon: () => h(CarryOutOutlined),
+    label: '订单',
+    title: '订单',
+  },
+  {
+    key: 'message',
+    icon: () => h(BellOutlined),
+    label: '消息通知',
+    title: '消息通知',
+  },
+  {
+    key: 'contact',
+    icon: () => h(PhoneOutlined),
+    label: '联系我们',
+    title: '联系我们',
+  },
+]);
 // 面包屑导航
 const navLast = {
     URL : '',
@@ -158,149 +201,7 @@ function onSearch() {
 const commentOrderType = ref()
 //在加载页面前获取数据
 onBeforeMount(()=>{
-    //根据城市名获取城市信息
-    axios({
-        method: 'get',
-        url: `http://localhost:8080/cities/city?city_name=${cityName.cityName}`,
-        headers: {
-            'Content-Type' : 'application/x-www-form-urlencoded'
-        },
-    }).then((result)=>{
-        detailInstance.value = result.data.data
-        //必玩景点数组处理
-        detailInstance.value.mustVisit = detailInstance.value.mustVisit.replace(/[\[\]]/,'').split('、')
-        // 图片数组处理
-        let pattern = /[\[\]]/g
-        detailInstance.value.imageUrl = detailInstance.value.imageUrl.replace(pattern,'').split(',')
-    }).catch(function(error){
-        console.log(error);
-    })
-    //根据城市名获取城市相关景区
-    axios({
-        method: 'get',
-        url: `http://localhost:8080/cities/scenicSpots?city_name=${cityName.cityName}`,
-        headers: {
-            'Content-Type' : 'application/x-www-form-urlencoded'
-        },
-    }).then((result)=>{
-        sceneList.value = result.data.data
-        //处理列表中各个景点的imageUrl的值
-        let pattern = /[\[\]]/g
-        for(let i = 0; i < sceneList.value.length; i++){
-            sceneList.value[i].imageUrl = sceneList.value[i].imageUrl.replace(pattern,'').split(',')[0]
-        }
-    }).catch(function(error){
-        console.log(error);
-    })
-    //根据城市名获取附近酒店
-    axios({
-        method: 'get',
-        url: `http://localhost:8080/hotels/searchHotelByCity?city_name=${cityName.cityName}`,
-        headers: {
-            'Content-Type' : 'application/x-www-form-urlencoded'
-        },
-    }).then((result)=>{
-        console.log(result);
-        if(result.data.status === 0){
-            hotels.value = result.data.data
-        }else{
-            message.error({
-                content: () => '系统繁忙,请稍后再试',
-                style: {
-                    marginTop: '10vh'
-                }
-            })
-        }
-    }).catch(function(error){
-        console.log(error);
-    })
-    //根据城市名获取附近美食
-    axios({
-        method: 'get',
-        url: `http://localhost:8080/cities/foods?city_name=${cityName.cityName}`,
-        headers: {
-            'Content-Type' : 'application/x-www-form-urlencoded'
-        },
-    }).then((result)=>{
-        if(result.data.status === 0){
-            foods.value = result.data.data
-        }else{
-            message.error({
-                content: () => '系统繁忙,请稍后再试',
-                style: {
-                    marginTop: '10vh'
-                }
-            })
-        }
-    }).catch(function(error){
-        console.log(error);
-    })
-    //根据城市名查询附近演出
-    axios({
-        method: 'get',
-        url: `http://localhost:8080/events/findByCity?city_name=${cityName.cityName}`,
-        headers: {
-            'Content-Type' : 'application/x-www-form-urlencoded'
-        },
-    }).then((result)=>{
-        if(result.data.status === 0){
-            shows.value = result.data.data
-        }else{
-            message.error({
-                content: () => '系统繁忙,请稍后再试',
-                style: {
-                    marginTop: '10vh'
-                }
-            })
-        }
-    }).catch(function(error){
-        console.log(error);
-    })
-    //根据城市名查询城市游玩路线
-    axios({
-        method: 'get',
-        url: `http://localhost:8080/route/city?city_name=${cityName.cityName}`,
-        headers: {
-            'Content-Type' : 'application/x-www-form-urlencoded'
-        },
-    }).then((result)=>{
-        if(result.data.status === 0){
-            travelRoutes.value = result.data.data
-        }else{
-            message.error({
-                content: () => '系统繁忙,请稍后再试',
-                style: {
-                    marginTop: '10vh'
-                }
-            })
-        }
-    }).catch(function(error){
-        console.log(error);
-    })
-    //根据城市名查询游玩攻略
-    axios({
-        method: 'get',
-        url: `http://localhost:8080/travelGuides/city?city_name=${cityName.cityName}`,
-        headers: {
-            'Content-Type' : 'application/x-www-form-urlencoded'
-        },
-    }).then((result)=>{
-        if(result.data.status === 0){
-            travelTactics.value = result.data.data
-            console.log("游玩攻略");
-            console.log(travelTactics);
-            console.log(travelTactics.value);
-        }else{
-            message.error({
-                content: () => '系统繁忙,请稍后再试',
-                style: {
-                    marginTop: '10vh'
-                }
-            })
-        }
-    }).catch(function(error){
-        console.log(error);
-    })
+    
     //根据城市名获取用户评论(默认评论排序是智能排序)
     axios({
         method: 'get',
@@ -362,9 +263,10 @@ onBeforeMount(()=>{
                 <span style="font-size: 28px;">TouristSystem</span>
             </div>
             <div class="search-box">
-                <a-input-search v-model:value="targetCity" placeholder="请输入目标城市" size="medium" enter-button
+                <a-input-search v-model:value="targetScene" placeholder="请输入目标景区" size="medium" enter-button
                     @search="onSearch" />
             </div>
+            <a-menu class="detail-menu" v-model:selectedKeys="current" mode="horizontal" :items="navItems" />
         </a-layout-header>
         <a-layout-content style="padding: 0 50px;display: flex;flex-wrap: wrap;">
             <!-- 面包屑导航栏 -->

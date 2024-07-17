@@ -96,14 +96,19 @@ const routes = [
         component: UserDetail
       },
       {
-        path: 'hotel/hotelPage',
+        path: 'hotelPage',
         name : 'hotelPage',
         component: HotelPage
       },
       {
-        path: 'hotel/hotelReserve',
+        path: 'hotelReserve',
         name: 'hotelReserve',
         component: HotelReserve
+      },
+      {
+        path: 'hotelDetail',
+        name: 'hotelDetail',
+        component: HotelDetail
       },
     ]
   },

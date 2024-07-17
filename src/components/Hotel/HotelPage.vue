@@ -13,7 +13,7 @@ import { HomeOutlined,
 import router from '../../router'
 import axios from 'axios';
 
-const baseURL = `http://192.168.40.236:8080`
+const baseURL = `http://192.168.104.141:8080`
 
 axios.defaults.baseURL = baseURL
 

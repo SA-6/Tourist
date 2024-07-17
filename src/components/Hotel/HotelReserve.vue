@@ -13,7 +13,7 @@ import router from '../../router'
 import { RouterLink, useRoute, useRouter } from 'vue-router';
 const route = useRoute()
 
-const baseURL = `http://192.168.40.236:8080`
+const baseURL = `http://192.168.104.141:8080`
 axios.defaults.baseURL = baseURL
 
 // defineProps([''])
@@ -120,9 +120,8 @@ async function getHotelsByCity(cityName,index=0,page=1,stars=-1,max=10000,min=-1
 }
 
 async function onSearchButtonClicked() {
-  cityHotels.datas = await getHotelsByCity(secondCity,count)
+  cityHotels.datas = await getHotelsByCity(secondCity)
 }
-
 
 // 酒店筛选标签页选择
 const areaData = reactive([
@@ -328,14 +327,15 @@ const hotelData = ref([]);
 const hotelList = ref([]);
 
 // 详情按钮点击事件
-function onDetailButtonClicked(id){
+function onDetailButtonClicked(name,hotelId){
   router.push({
     name : 'hotelDetail',
     query : {
-      id : id
+      name : name,
+      hotelId : hotelId
     }
   })
-  historyData.push(()=>{
+  historyData.value.push(()=>{
     hotelData.value.forEach((item,index)=>{
       if (item.id === id){
         return item
@@ -507,7 +507,8 @@ const historyActiveKey = ref(['1']);
                       <RouterLink :to="{
                         name  : 'hotelDetail',
                         query : {
-                          id : item.hotelId,
+                          name : item.name,
+                          hotelId : item.hotelId
                         }
                       }" style="font-size: 20px;margin: 0;font-weight: 800;">
                         {{ item.name }}
@@ -518,7 +519,8 @@ const historyActiveKey = ref(['1']);
                       <RouterLink :to="{
                         name: 'hotelDetail',
                         query: {
-                          id: item.hotelId,
+                          name: item.name,
+                          hotelId : item.hotelId
                         }
                       }">
                         <a-avatar :src="item.imageUrl" style="height: 200px;width: 200px;border-radius: 0;" />
@@ -563,7 +565,7 @@ const historyActiveKey = ref(['1']);
                       </div>
                       <div></div>
                       <button style="border-radius: 0;background-color: rgb(40, 125, 250);color: #fff;font-weight:600;"
-                        @click="onDetailButtonClicked(item.hotelId)">查看详情</button>
+                        @click="onDetailButtonClicked(item.name,item.hotelId)">查看详情</button>
                     </div>
                   </div>
                 </a-skeleton>
@@ -594,7 +596,8 @@ const historyActiveKey = ref(['1']);
                               <router-link :to="{
                                 name : 'hotelDetail',
                                 query : {
-                                  id : item.hotelId
+                                  name : item.name,
+                                  hotelId : item.hotelId
                                 }
                               }" style="font-size: 16px;margin: 0;font-weight: 800;">
                                 {{ item.name }}
@@ -605,7 +608,8 @@ const historyActiveKey = ref(['1']);
                               <router-link :to="{
                                 name: 'hotelDetail',
                                 query: {
-                                  id: item.hotelId
+                                  name: item.name,
+                                  hotelId : item.hotelId
                                 }
                               }">
                                 <a-avatar :src="item.imageUrl" style="height: 88px;width: 88px;border-radius: 0;" />
