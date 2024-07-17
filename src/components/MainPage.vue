@@ -17,6 +17,7 @@ import router from '../router'
 import { useUserStore } from '../store/userStore'
 import { message } from 'ant-design-vue';
 import axios from 'axios';
+import { RouterView } from 'vue-router';
 //使用pinia中定义的store
 const userStore = useUserStore()
 //读取用户数据
@@ -94,13 +95,13 @@ const ALayOutHeight = ref('300%')
 const serverURL = 'http://192.168.40.121:8080'
 //选择菜单项后触发的事件
 function selectMenuItem(item) {
-  console.log(item.key);
   current.value = [item.key];
+  console.log(111111,current.value);
 }
 
-watchEffect(() => {
-  changeRouterView(current.value[0])
-})
+// watchEffect(() => {
+//   changeRouterView(current.value[0])
+// })
 
 function changeRouterView(key) {
   if(['/mainPage/complainRecord', '/mainPage/complainAdd', '/mainPage/notice'].includes(key)){
@@ -196,57 +197,18 @@ function sendInfoToBot() {
       console.log(JSON.stringify(response));
   });
 }
+
 </script>
 
 <template>
   <!-- 页面整体布局 -->
   <a-layout :style="{height: ALayOutHeight}">
-    <a-layout-header :style="{ position: 'fixed', zIndex: 10, width: '100%', height: '80px', background: 'transparent', padding: '0 0 0 0', display: 'flex', background: 'transparent', backdropFilter: 'blur(10px)'}">
-      <!-- LOGO -->
-      <div class="logo">
-        <img src="../../src/assets/image/mtfy.jpg" />
-      </div>
-      <div class="name">
-        <h2>TouristSystem</h2>
-      </div>
-      <!-- 菜单栏 -->
-      <a-menu v-model:selectedKeys="current" mode="horizontal" :items="items" 
-        style="height: 80px; background: transparent; backdrop-filter: blur(10px); width: 75%" 
-        @click="selectMenuItem"/>
-      <a-dropdown-button 
-        class="avatarBtn"
-        >
-        <template v-if="userInfo.username !== '' ? true : false">
-          {{ userInfo.nickname }}
-        </template>
-        <template v-else>
-          未登录用户
-        </template>
-        {{userInfo.nickname}}
-        <template #overlay>
-          <a-menu @click="handleMenuClick">
-            <a-menu-item key="0">
-              <ContactsOutlined />
-              登录
-            </a-menu-item>
-            <template v-if="userInfo.username !== '' ? true : false">
-              <a-menu-item key="1">
-                <UserOutlined />
-                个人信息
-              </a-menu-item>
-              <a-menu-item key="2">
-                <UserOutlined />
-                退出登录
-              </a-menu-item>
-            </template>
-          </a-menu>
-        </template>
-      <template #icon><a-avatar src="https://www.antdv.com/assets/logo.1ef800a8.svg" size="large"/></template>
-    </a-dropdown-button>
-    </a-layout-header>
+    
     <a-layout-content :style="layoutContentStyle">
       <div :style="{ background: '#fff', padding: '0', minHeight: '100%'}">
+
         <router-view></router-view>
+
         <!-- 悬浮按钮 -->
         <a-float-button-group trigger="hover" type="primary" :style="{ right: '24px' }">
           <template #icon>
@@ -272,7 +234,6 @@ function sendInfoToBot() {
           style="color: red"
           title="旅游推荐助手"
           placement="right"
-          @after-open-change="afterOpenChange"
         >
           <div class="chatBox">
             <div class="infoBox">

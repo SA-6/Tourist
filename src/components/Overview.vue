@@ -15,7 +15,7 @@ const recommendScene = ref([])
 // 推荐酒店
 const recommendHotel = ref([])
 // 服务器请求路径
-const serverURL = 'http://192.168.40.121:8080'
+const serverURL = 'http://192.168.40.236:8080'
 //获取推荐信息并将信息存入store
 function getRecommendInfo() {
   axios({

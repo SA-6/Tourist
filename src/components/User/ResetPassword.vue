@@ -75,7 +75,7 @@ function postData() {
       </div>
       <h3>验证码</h3>
       <div class="inputbox">
-        <a-input-search
+        <a-input-search class="validateCodeInput"
             v-model:value="userData.validateCode"
             placeholder="请输入验证码"
             size="large"
@@ -167,6 +167,53 @@ section .bg {
   border:none;
   margin-bottom: 20px;
 }
+
+.validateCodeInput {
+  height: 80%;
+  position: relative;
+  width: 100%;
+  outline: none;
+  font-size:1.25em;
+  color:#8f2c24;
+  border-radius: 5px;
+  background: #fff;
+  border:none;
+  margin-bottom: 20px;
+}
+::v-deep(.validateCodeInput span) {
+  height: 100%;
+  margin: 0;
+  line-height: 50px;
+}
+::v-deep(.validateCodeInput input) {
+  padding: 0%;
+  height: 100%;
+  border: 0;
+  font-size: 1.4em;
+  outline:none;
+  line-height: 40px;
+  padding-left: 20px;
+}
+::v-deep(.validateCodeInput button) {
+  /* padding: 0%; */
+  height: 100%;
+  padding-right: 10px;
+  border: 0;
+  
+  font-size: 1.25em;
+  outline: none;
+  line-height: 40px;
+}
+::v-deep(.validateCodeInput button span) {
+  /* padding: 0%; */
+  height: 50%;
+  /* margin-top: 15px; */
+  border: 0;
+  font-size: 1em;
+  outline: none;
+  line-height: 30px;
+}
+
 .login .inputbox input {
   position: relative;
   width: 100%;
@@ -183,32 +230,4 @@ section .bg {
   position: relative;
 }
 
-.validateCodeInput {
-  height: 70%;
-  position: relative;
-  width: 100%;
-  padding: 0px 20px;
-  outline: none;
-  font-size:1.25em;
-  color:#8f2c24;
-  border-radius: 5px;
-  background: #fff;
-  border:none;
-  margin-bottom: 20px;
-}
-
-.inputbox :deep(span) {
-  height: 100%
-}
-
-.validateCodeInput :deep(.ant-input-group) {
-  height: 50px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 100%;
-}
-.validateCodeInput :deep(.ant-input-group :deep(input)) {
-  height: 60px;
-}
 </style>

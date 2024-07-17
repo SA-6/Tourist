@@ -20,7 +20,6 @@ import CityDetail from '../components/City/CityDetail.vue'
 import Notice from '../components/Notice/Notice.vue'
 import UserInfo from '../components/User/UserInfo.vue'
 import Test from '../components/Test.vue'
-import DetailPage from '../components/DetailPage.vue'
 import ResetPassword from '../components/User/ResetPassword.vue'
 //设置路由
 const routes = [
@@ -110,9 +109,9 @@ const routes = [
         component: HotelReserve
       },
       {
-        path: 'DetailPage',
-        name: 'detailPage',
-        component: DetailPage
+        path: 'hotelDetail',
+        name: 'hotelDetail',
+        component: HotelDetail
       },
     ]
   },

@@ -125,6 +125,7 @@ function getValidateCode() {
       <h3>验证码</h3>
       <div class="inputbox">
         <a-input-search
+            class="validateCode-input"
             v-model:value="userData.validateCode"
             placeholder="请输入验证码"
             size="large"
@@ -216,6 +217,47 @@ section .bg {
   border:none;
   margin-bottom: 20px;
 }
+.validateCode-input {
+  height: 80%;
+  position: relative;
+  width: 100%;
+  outline: none;
+  font-size:1.25em;
+  color:#8f2c24;
+  border-radius: 5px;
+  background: #fff;
+  border:none;
+  margin-bottom: 20px;
+}
+::v-deep(.validateCode-input input) {
+  padding: 0%;
+  height: 100%;
+  border: 0;
+  font-size: 1.25em;
+  outline:none;
+  line-height: 40px;
+  padding-left: 20px;
+}
+::v-deep(.validateCode-input button) {
+  /* padding: 0%; */
+  height: 100%;
+  padding-right: 10px;
+  border: 0;
+  
+  font-size: 1.25em;
+  outline: none;
+  line-height: 40px;
+}
+::v-deep(.validateCode-input button span) {
+  /* padding: 0%; */
+  height: 50%;
+  /* margin-top: 15px; */
+  border: 0;
+  font-size: 1em;
+  outline: none;
+  line-height: 30px;
+}
+
 .login .inputbox input {
   position: relative;
   width: 100%;
@@ -260,5 +302,8 @@ section .bg {
 .validateCodeInput :deep(.ant-input-group :deep(input)) {
   height: 60px;
 }
-
+::v-deep(.inputbox span)
+{
+  line-height: 40px;
+}
 </style>
