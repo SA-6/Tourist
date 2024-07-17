@@ -230,16 +230,19 @@ const submitComment = () => {
   }
   const tempParams = {
     comment: submitCommentContent.value,
-    rating: rating.value
+    rating: rating.value,
+    sceneId: params.sceneId
   }
   axios({
     method: 'post',
-    url: `http://localhost:8080/scenicSpots/${params.sceneId}/comment`,
+    url: serverURL + `/scenicSpots/comment`,
     headers: {
         'Content-Type': 'application/x-www-form-urlencoded',
         'token': `${userInfo.token}`
     },
-    data: new URLSearchParams(tempParams).toString(),
+    //data: tempParams.stringfy(),
+    data: JSON.stringify(tempParams),
+    withCredentials: false
   }).then((result)=>{
     console.log(result);
     //请求成功
@@ -298,12 +301,8 @@ const status = ref(true)
 const current = ref()
 //切换评论页
 
-const serverURL = 'http://localhost:8080'
-//在加载页面前获取数据
-onBeforeMount(()=>{
-    console.log("sceneName:"+params.sceneName);
-    console.log('sceneId:'+params.sceneId);
-    //根据景区名获取景区信息
+//根据景区名获取景区信息
+function getSceneInfoBySceneName() {
     axios({
         method: 'get',
         url: serverURL+`/scenicSpots/searchByName?scene_name=${params.sceneName}`,
@@ -320,7 +319,9 @@ onBeforeMount(()=>{
     }).catch(function(error){
         console.log(error);
     })
-    //根据景区名获取附近酒店
+}
+//根据景区名获取附近酒店
+function getHotelBySceneName() {
     axios({
         method: 'get',
         url: serverURL + `/scenicSpots/nearbyHotels?scene_name=${params.sceneName}`,
@@ -341,7 +342,9 @@ onBeforeMount(()=>{
     }).catch(function(error){
         console.log(error);
     })
-    //根据景区名获取附近美食
+}
+//根据景区名获取附近美食
+function getFoodBySceneName() {
     axios({
         method: 'get',
         url: serverURL + `/foods/getFoodsByAttractionAndConditions?scene_id=${params.sceneId}`,
@@ -364,7 +367,9 @@ onBeforeMount(()=>{
     }).catch(function(error){
         console.log(error);
     })
-    //根据景区名查询附近演出
+}
+//根据景区名查询附近演出
+function getShowBySceneName() {
     axios({
         method: 'get',
         url: serverURL + `/events/findByScenicSpot?scene_id=${params.sceneId}`,
@@ -387,7 +392,9 @@ onBeforeMount(()=>{
     }).catch(function(error){
         console.log(error);
     })
-    //根据景区名查询景区游玩路线
+}
+//根据景区名查询景区游玩路线
+function getRouteBySceneName() {
     axios({
         method: 'get',
         url: serverURL + `/route/involvedScenic?scene_name=${params.sceneName}`,
@@ -408,7 +415,9 @@ onBeforeMount(()=>{
     }).catch(function(error){
         console.log(error);
     })
-    //根据景区名查询游玩攻略
+}
+//根据景区名查询游玩攻略
+function getTacticsBySceneName() {
     axios({
         method: 'get',
         url: serverURL + `/travelGuides/scenicSpot?scene_name=${params.sceneName}`,
@@ -429,7 +438,9 @@ onBeforeMount(()=>{
     }).catch(function(error){
         console.log(error);
     })
-    //查询景点的交通车
+}
+//查询景点的交通车
+function getTrafficBySceneName() {
     axios({
         method: 'get',
         url: serverURL + `/transport/scenicSpot?scene_name=${params.sceneName}`,
@@ -452,7 +463,9 @@ onBeforeMount(()=>{
     }).catch(function(error){
         console.log(error);
     })
-    //根据景区名获取用户评论(默认评论排序是智能排序--高赞优先)
+}
+//根据景区名获取用户评论(默认评论排序是智能排序--高赞优先)
+function getUserCommentByRating() {
     axios({
         method: 'get',
         url: serverURL + `/scenicSpots/${params.sceneId}/comment/like`,
@@ -479,7 +492,9 @@ onBeforeMount(()=>{
     }).catch(function(error){
         console.log(error);
     })
-    //根据景区名获取用户评论(按发布时间排序)
+}
+//根据景区名获取用户评论(按发布时间排序)
+function getUserCommentByTime() {
     axios({
         method: 'get',
         url: serverURL + `/scenicSpots/${params.sceneId}/comment/time`,
@@ -506,6 +521,30 @@ onBeforeMount(()=>{
     }).catch(function(error){
         console.log(error);
     })
+}
+const serverURL = 'http://localhost:8080'
+//在加载页面前获取数据
+onBeforeMount(()=>{
+    console.log("sceneName:"+params.sceneName);
+    console.log('sceneId:'+params.sceneId);
+    //根据景区名获取景区信息
+    getSceneInfoBySceneName()
+    //根据景区名获取附近酒店
+    getHotelBySceneName()
+    //根据景区名获取附近美食
+    getFoodBySceneName()
+    //根据景区名查询附近演出
+    getShowBySceneName()
+    //根据景区名查询景区游玩路线
+    getRouteBySceneName()
+    //根据景区名查询游玩攻略
+    getTacticsBySceneName()
+    //查询景点的交通车
+    getTrafficBySceneName()
+    //根据景区名获取用户评论(默认评论排序是智能排序--高赞优先)
+    getUserCommentByRating()
+    //根据景区名获取用户评论(按发布时间排序)
+    getUserCommentByTime()
 })
 </script>
 

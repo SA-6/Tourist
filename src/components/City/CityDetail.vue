@@ -156,9 +156,8 @@ function onSearch() {
 }
 //评论排序类型
 const commentOrderType = ref()
-//在加载页面前获取数据
-onBeforeMount(()=>{
-    //根据城市名获取城市信息
+//根据城市名获取城市信息
+function getCityDetailInfo() {
     axios({
         method: 'get',
         url: `http://localhost:8080/cities/city?city_name=${cityName.cityName}`,
@@ -175,6 +174,10 @@ onBeforeMount(()=>{
     }).catch(function(error){
         console.log(error);
     })
+}
+
+//根据城市名获取城市相关景区
+function getSceneByCityName() {
     //根据城市名获取城市相关景区
     axios({
         method: 'get',
@@ -192,7 +195,10 @@ onBeforeMount(()=>{
     }).catch(function(error){
         console.log(error);
     })
-    //根据城市名获取附近酒店
+}
+
+//根据城市名获取附近酒店
+function getHotelByCityName() {
     axios({
         method: 'get',
         url: `http://localhost:8080/hotels/searchHotelByCity?city_name=${cityName.cityName}`,
@@ -214,7 +220,9 @@ onBeforeMount(()=>{
     }).catch(function(error){
         console.log(error);
     })
-    //根据城市名获取附近美食
+}
+//根据城市名获取附近美食
+function getFoodByCityName() {
     axios({
         method: 'get',
         url: `http://localhost:8080/cities/foods?city_name=${cityName.cityName}`,
@@ -235,7 +243,9 @@ onBeforeMount(()=>{
     }).catch(function(error){
         console.log(error);
     })
-    //根据城市名查询附近演出
+}
+//根据城市名查询附近演出
+function getShowByCityName() {
     axios({
         method: 'get',
         url: `http://localhost:8080/events/findByCity?city_name=${cityName.cityName}`,
@@ -256,7 +266,9 @@ onBeforeMount(()=>{
     }).catch(function(error){
         console.log(error);
     })
-    //根据城市名查询城市游玩路线
+}
+//根据城市名查询城市游玩路线
+function getRouteByCityName() {
     axios({
         method: 'get',
         url: `http://localhost:8080/route/city?city_name=${cityName.cityName}`,
@@ -277,7 +289,9 @@ onBeforeMount(()=>{
     }).catch(function(error){
         console.log(error);
     })
-    //根据城市名查询游玩攻略
+}
+//根据城市名查询游玩攻略
+function getTacticsByCityName() {
     axios({
         method: 'get',
         url: `http://localhost:8080/travelGuides/city?city_name=${cityName.cityName}`,
@@ -301,7 +315,9 @@ onBeforeMount(()=>{
     }).catch(function(error){
         console.log(error);
     })
-    //根据城市名获取用户评论(默认评论排序是智能排序)
+}
+//根据城市名获取用户评论(默认评论排序是智能排序)
+function getUserCommentByRating() {
     axios({
         method: 'get',
         url: `http://localhost:8080/travelGuides/city?city_name=${cityName.cityName}`,
@@ -325,7 +341,9 @@ onBeforeMount(()=>{
     }).catch(function(error){
         console.log(error);
     })
-    //根据城市名获取用户评论(按时间排序)
+}
+//根据城市名获取用户评论(按时间排序)
+function getUserCommentByTime() {
     axios({
         method: 'get',
         url: `http://localhost:8080/travelGuides/city?city_name=${cityName.cityName}`,
@@ -349,6 +367,27 @@ onBeforeMount(()=>{
     }).catch(function(error){
         console.log(error);
     })
+}
+//在加载页面前获取数据
+onBeforeMount(()=>{
+    //根据城市名获取城市信息
+    getCityDetailInfo()
+    //根据城市名获取城市相关景区
+    getSceneByCityName()
+    //根据城市名获取附近酒店
+    getHotelByCityName()
+    //根据城市名获取附近美食
+    getFoodByCityName()
+    //根据城市名查询附近演出
+    getShowByCityName()
+    //根据城市名查询城市游玩路线
+    getRouteByCityName()
+    //根据城市名查询游玩攻略
+    getTacticsByCityName()
+    //根据城市名获取用户评论(默认评论排序是智能排序)
+    getUserCommentByRating()
+    //根据城市名获取用户评论(按时间排序)
+    getUserCommentByTime()
 })
 </script>
 

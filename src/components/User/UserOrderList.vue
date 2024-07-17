@@ -63,7 +63,7 @@ const serverURL = 'http://localhost:8080'
 onBeforeMount(()=>{
   axios({
     method: 'get',
-    url: serverURL + '/orders/list',
+    url: serverURL + '/orders/list/',
     headers: {
       'Content-Type': 'application/x-www-form-urlencoded',
       'token': `${userInfo.token}`
