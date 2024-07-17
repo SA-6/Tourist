@@ -348,7 +348,9 @@ function afterOpenChange() {
     </a-layout-header>
     <a-layout-content :style="layoutContentStyle">
       <div :style="{ background: '#fff', padding: '0', minHeight: '100%'}">
+
         <router-view></router-view>
+
         <!-- 悬浮按钮 -->
         <a-float-button-group trigger="hover" type="primary" :style="{ right: '24px' }">
           <template #icon>
@@ -374,7 +376,6 @@ function afterOpenChange() {
           style="color: red"
           title="旅游推荐助手"
           placement="right"
-          @after-open-change="afterOpenChange"
         >
           <div class="chatBox">
             <div class="infoBox">

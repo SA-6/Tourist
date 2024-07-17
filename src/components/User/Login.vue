@@ -147,6 +147,40 @@ function getValidateCode() {
           <a @click="registerUser">注册新用户</a>
         </div>
       </div>
+      <h3>密码</h3>
+      <div class="inputbox">
+        <a-input-password
+          class="passwordInput"
+          v-model:value="userData.password"
+          placeholder="Input Password"
+          :visibility-toggle="true"
+          font-size="1.25em"
+          color="#8f2c24"
+        />
+      </div>
+      <h3>验证码</h3>
+      <div class="inputbox">
+        <a-input-search
+            class="validateCode-input"
+            v-model:value="userData.validateCode"
+            placeholder="请输入验证码"
+            size="large"
+            @search="getValidateCode"
+          >
+            <template #enterButton>
+              <a-button>获取验证码</a-button>
+            </template>
+          </a-input-search>
+      </div>
+      <div class="inputbox">
+        <input type="submit" value="登录" id="btn" @click="login">
+      </div>
+      <!-- 额外选项 -->
+      <div class="options">
+        <a @click="resetPassword">忘记密码</a> | 
+        <a @click="registerUser">注册新用户</a>
+      </div>
+    </div>
   </section>
 </template>
 
@@ -220,6 +254,47 @@ section .bg {
   border:none;
   margin-bottom: 20px;
 }
+.validateCode-input {
+  height: 80%;
+  position: relative;
+  width: 100%;
+  outline: none;
+  font-size:1.25em;
+  color:#8f2c24;
+  border-radius: 5px;
+  background: #fff;
+  border:none;
+  margin-bottom: 20px;
+}
+::v-deep(.validateCode-input input) {
+  padding: 0%;
+  height: 100%;
+  border: 0;
+  font-size: 1.25em;
+  outline:none;
+  line-height: 40px;
+  padding-left: 20px;
+}
+::v-deep(.validateCode-input button) {
+  /* padding: 0%; */
+  height: 100%;
+  padding-right: 10px;
+  border: 0;
+  
+  font-size: 1.25em;
+  outline: none;
+  line-height: 40px;
+}
+::v-deep(.validateCode-input button span) {
+  /* padding: 0%; */
+  height: 50%;
+  /* margin-top: 15px; */
+  border: 0;
+  font-size: 1em;
+  outline: none;
+  line-height: 30px;
+}
+
 .login .inputbox input {
   position: relative;
   width: 100%;
@@ -264,56 +339,8 @@ section .bg {
 .validateCodeInput :deep(.ant-input-group :deep(input)) {
   height: 60px;
 }
-
-/* 流光动画 */
-.borderLine{
-  position: absolute;
-  top: 0;
-  inset: 0;
-}
-@keyframes animate {
-  0%{
-    transform:rotate(0deg);
-  }
-  100%{
-    transform: rotate(360deg);
-  }
-
-
-}
-.box::before,
-.box::after,
-.borderLine::before,
-.borderLine::after{
-  content: "";
-  position: absolute;
-  top: -50%;
-  left: -50%;
-  width: 380px;
-  height: 420px;
-  background: linear-gradient(
-    0deg,transparent,transparent,
-    #45f3ff,#45f3ff,#45f3ff
-  );
-  z-index: 1;
-  transform-origin: bottom right;
-  animation: animate 6s linear infinite;
-}
-.box::after{
-  animation-delay: -3s;
-}
-.borderLine::before{
-  background: linear-gradient(
-    0deg,transparent,transparent,
-    #ff2770,#ff2770,#ff2770
-  );
-  animation-delay: -1.5s;
-}
-.borderLine::after {
-  background: linear-gradient(
-    0deg,transparent,transparent,
-    #ff2770,#ff2770,#ff2770
-  );
-  animation-delay: -4.5s;
+::v-deep(.inputbox span)
+{
+  line-height: 40px;
 }
 </style>
