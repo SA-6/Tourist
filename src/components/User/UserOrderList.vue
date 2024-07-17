@@ -6,28 +6,33 @@ import { useUserStore } from '../../store/userStore'
 const userInfo = useUserStore();
 const columns = [
   {
-    title: '序号',
+    title: '订单序号',
     dataIndex: 'id',
     width: '100px',
     fixed: 'left'
   },
   {
-    title: '用户名',
+    title: '用户号',
     dataIndex: 'uid',
     width: '100px',
   },
   {
-    title: '附件',
+    title: '订单类型',
     dataIndex: 'attachment',
     width: '150px',
   },
   {
-    title: '日期',
+    title: '下单日期',
     dataIndex: 'date',
     width: '250px',
   },
   {
-    title: '内容',
+    title: '付款日期',
+    dataIndex: 'checkInTime',
+    width: '250px',
+  },
+  {
+    title: '订单详情',
     dataIndex: 'content',
     width: '300px',
   },
@@ -36,61 +41,41 @@ const columns = [
     dataIndex: 'status',
     width: '150px',
   },
-  {
-    title: '操作',
-    dataIndex: 'operation',
-    fixed: 'right',
-    width: '150px'
-  },
 ];
-const data = [];
-for (let i = 0; i < 100; i++) {
-  data.push({
-    key: i.toString(),
-    id: `Edrward ${i}`,
-    uid: `User100${i}`,
-    attachment: `London Park no. ${i}`,
-    date: new Date().toISOString(),
-    content: 'Pellentesque accumsan cursus dui,'+ 
-    'sodales blandit urna sodales vitae Pellentesque accumsan cursus dui,'+
-    ' sodales blandit urna urna sodales vitae ipsum Pellentesque accumsan cursus dui,'+
-    'sodales blan urna sodales vitaePellentesque accumsan cursus dui, sodales blan sodales vitae.',
-    status: 'finished'
-  });
-}
+const data = ref([]);
+// for (let i = 0; i < 100; i++) {
+//   data.push({
+//     key: i.toString(),
+//     id: `Edrward ${i}`,
+//     uid: `User100${i}`,
+//     attachment: `London Park no. ${i}`,
+//     date: new Date().toISOString(),
+//     content: 'Pellentesque accumsan cursus dui,'+ 
+//     'sodales blandit urna sodales vitae Pellentesque accumsan cursus dui,'+
+//     ' sodales blandit urna urna sodales vitae ipsum Pellentesque accumsan cursus dui,'+
+//     'sodales blan urna sodales vitaePellentesque accumsan cursus dui, sodales blan sodales vitae.',
+//     status: 'finished'
+//   });
+// }
 //获取投诉记录信息
 //请求服务器资源的路径
 const serverURL = 'http://localhost:8080'
 onBeforeMount(()=>{
   axios({
     method: 'get',
+    url: serverURL + '/orders/list',
     headers: {
-      'Content-Type': 'application/json',
-      'Authorization': `${userInfo.token}`
-    }
+      'Content-Type': 'application/x-www-form-urlencoded',
+      'token': `${userInfo.token}`
+    },
   }).then((result)=>{
     console.log(result.data);
-    data = result.data.data;
+    data.value = result.data.data;
   }).catch(function(error){
     console.log(error);
   })
 })
 const dataSource = ref(data);
-const editableData = reactive({});
-const edit = key => {
-  console.log(key);
-  editableData[key] = cloneDeep(dataSource.value.filter(item => key === item.key)[0]);
-  console.log(editableData[key]);
-};
-const save = key => {
-  Object.assign(dataSource.value.filter(item => key === item.key)[0], editableData[key]);
-  delete editableData[key];
-};
-const cancel = key => {
-  delete editableData[key];
-};
-const selectDate = ref();
-const selectType = ref();
 </script>
 
 <template>
@@ -115,34 +100,8 @@ const selectType = ref();
       style="width: 200px"
     ></a-select>
     <a-table :columns="columns" :data-source="dataSource" :scroll="{ x:1300, y:520 }" bordered>
-    <template #bodyCell="{ column, text, record }">
-      <template v-if="['attachment', 'content'].includes(column.dataIndex)">
-        <div>
-          <a-input
-            v-if="editableData[record.key]"
-            v-model:value="editableData[record.key][column.dataIndex]"
-            style="margin: -5px 0"
-          />
-          <template v-else>
-            {{ text }}
-          </template>
-        </div>
-      </template>
-      <template v-else-if="column.dataIndex === 'operation'">
-        <div class="editable-row-operations">
-          <span v-if="editableData[record.key]">
-            <a-typography-link @click="save(record.key)">Save</a-typography-link>
-            <a-popconfirm title="Sure to cancel?" @confirm="cancel(record.key)">
-              <a>Cancel</a>
-            </a-popconfirm>
-          </span>
-          <span v-else>
-            <a @click="edit(record.key)">Edit</a>
-          </span>
-        </div>
-      </template>
-    </template>
-  </a-table>
+    
+    </a-table>
   </div>
 </template>
 

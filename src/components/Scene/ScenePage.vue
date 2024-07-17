@@ -50,9 +50,11 @@ const recommendData = useRecommendDataStore().recommendDataInfo
 // 推荐景区列表
 const sceneList = ref([])
 // 跳转景区详情页
-function showDetail() {
+function showDetail(sceneName,scenicSpotId) {
   console.log("跳转前");
-  router.push("/mainPage/scenePage/sceneDetail")
+  console.log("sceneName:"+sceneName);
+  console.log("scenicSpotId:"+scenicSpotId);
+  router.push({ name : 'sceneDetail', params: { sceneName : sceneName, sceneId : scenicSpotId } })
   console.log("跳转后");
 }
 //请求地址
@@ -179,7 +181,7 @@ onMounted(()=>{
               <hr>
               <div style="display: flex;justify-content: space-between; width: 100%;position: absolute;bottom: 20px;">
                 <span>{{ scene.openingDays }}-{{ scene.openingHours }}</span>
-                <a style="position: relative;right: 70px;">Read More
+                <a style="position: relative;right: 70px;" @click="showDetail(scene.name,scene.scenicSpotId)">Read More
                   <RightCircleOutlined style="position: relative;left: 5px;top: 2px;" />
                 </a>
               </div>

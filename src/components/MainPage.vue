@@ -90,7 +90,7 @@ const backgroundStyle = ref('transparent');
 // 设置登录按钮的背景样式
 const btnStyle = ref('transparent')
 //设置布局的高度
-const ALayOutHeight = ref('300%')
+const ALayOutHeight = ref('400%')
 //设置头部导航栏是否可见
 const isVisible = ref(true)
 // 服务器请求路径
@@ -152,12 +152,13 @@ function selectMenuItem(item) {
 
 // 添加路由守卫
 router.beforeEach((to, from, next) => {
-  let sign = false;
-  switch (to.path) {
-    case '/mainPage/complain/complainRecord':
-    case '/mainPage/complain/complainAdd':
-    case '/mainPage/notice':
-    case '/mainPage/user/userDetail':
+  switch (to.name) {
+    case 'complainRecord':
+    case 'complainAdd':
+    case 'notice':
+    case 'userDetail':
+    case 'userOrderList':
+      isVisible.value = true
       layoutContentStyle.value.marginTop = '80px';
       ALayOutHeight.value = '100%';
       btnStyle.value = '#76EEC6';
@@ -165,9 +166,20 @@ router.beforeEach((to, from, next) => {
         layoutContentStyle.value.isHeightSet = true;
         layoutContentStyle.value.height = '90%';
       }
-      sign = true
       break;
-    case '/mainPage/city/cityPage':
+    case 'overview':
+      console.log("主页主页主页主页");
+      isVisible.value = true
+      btnStyle.value = 'transparent';
+      layoutContentStyle.value.marginTop = '0';
+      ALayOutHeight.value = '400%';
+      if (layoutContentStyle.value.isHeightSet) {
+        delete layoutContentStyle.value.height;
+        layoutContentStyle.value.isHeightSet = false;
+      }
+      break;
+    case 'cityPage':
+      isVisible.value = true
       btnStyle.value = 'transparent';
       layoutContentStyle.value.marginTop = '0';
       ALayOutHeight.value = '600%';
@@ -175,9 +187,9 @@ router.beforeEach((to, from, next) => {
         delete layoutContentStyle.value.height;
         layoutContentStyle.value.isHeightSet = false;
       }
-      sign = true
       break;
-    case '/mainPage/hotel/hotelPage':
+    case 'hotelPage':
+      isVisible.value = true
       btnStyle.value = 'transparent';
       layoutContentStyle.value.marginTop = '0';
       ALayOutHeight.value = '483%';
@@ -185,9 +197,9 @@ router.beforeEach((to, from, next) => {
         delete layoutContentStyle.value.height;
         layoutContentStyle.value.isHeightSet = false;
       }
-      sign = true
       break;
-      case '/mainPage/scene/scenePage':
+      case 'scenePage':
+        isVisible.value = true
       btnStyle.value = 'transparent';
       layoutContentStyle.value.marginTop = '0';
       ALayOutHeight.value = '530%';
@@ -195,22 +207,20 @@ router.beforeEach((to, from, next) => {
         delete layoutContentStyle.value.height;
         layoutContentStyle.value.isHeightSet = false;
       }
-      sign = true
       break;
-    case '/mainPage/city/cityDetail':
-    case '/mainPage/hotel/hotelDetail':
-    case '/mainPage/hotel/hotelReserve':
-    case '/mainPage/scene/sceneDetail':
+    case 'cityDetail':
+    case 'hotelDetail':
+    case 'hotelReserve':
+    case 'sceneDetail':
       console.log("case判断");
       isVisible.value = false;
       ALayOutHeight.value = '400%'
       if (!layoutContentStyle.value.isHeightSet) {
           layoutContentStyle.value.isHeightSet = true;
-          layoutContentStyle.value.height = '400%';
+          layoutContentStyle.value.height = '130%';
       }else{
-        layoutContentStyle.value.height = '400%'
+        layoutContentStyle.value.height = '130%'
       }
-      sign = true
       break;
     default:
       btnStyle.value = 'transparent';
@@ -220,7 +230,6 @@ router.beforeEach((to, from, next) => {
         delete layoutContentStyle.value.height;
         layoutContentStyle.value.isHeightSet = false;
       }
-      sign = true
       break;
   }
   next();
@@ -331,6 +340,10 @@ function afterOpenChange() {
               <a-menu-item key="/mainPage/user/userDetail">
                 <UserOutlined />
                 个人信息
+              </a-menu-item>
+              <a-menu-item key="/mainPage/user/userOrderList">
+                <UserOutlined />
+                  个人订单
               </a-menu-item>
               <a-menu-item key="/logout">
                 <UserOutlined />

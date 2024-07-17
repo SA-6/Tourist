@@ -3,6 +3,7 @@ import { h, ref ,defineComponent ,reactive, onBeforeMount } from 'vue';
 import dayjs from 'dayjs';
 import axios from 'axios';
 import relativeTime from 'dayjs/plugin/relativeTime';
+import { useUserStore } from '../../store/userStore';
 import { message } from 'ant-design-vue';
 import { 
     UserOutlined,
@@ -64,6 +65,8 @@ const navItems = ref([
   },
 ]);
 
+//读取用户信息
+const userInfo = useUserStore().userInfo
 // 面包屑导航
 const navLast = {
     URL : '',
@@ -123,17 +126,24 @@ const commentTimeSortedData = ref([]);
 
 dayjs.extend(relativeTime);
 const likes = ref(0);
-const dislikes = ref(0);
-const action = ref();
-const like = () => {
-  likes.value = 1;
-  dislikes.value = 0;
-  action.value = 'liked';
+const action = ref([]);
+//评论点赞
+const like = (index) => {
+  if(action.value[index]  === 'liked'){
+    likes.value = likes.value - 1;
+    action.value[index] = '';
+  }else{
+    likes.value = likes.value + 1;
+    action.value[index] = 'liked';
+  }
 };
-const dislike = () => {
-  likes.value = 0;
-  dislikes.value = 1;
-  action.value = 'disliked';
+//不喜欢评论
+const dislike = (index) => {
+    if(action.value[index] === 'disliked'){
+        action.value[index] = ''
+    }else{
+        action.value[index] = 'disliked';
+    }
 };
 //切换评论页
 const currentPage1 = ref(1);
@@ -197,35 +207,51 @@ const onChangeByTime = pageNumber => {
     })
 };
 // 发表评论
+//弹出发表评论框
 const open = ref(false);
 const showDrawer = () => {
-  open.value = true;
+  if(localStorage.getItem('username') !== ''){
+    open.value = true;
+  }else{
+    alert("您还未登录,请先登录")
+  }
 };
 const onClose = () => {
   open.value = false;
 };
+// 提交评论
+const submitCommentContent = ref('')
 const submitting = ref(false);
-const commentContent = ref('');
-const handleSubmit = () => {
-  if (!value.value) {
+const rating = ref(2.5);
+const submitComment = () => {
+  if (!submitCommentContent.value) {
+    alert("输入内容不能为空")
     return;
   }
-  submitting.value = true;
-  setTimeout(() => {
-    submitting.value = false;
-    comments.value = [
-      {
-        author: 'Han Solo',
-        avatar: 'https://joeschmoe.io/api/v1/random',
-        content: commentContent.value,
-        datetime: dayjs().fromNow(),
-      },
-      ...comments.value,
-    ];
-    value.value = '';
-  }, 1000);
+  const tempParams = {
+    comment: submitCommentContent.value,
+    rating: rating.value
+  }
+  axios({
+    method: 'post',
+    url: `http://localhost:8080/scenicSpots/${params.sceneId}/comment`,
+    headers: {
+        'Content-Type': 'application/x-www-form-urlencoded',
+        'token': `${userInfo.token}`
+    },
+    data: new URLSearchParams(tempParams).toString(),
+  }).then((result)=>{
+    console.log(result);
+    //请求成功
+    if(result.data.status === 0){
+        message.info('发表评论成功')
+    }else{
+        message.error('系统繁忙,请稍后再试')
+    }
+  }).catch(function(error){
+    console.log(error);
+  })
 };
-const rating = ref(2.5);
 
 // 观光车列表
 const trafficCars = ref([])
@@ -264,7 +290,10 @@ function onSearch() {
     })
 }
 //Ovo
-const activeKey = ref('1')
+const activeKeyOfRoute = ref('1')
+const activeKeyOfTactics = ref('1')
+const activeKeyOfComment = ref('1')
+
 const status = ref(true)
 const current = ref()
 //切换评论页
@@ -272,6 +301,8 @@ const current = ref()
 const serverURL = 'http://localhost:8080'
 //在加载页面前获取数据
 onBeforeMount(()=>{
+    console.log("sceneName:"+params.sceneName);
+    console.log('sceneId:'+params.sceneId);
     //根据景区名获取景区信息
     axios({
         method: 'get',
@@ -424,7 +455,7 @@ onBeforeMount(()=>{
     //根据景区名获取用户评论(默认评论排序是智能排序--高赞优先)
     axios({
         method: 'get',
-        url: serverURL + `/scenicSpots/${currentPage1.value}/comment/like`,
+        url: serverURL + `/scenicSpots/${params.sceneId}/comment/like`,
         headers: {
             'Content-Type' : 'application/x-www-form-urlencoded'
         },
@@ -433,6 +464,7 @@ onBeforeMount(()=>{
         console.log(result);
         if(result.data.status === 0){
             commentRatingSortedData.value = result.data.data
+            //likes.value = result.data.data.scenicReview.likeNum
             console.log("评分排序评论");
             console.log(commentRatingSortedData);
             console.log(commentRatingSortedData.value);
@@ -450,7 +482,7 @@ onBeforeMount(()=>{
     //根据景区名获取用户评论(按发布时间排序)
     axios({
         method: 'get',
-        url: serverURL + `/scenicSpots/${currentPage2.value}/comment/time`,
+        url: serverURL + `/scenicSpots/${params.sceneId}/comment/time`,
         headers: {
             'Content-Type' : 'application/x-www-form-urlencoded'
         },
@@ -459,6 +491,7 @@ onBeforeMount(()=>{
         console.log(result);
         if(result.data.status === 0){
             commentTimeSortedData.value = result.data.data
+            //likes.value = result.data.data.scenicReview.likeNum
             console.log("评分排序评论");
             console.log(commentTimeSortedData);
             console.log(commentTimeSortedData.value);
@@ -579,7 +612,7 @@ onBeforeMount(()=>{
                 <section class="route-wrapper">
                     <h2 style="margin: 0;text-align: left;padding: 20px;padding-bottom: 0;">相关游玩路线</h2>
                     <div class="route-container">
-                        <a-collapse v-model:activeKey="activeKey" :bordered="false"
+                        <a-collapse v-model:activeKey="activeKeyOfRoute" :bordered="false"
                             style="background: rgb(255, 255, 255)">
                             <template #expandIcon="{ isActive }">
                                 <RightCircleOutlined :rotate="isActive ? 90 : 0" />
@@ -606,7 +639,7 @@ onBeforeMount(()=>{
                 <section class="tactics-wrapper">
                     <h2 style="margin: 0;text-align: left;padding: 20px;padding-bottom: 0;">游玩攻略</h2>
                     <div class="tactics-container">
-                        <a-collapse v-model:activeKey="activeKey" :bordered="false"
+                        <a-collapse v-model:activeKey="activeKeyOfTactics" :bordered="false"
                             style="background: rgb(255, 255, 255)">
                             <template #expandIcon="{ isActive }">
                                 <RightCircleOutlined :rotate="isActive ? 90 : 0" />
@@ -620,7 +653,7 @@ onBeforeMount(()=>{
                                             style="height: 50%;width: 100%;display: flex;justify-content: space-between;">
                                             <h2>{{ tacticsItem.title }}</h2>
                                             <div style="padding-top: 5px;">
-                                                <a-tag color="#f50" v-for="tag in tacticsItem.tags"
+                                                <a-tag color="#f50" v-for="(tag,index) in tacticsItem.tags" :key="index"
                                                     style="height: 25px;line-height: 25px;">{{ tag }}</a-tag>
                                             </div>
                                         </div>
@@ -653,11 +686,11 @@ onBeforeMount(()=>{
                             <div style="display: flex;height: 5vh;position: relative;">
                                 <h2>用户点评({{ getCommentCount() }})</h2>
                                 <a-button type="primary" @click="showDrawer">写点评</a-button>
-                                <a-drawer :width="500" title="Basic Drawer" placement="bottom" :open="open"
+                                <a-drawer :width="500" title="发表评论" placement="bottom" :open="open"
                                     @close="onClose">
                                     <template #extra>
-                                        <a-button style="margin-right: 8px" @click="onClose">Cancel</a-button>
-                                        <a-button type="primary" @click="onClose">Submit</a-button>
+                                        <a-button style="margin-right: 8px" @click="onClose">取消</a-button>
+                                        <a-button type="primary" @click="submitComment">提交</a-button>
                                     </template>
                                     <a-comment>
                                         <template #avatar>
@@ -665,7 +698,7 @@ onBeforeMount(()=>{
                                         </template>
                                         <template #content>
                                             <a-form-item>
-                                                <a-textarea v-model:value="value" :rows="4" />
+                                                <a-textarea v-model:value="submitCommentContent" :rows="4"/>
                                             </a-form-item>
                                         </template>
                                         <a-rate v-model:value="rating" allow-half :allowClear="true" />
@@ -678,54 +711,50 @@ onBeforeMount(()=>{
                             </div>
                         </div>
                         <!-- 展示评论 -->
-                        <a-tabs v-model:activeKey="activeKey">
+                        <a-tabs v-model:activeKey="activeKeyOfComment">
                             <a-tab-pane key="1" tab="智能排序">
                                 <a-comment v-for="(comment,index) in commentRatingSortedData" :key="index">
                                     <template #actions>
                                         <span key="comment-basic-like">
                                             <a-tooltip title="Like">
-                                                <template v-if="action === 'liked'">
-                                                    <LikeFilled @click="like" />
+                                                <template v-if="action[index] === 'liked'">
+                                                    <LikeFilled @click="like(index)" />
                                                 </template>
                                                 <template v-else>
-                                                    <LikeOutlined @click="like" />
+                                                    <LikeOutlined @click="like(index)" />
                                                 </template>
                                             </a-tooltip>
                                             <span style="padding-left: 8px; cursor: auto">
-                                                {{ likes }}
+                                                {{ action[index] === 'disliked' ? comment.scenicReview.likeNum : comment.scenicReview.likeNum + 1 }}
                                             </span>
                                         </span>
                                         <span key="comment-basic-dislike">
                                             <a-tooltip title="Dislike">
-                                                <template v-if="action === 'disliked'">
-                                                    <DislikeFilled @click="dislike" />
+                                                <template v-if="action[index] === 'disliked'">
+                                                    <DislikeFilled @click="dislike(index)" />
                                                 </template>
                                                 <template v-else>
-                                                    <DislikeOutlined @click="dislike" />
+                                                    <DislikeOutlined @click="dislike(index)" />
                                                 </template>
                                             </a-tooltip>
-                                            <span style="padding-left: 8px; cursor: auto">
+                                            <!-- <span style="padding-left: 8px; cursor: auto">
                                                 {{ dislikes }}
-                                            </span>
+                                            </span> -->
                                         </span>
                                         <span key="comment-basic-reply-to">Reply to</span>
                                     </template>
-                                    <template #author><a>Han Solo</a></template>
+                                    <template #author><a>{{ comment.username }}</a></template>
                                     <template #avatar>
-                                        <a-avatar src="https://joeschmoe.io/api/v1/random" alt="Han Solo" />
+                                        <a-avatar :src="comment.avatar" alt="Han Solo" />
                                     </template>
                                     <template #content>
                                         <p>
-                                            We supply a series of design principles, practical patterns and high quality
-                                            design
-                                            resources (Sketch and Axure), to help people create their product prototypes
-                                            beautifully and
-                                            efficiently.
+                                            {{ comment.scenicReview.comment }}
                                         </p>
                                     </template>
                                     <template #datetime>
-                                        <a-tooltip :title="dayjs().format('YYYY-MM-DD HH:mm:ss')">
-                                            <span>{{ dayjs().fromNow() }}</span>
+                                        <a-tooltip :title="comment.time">
+                                            <span>{{ comment.time }}</span>
                                         </a-tooltip>
                                     </template>
                                 </a-comment>
@@ -737,31 +766,29 @@ onBeforeMount(()=>{
                                     <template #actions>
                                         <span key="comment-basic-like">
                                             <a-tooltip title="Like">
-                                                <template v-if="action === 'liked'">
-                                                    <LikeFilled @click="like" />
-                                                    {{ comment.likeNum }}
+                                                <template v-if="action[index] === 'liked'">
+                                                    <LikeFilled @click="like(index)" />
                                                 </template>
                                                 <template v-else>
-                                                    <LikeOutlined @click="like" />
-                                                    {{ comment.likeNum }}
+                                                    <LikeOutlined @click="like(index)" />
                                                 </template>
                                             </a-tooltip>
                                             <span style="padding-left: 8px; cursor: auto">
-                                                {{ likes }}
+                                                {{ action[index] === 'disliked' ? comment.scenicReview.likeNum : comment.scenicReview.likeNum + 1 }}
                                             </span>
                                         </span>
                                         <span key="comment-basic-dislike">
                                             <a-tooltip title="Dislike">
-                                                <template v-if="action === 'disliked'">
-                                                    <DislikeFilled @click="dislike" />
+                                                <template v-if="action[index] === 'disliked'">
+                                                    <DislikeFilled @click="dislike(index)" />
                                                 </template>
                                                 <template v-else>
-                                                    <DislikeOutlined @click="dislike" />
+                                                    <DislikeOutlined @click="dislike(index)" />
                                                 </template>
                                             </a-tooltip>
-                                            <span style="padding-left: 8px; cursor: auto">
+                                            <!-- <span style="padding-left: 8px; cursor: auto">
                                                 {{ dislikes }}
-                                            </span>
+                                            </span> -->
                                         </span>
                                         <span key="comment-basic-reply-to">Reply to</span>
                                     </template>
@@ -893,10 +920,6 @@ onBeforeMount(()=>{
             </section>
 
         </a-layout-content>
-
-        <a-layout-footer :style="{ textAlign: 'center' }">
-            Tourist System ©2024 Created by CSU-SoftwareEngineer-2204
-        </a-layout-footer>
     </a-layout>
 
 </template>

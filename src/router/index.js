@@ -22,6 +22,7 @@ import CityDetail from '../components/City/CityDetail.vue'
 import Notice from '../components/Notice/Notice.vue'
 import UserDetail from '../components/User/UserDetail.vue'
 import ResetPassword from '../components/User/ResetPassword.vue'
+import UserOrderList from '../components/User/UserOrderList.vue'
 //设置路由
 const routes = [
   {
@@ -105,6 +106,16 @@ const routes = [
         name: 'hotelReserve',
         component: HotelReserve
       },
+      {
+        path: 'hotel/hotelDetail',
+        name: 'hoteldetail',
+        component: HotelDetail
+      },
+      {
+        path: 'user/userOrderList',
+        name: 'userOrderList',
+        component: UserOrderList
+      }
     ]
   },
 ]
@@ -124,7 +135,7 @@ router.beforeEach((to, from, next) => {
       // 如果为空，则不跳转或根据需要重定向到其他页面
       alert('您还未登录,请先登录后查看!');
       next(false); // 阻止跳转
-      window.location.reload();
+      router.push('/mainPage/overview')
     } else {
       next(); // 允许跳转
     }

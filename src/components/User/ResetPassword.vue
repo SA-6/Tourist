@@ -188,7 +188,7 @@ section .bg {
 .login {
   position: relative;
   width: 500px;
-  height: 700px;
+  height: 730px;
   padding: 60px;
   border-radius: 20px;
   background: rgba(255, 255, 255,0.25);
