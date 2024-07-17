@@ -2,8 +2,9 @@
 import { cloneDeep } from 'lodash-es';
 import { reactive, ref, onBeforeMount } from 'vue';
 import axios from 'axios';
+import router from '../../router';
 import { useUserStore } from '../../store/userStore'
-const userInfo = useUserStore();
+const userInfoStore = useUserStore();
 const columns = [
   {
     title: '序号',
@@ -44,37 +45,27 @@ const columns = [
   },
 ];
 const data = [];
-for (let i = 0; i < 100; i++) {
-  data.push({
-    key: i.toString(),
-    id: `Edrward ${i}`,
-    uid: `User100${i}`,
-    attachment: `London Park no. ${i}`,
-    date: new Date().toISOString(),
-    content: 'Pellentesque accumsan cursus dui,'+ 
-    'sodales blandit urna sodales vitae Pellentesque accumsan cursus dui,'+
-    ' sodales blandit urna urna sodales vitae ipsum Pellentesque accumsan cursus dui,'+
-    'sodales blan urna sodales vitaePellentesque accumsan cursus dui, sodales blan sodales vitae.',
-    status: 'finished'
-  });
-}
-//获取投诉记录信息
-//请求服务器资源的路径
-// const serverURL = 'http://192.168.0.1:8080'
-// onBeforeMount(()=>{
-//   axios({
-//     method: 'get',
-//     headers: {
-//       'Content-Type': 'application/json',
-//       'Authorization': `${userInfo.token}`
-//     }
-//   }).then((result)=>{
-//     console.log(result.data);
-//     data.value = result.data.data;
-//   }).catch(function(error){
-//     console.log(error);
-//   })
-// })
+// 获取投诉记录信息
+// 请求服务器资源的路径
+const serverURL = 'http://localhost:8080'
+// 在组件挂载前加载数据
+onBeforeMount(()=>{
+  console.log("userId:" + userInfoStore.userInfo.userId);
+  console.log("token:" + userInfoStore.userInfo.token);
+  axios({
+    method: 'get',
+    url: serverURL+`/complaint/user/${ userInfoStore.userInfo.userId }`,
+    headers: {
+      'Content-Type': 'application/x-www-form-urlencoded',
+      'Authorization': `${ userInfoStore.userInfo.token }`
+    },
+  }).then((result)=>{
+    console.log(result);
+    data.value = result.data.data;
+  }).catch(function(error){
+    console.log(error);
+  })
+});
 const dataSource = ref(data);
 const editableData = reactive({});
 const edit = key => {

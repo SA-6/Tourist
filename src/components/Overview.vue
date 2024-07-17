@@ -3,11 +3,8 @@ import router from '../router'
 import { onBeforeMount, ref, onMounted } from 'vue';
 import { useRecommendDataStore } from '../store/recommendDataStore'
 import axios from 'axios';
-function getHotelInfo(e) {
-  console.log(e.target.src);
-}
 // 推荐信息存储
-const recommendInfoStore = useRecommendDataStore
+const recommendInfoStore = useRecommendDataStore()
 // 推荐城市
 const recommendCity = ref([])
 // 推荐景点
@@ -15,7 +12,7 @@ const recommendScene = ref([])
 // 推荐酒店
 const recommendHotel = ref([])
 // 服务器请求路径
-const serverURL = 'http://192.168.40.121:8080'
+const serverURL = 'http://localhost:8080'
 //获取推荐信息并将信息存入store
 function getRecommendInfo() {
   axios({
@@ -30,7 +27,37 @@ function getRecommendInfo() {
       recommendCity.value = result.data.data.popularCitiesList;
       recommendScene.value = result.data.data.scenicSpotsList;
       recommendHotel.value = result.data.data.hotelsList;
-      recommendInfoStore.setRecommendDataInfo(result.data.data)
+      //处理酒店图片列表
+      // 将每个城市的 imageUrl 属性更新为实际的 URL 列表
+      const updatedRecommendCity = recommendCity.value.map(city => {
+        // 分割字符串并返回新的数组
+        const imageUrl = city.imageUrl.split(",")[0].slice(1);
+        // console.log(imageUrl);
+        // 返回更新后的对象
+        return {
+          ...city,
+          imageUrl  // 更新属性名（如果需要）
+        };
+      });
+      //处理景点图片列表
+      // 将每个景点的 imageUrl 属性更新为实际的 URL 列表
+      const updatedRecommendScene = recommendScene.value.map(scene => {
+        // 分割字符串并返回新的数组
+        const imageUrl = scene.imageUrl.split(",")[0].slice(1);
+        // console.log(imageUrl);
+        // 返回更新后的对象
+        return {
+          ...scene,
+          imageUrl  // 更新属性名（如果需要）
+        };
+      });
+      // 如果你想更新原始的 reactive ref，可以直接赋值
+      recommendCity.value = updatedRecommendCity;
+      recommendScene.value = updatedRecommendScene;
+      console.log("ddd");
+      console.log(result.data.data);
+      recommendInfoStore.setRecommendDataInfo(recommendCity,recommendHotel,recommendScene)
+      console.log(recommendInfoStore.recommendDataInfo);
     }else{
       message.error({
         content: ()=> '获取失败',
@@ -43,10 +70,21 @@ function getRecommendInfo() {
     console.log(error);
   })
 }
+//跳转城市详情页
+function getCityInfo(cityId,cityName) {
+  router.push({ name : 'cityDetail', params: { cityName : cityName } })
+}
+//跳转酒店详情页
+function getHotelInfo(hotelId,hotelName) {
+  router.push({ name : 'hotelDetail', params: { hotelName : hotelName } })
+}
+//跳转景区详情页
+function getSceneInfo(sceneId,sceneName) {
+  router.push({ name : 'sceneDetail', params: { sceneName : sceneName, sceneId : sceneId } })
+}
 onMounted(()=>{
   getRecommendInfo();
 })
-
 </script>
 
 <template>
@@ -91,12 +129,12 @@ onMounted(()=>{
     <a-row justify="space-around" align="middle" class="row">
       <div v-for="(item,index) in recommendCity" :key="index" class="hotel-card-wrapper">
         <a-col :span="4">
-          <a-card hoverable style="width: 240px" @click="getCityInfo(item.cityId)">
+          <a-card hoverable style="width: 260px;height: 400px" @click="getCityInfo(item.cityId,item.name)">
             <template #cover>
-              <img alt="example" src="https://os.alipayobjects.com/rmsportal/QBnOOoLaAfKPirc.png" />
+              <img alt="example" :src="item.imageUrl" />
             </template>
             <a-card-meta :title="item.name">
-              <template #description>{{item.description}}</template>
+              <template #description>{{item.description.length > 50 ? item.description.slice(0,51)+'...':item.description}}</template>
             </a-card-meta>
           </a-card>
         </a-col>
@@ -109,12 +147,12 @@ onMounted(()=>{
     <a-row justify="space-around" align="middle" class="row">
       <div v-for="(item,index) in recommendHotel" :key="index" class="hotel-card-wrapper">
         <a-col :span="4">
-          <a-card hoverable style="width: 240px" @click="getHotelInfo(item.hotelId)">
+          <a-card hoverable style="width: 240px; height: 400px" @click="getHotelInfo(item.hotelId,item.name)">
             <template #cover>
               <img alt="example" :src="item.imageUrl" />
             </template>
             <a-card-meta :title="item.name">
-              <template #description>{{item.description}}</template>
+              <template #description>{{item.description.length > 50 ? item.description.slice(0,51)+'...':item.description}}</template>
             </a-card-meta>
           </a-card>
         </a-col>
@@ -127,12 +165,12 @@ onMounted(()=>{
     <a-row justify="space-between" align="bottom" class="row">
       <div v-for="(item,index) in recommendScene" :key="index" class="hotel-card-wrapper">
         <a-col :span="4">
-          <a-card hoverable style="width: 240px" @click="getSceneInfo(item.scenicSpotId)">
+          <a-card hoverable style="width: 240px;height: 400px" @click="getSceneInfo(item.scenicSpotId,item.name)">
             <template #cover>
               <img alt="example" :src="item.imageUrl" />
             </template>
             <a-card-meta :title="item.name">
-              <template #description>{{item.description}}</template>
+              <template #description>{{item.description.length > 50 ? item.description.slice(0,51)+'...':item.description}}</template>
             </a-card-meta>
           </a-card>
         </a-col>

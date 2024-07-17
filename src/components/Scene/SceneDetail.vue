@@ -1,7 +1,9 @@
 <script setup>
-import { h, ref ,defineComponent ,reactive } from 'vue';
+import { h, ref ,defineComponent ,reactive, onBeforeMount } from 'vue';
 import dayjs from 'dayjs';
+import axios from 'axios';
 import relativeTime from 'dayjs/plugin/relativeTime';
+import { message } from 'ant-design-vue';
 import { 
     UserOutlined,
     CarryOutOutlined, 
@@ -62,42 +64,22 @@ const navItems = ref([
   },
 ]);
 
-
 // 面包屑导航
 const navLast = {
     URL : '',
     name : '景区'
 }
-
-
+//获取路径跳转时携带的参数
+const params = defineProps({
+    sceneName: String,
+    sceneId: Number
+})
 // 详情展示
-let detailInstance = {}
+const detailInstance = ref({})
 const navContent = detailInstance.name;
-detailInstance = {
-    "id": 1,
-    "name": "故宫博物院",
-    "type": "文化古迹类",
-    "description": "中国古代宫廷建筑的精华，世界文化遗产",
-    "level": 5,
-    "rating": 4.9,
-    "nearbyFoods": "1,2,3",
-    "ticketPrice": "60.00",
-    "contactNumber": "10-12345678",
-    "imageUrl": "[https://dimg04.c-ctrip.com/images/0100j1200046x94ebB936_R_1600_10000.jpg,https://dimg04.c-ctrip.com/images/100k0q000000gqnh8EE78_R_1600_10000.jpg,https://dimg04.c-ctrip.com/images/100g0x000000let3k0858_R_1600_10000.jpg]",
-    "features": "导游服务, 停车场, 免费Wi-Fi",
-    "routeInfo": "通畅",
-    "openTime": {
-      "openHours": "08:30-17:00",
-      "openDays": "全年不开放"
-    }
-}
-
-// 图片展示处理
-let pattern = /[\]\[]*/
-detailInstance.imageUrl = detailInstance.imageUrl.replace(pattern,'').split(',')
 
 function getImgUrl(i){
-    return detailInstance.imageUrl[i];
+    return detailInstance.value.imageUrl[i];
 }
 const visible = ref(false);
 
@@ -112,27 +94,9 @@ function getStatusDescription() {
 }
 
 // 游玩线路部分
-let travelRoutes = []
-travelRoutes.push({
-    "cityName": "成都",
-    "involvedAttractions": "武侯祠, 锦里古街, 人民公园",
-    "description": "深入了解成都的三国文化和市民生活。",
-    "content": "上午：参观武侯祠，了解三国历史；中午：锦里古街用餐；下午：人民公园体验成都市民的休闲方式，如喝茶、打麻将;",
-    "recommendation": 4.6,
-    "imageUrl": "http://image.com/chengdu-culture-park-tour.jpg",
-    "days": 1
-})
-travelRoutes.push({
-    "cityName": "成都",
-    "involvedAttractions": "武侯祠, 都江堰, 九寨沟",
-    "description": "我也不知道这是啥路线，成都我就知道这几个地",
-    "content": "上午:睡觉;中午:睡觉;晚上:睡觉;",
-    "recommendation": 999999,
-    "imageUrl": null,
-    "days": 1
-    
-})
-for(const route of travelRoutes) {
+const travelRoutes = ref([])
+
+for(const route of travelRoutes.value) {
     route.routes = []
     let sections = route.content.split(/[;；]/).filter(item => item !== '')
     for(const section of sections) {
@@ -144,34 +108,9 @@ for(const route of travelRoutes) {
     }
 }
 
-
 // 游玩攻略部分
-let travelTactics = []
-travelTactics.push({
-    "guideId": 1,
-    "title" : "都江堰游玩攻略",
-    "cityName": "成都",
-    "attractionName": "都江堰",
-    "guideContent": "都江堰是世界文化遗产，是古代中国的一项伟大水利工程。除了参观水利工程，还可以欣赏到青城山的自然风光。",
-    "recommendation": "4.8",
-    "imageUrl": "http://image.com/dujiangyan-guide.jpg",
-    "days": 1,
-    "avgCost": 300,
-    "tags": "文化遗产, 自然风光"
-})
-travelTactics.push({
-    "guideId": 2,
-    "title" : "都江堰游玩攻略",
-    "cityName": "成都",
-    "attractionName": "都江堰",
-    "guideContent": "都江堰是世界文化遗产，是古代中国的一项伟大水利工程。除了参观水利工程，还可以欣赏到青城山的自然风光。",
-    "recommendation": "4.8",
-    "imageUrl": "http://image.com/dujiangyan-guide.jpg",
-    "days": 1,
-    "avgCost": 300,
-    "tags": "文化遗产, 自然风光"
-})
-for(const item of travelTactics) {
+const travelTactics = ref([])
+for(const item of travelTactics.value) {
     item.tags = item.tags.split(/[,，]/)
 }
 function getTravelTactics() {
@@ -179,14 +118,8 @@ function getTravelTactics() {
 }
 
 // 用户评论部分
-const commentRatingSortedData = [];
-const commentTimeSortedData = [];
-// const pagination = {
-//   onChange: page => {
-//     console.log(page);
-//   },
-//   pageSize: 6,
-// };
+const commentRatingSortedData = ref([]);
+const commentTimeSortedData = ref([]);
 
 dayjs.extend(relativeTime);
 const likes = ref(0);
@@ -202,13 +135,67 @@ const dislike = () => {
   dislikes.value = 1;
   action.value = 'disliked';
 };
-
-const current1 = ref(1);
-const current2 = ref(2);
-const onChange = pageNumber => {
+//切换评论页
+const currentPage1 = ref(1);
+const currentPage2 = ref(1);
+//智能排序切换页
+const onChangeByLike = pageNumber => {
   console.log('Page: ', pageNumber);
+  axios({
+        method: 'get',
+        url: serverURL + `/scenicSpots/${pageNumber}/comment/like`,
+        headers: {
+            'Content-Type' : 'application/x-www-form-urlencoded'
+        },
+    }).then((result)=>{
+        console.log("智能排序评论");
+        console.log(result);
+        if(result.data.status === 0){
+            commentRatingSortedData.value = result.data.data
+            console.log("评分排序评论");
+            console.log(commentRatingSortedData);
+            console.log(commentRatingSortedData.value);
+        }else{
+            message.error({
+                content: () => '系统繁忙,请稍后再试',
+                style: {
+                    marginTop: '10vh'
+                }
+            })
+        }
+    }).catch(function(error){
+        console.log(error);
+    })
 };
-
+//时间排序切换页
+const onChangeByTime = pageNumber => {
+  console.log('Page: ', pageNumber);
+  axios({
+        method: 'get',
+        url: serverURL + `/scenicSpots/${pageNumber}/comment/time`,
+        headers: {
+            'Content-Type' : 'application/x-www-form-urlencoded'
+        },
+    }).then((result)=>{
+        console.log("时间排序评论");
+        console.log(result);
+        if(result.data.status === 0){
+            commentTimeSortedData.value = result.data.data
+            console.log("评分排序评论");
+            console.log(commentTimeSortedData);
+            console.log(commentTimeSortedData.value);
+        }else{
+            message.error({
+                content: () => '系统繁忙,请稍后再试',
+                style: {
+                    marginTop: '10vh'
+                }
+            })
+        }
+    }).catch(function(error){
+        console.log(error);
+    })
+};
 // 发表评论
 const open = ref(false);
 const showDrawer = () => {
@@ -241,49 +228,251 @@ const handleSubmit = () => {
 const rating = ref(2.5);
 
 // 观光车列表
-let trafficCars = []
-trafficCars.push({
-    "transportId": 2,
-    "vehicleType": "叮叮車",
-    "price": 0.01,
-    "serviceTime": "夜间"
-})
+const trafficCars = ref([])
 
 // 食物列表
-let foods = []
-foods.push({
-    "foodId": 1,
-    "name": "北京烤鸭",
-    "type": "特色美食",
-    "cuisine": "北京菜",
-    "description": "皮脆肉嫩，色泽金黄，风味独特",
-    "priceRange": "高",
-    "rating": 4.8,
-    "number": 3,
-    "address": "北京市烤鸭店",
-    "openingHours": "每日 10:00-22:00",
-    "contactNumber": "010-12345678",
-    "imageUrl": "https://n.sinaimg.cn/sinakd10117/732/w2048h1084/20200627/086d-ivmqpck3629916.jpg",
-    "averageCost": 200,
-    "features": "享誉世界的传统美食"
-})
+const foods = ref([])
+
 // 附近演出列表
-let shows = []
-shows.push({
-    "eventId": 1,
-    "name": "春之韵音乐会",
-    "type": "音乐会",
-    "description": "一场庆祝春天到来的户外音乐会，由著名指挥家和交响乐团演出。",
-    "location": "北京中山公园音乐堂",
-    "time": "2024-07-20 19:30:00",
-    "ticketPrice": 480,
-    "imageUrl": "http://image.com/spring-concert.jpg"
-})
+const shows = ref([])
 
 // 附近酒店列表
-let hotels = []
-hotels.push({
+const hotels = ref([])
 
+//搜索目标景区
+const targetScene = ref('')
+function onSearch() {
+    axios({
+        method: 'post',
+        url: `serverURL/cities/scenicSpots/searchByName?scene_name=${targetScene.value}`,
+        headers: {  
+            'Content-Type': 'application/x-www-form-urlencoded'  
+        },
+    }).then((result)=>{
+        if(result.data.status === '0'){
+            router.push({ name : 'sceneDetail', params: { sceneName : sceneName } })
+        }else{
+            message.error({
+                content:()=> `${result.data.msg}`,
+                style: {
+                marginTop: '10vh',
+                }
+            })
+        }
+    }).catch(function(error){
+        console.log(error);
+    })
+}
+//Ovo
+const activeKey = ref('1')
+const status = ref(true)
+const current = ref()
+//切换评论页
+
+const serverURL = 'http://localhost:8080'
+//在加载页面前获取数据
+onBeforeMount(()=>{
+    //根据景区名获取景区信息
+    axios({
+        method: 'get',
+        url: serverURL+`/scenicSpots/searchByName?scene_name=${params.sceneName}`,
+        headers: {
+            'Content-Type' : 'application/x-www-form-urlencoded'
+        },
+    }).then((result)=>{
+        console.log("获取景区信息");
+        console.log(result);
+        detailInstance.value = result.data.data
+        // 图片数组处理
+        let pattern = /[\[\]]/g
+        detailInstance.value.imageUrl = detailInstance.value.imageUrl.replace(pattern,'').split(',')
+    }).catch(function(error){
+        console.log(error);
+    })
+    //根据景区名获取附近酒店
+    axios({
+        method: 'get',
+        url: serverURL + `/scenicSpots/nearbyHotels?scene_name=${params.sceneName}`,
+        headers: {
+            'Content-Type' : 'application/x-www-form-urlencoded'
+        },
+    }).then((result)=>{
+        if(result.data.status === 0){
+            hotels.value = result.data.data
+        }else{
+            message.error({
+                content: () => '系统繁忙,请稍后再试',
+                style: {
+                    marginTop: '10vh'
+                }
+            })
+        }
+    }).catch(function(error){
+        console.log(error);
+    })
+    //根据景区名获取附近美食
+    axios({
+        method: 'get',
+        url: serverURL + `/foods/getFoodsByAttractionAndConditions?scene_id=${params.sceneId}`,
+        headers: {
+            'Content-Type' : 'application/x-www-form-urlencoded'
+        },
+    }).then((result)=>{
+        console.log("景区美食");
+        console.log(result);
+        if(result.data.status === 0){
+            foods.value = result.data.data
+        }else{
+            message.error({
+                content: () => '系统繁忙,请稍后再试',
+                style: {
+                    marginTop: '10vh'
+                }
+            })
+        }
+    }).catch(function(error){
+        console.log(error);
+    })
+    //根据景区名查询附近演出
+    axios({
+        method: 'get',
+        url: serverURL + `/events/findByScenicSpot?scene_id=${params.sceneId}`,
+        headers: {
+            'Content-Type' : 'application/x-www-form-urlencoded'
+        },
+    }).then((result)=>{
+        console.log("景区演出");
+        console.log(result);
+        if(result.data.status === 0){
+            shows.value = result.data.data
+        }else{
+            message.error({
+                content: () => '系统繁忙,请稍后再试',
+                style: {
+                    marginTop: '10vh'
+                }
+            })
+        }
+    }).catch(function(error){
+        console.log(error);
+    })
+    //根据景区名查询景区游玩路线
+    axios({
+        method: 'get',
+        url: serverURL + `/route/involvedScenic?scene_name=${params.sceneName}`,
+        headers: {
+            'Content-Type' : 'application/x-www-form-urlencoded'
+        },
+    }).then((result)=>{
+        if(result.data.status === 0){
+            travelRoutes.value = result.data.data
+        }else{
+            message.error({
+                content: () => '系统繁忙,请稍后再试',
+                style: {
+                    marginTop: '10vh'
+                }
+            })
+        }
+    }).catch(function(error){
+        console.log(error);
+    })
+    //根据景区名查询游玩攻略
+    axios({
+        method: 'get',
+        url: serverURL + `/travelGuides/scenicSpot?scene_name=${params.sceneName}`,
+        headers: {
+            'Content-Type' : 'application/x-www-form-urlencoded'
+        },
+    }).then((result)=>{
+        if(result.data.status === 0){
+            travelTactics.value = result.data.data
+        }else{
+            message.error({
+                content: () => '系统繁忙,请稍后再试',
+                style: {
+                    marginTop: '10vh'
+                }
+            })
+        }
+    }).catch(function(error){
+        console.log(error);
+    })
+    //查询景点的交通车
+    axios({
+        method: 'get',
+        url: serverURL + `/transport/scenicSpot?scene_name=${params.sceneName}`,
+        headers: {
+            'Content-Type' : 'application/x-www-form-urlencoded'
+        },
+    }).then((result)=>{
+        console.log("游玩交通车");
+        console.log(result);
+        if(result.data.status === 0){
+            trafficCars.value = result.data.data
+        }else{
+            message.error({
+                content: () => '系统繁忙,请稍后再试',
+                style: {
+                    marginTop: '10vh'
+                }
+            })
+        }
+    }).catch(function(error){
+        console.log(error);
+    })
+    //根据景区名获取用户评论(默认评论排序是智能排序--高赞优先)
+    axios({
+        method: 'get',
+        url: serverURL + `/scenicSpots/${currentPage1.value}/comment/like`,
+        headers: {
+            'Content-Type' : 'application/x-www-form-urlencoded'
+        },
+    }).then((result)=>{
+        console.log("智能排序评论");
+        console.log(result);
+        if(result.data.status === 0){
+            commentRatingSortedData.value = result.data.data
+            console.log("评分排序评论");
+            console.log(commentRatingSortedData);
+            console.log(commentRatingSortedData.value);
+        }else{
+            message.error({
+                content: () => '系统繁忙,请稍后再试',
+                style: {
+                    marginTop: '10vh'
+                }
+            })
+        }
+    }).catch(function(error){
+        console.log(error);
+    })
+    //根据景区名获取用户评论(按发布时间排序)
+    axios({
+        method: 'get',
+        url: serverURL + `/scenicSpots/${currentPage2.value}/comment/time`,
+        headers: {
+            'Content-Type' : 'application/x-www-form-urlencoded'
+        },
+    }).then((result)=>{
+        console.log("按时间排序评论");
+        console.log(result);
+        if(result.data.status === 0){
+            commentTimeSortedData.value = result.data.data
+            console.log("评分排序评论");
+            console.log(commentTimeSortedData);
+            console.log(commentTimeSortedData.value);
+        }else{
+            message.error({
+                content: () => '系统繁忙,请稍后再试',
+                style: {
+                    marginTop: '10vh'
+                }
+            })
+        }
+    }).catch(function(error){
+        console.log(error);
+    })
 })
 </script>
 
@@ -297,7 +486,7 @@ hotels.push({
                 <span style="font-size: 28px;">TouristSystem</span>
             </div>
             <div class="search-box">
-                <a-input-search v-model:value="value" placeholder="input search text" size="medium" enter-button
+                <a-input-search v-model:value="targetScene" placeholder="请输入目标景区" size="medium" enter-button
                     @search="onSearch" />
             </div>
             <a-menu class="detail-menu" v-model:selectedKeys="current" mode="horizontal" :items="navItems" />
@@ -320,17 +509,9 @@ hotels.push({
                                 <img :src="getImgUrl(props.i)" />
                             </a>
                         </template>
-                        <div v-for="imageItem in detailInstance.imageUrl.length" :key="imageItem">
-                            <img :src="getImgUrl(imageItem - 1)" />
+                        <div v-for="(imageItem,index) in detailInstance.imageUrl" :key="index">
+                            <img :src="imageItem" />
                         </div>
-                        <!-- <a-image :preview="{ visible: false }" v-for="item in imgUrl.length" :key="item"
-                                class="img-preview" :src="getImgUrl(item - 1)" @click="visible = true" />
-                            <div >
-                                <a-image-preview-group :preview="{ visible, onVisibleChange: vis => (visible = vis) }">
-                                    <a-image v-for="item in imgUrl.length" :key="item" class="img-preview"
-                                        :src="getImgUrl(item - 1)" />
-                                </a-image-preview-group>
-                            </div> -->
                     </a-carousel>
                 </div>
                 <div class="info-content-container">
@@ -357,7 +538,7 @@ hotels.push({
                     <div style="text-align: left;margin: 10px 0;">
                         <span style="margin-right: 20px;width: 80px;display: inline-block;">开放时间</span>
                         <span :style="{color : status?'green' : 'black'}"> {{ getStatusDescription() }} </span>
-                        <span>{{ detailInstance.openTime.openHours }}</span>
+                        <span>{{ detailInstance.openTime?.openHours }}</span>
                     </div>
                     <div style="text-align: left;margin: 10px 0;">
                         <span style="margin-right: 20px;width: 80px;display: inline-block;">票价</span>
@@ -388,8 +569,8 @@ hotels.push({
                         </div>
                         <div class="time-container">
                             <h2>开放时间</h2>
-                            <p style="min-height: 4vh;margin: 0;">{{ detailInstance.openTime.openDays }} &nbsp; {{
-                                detailInstance.openTime.openHours }}</p>
+                            <p style="min-height: 4vh;margin: 0;">{{ detailInstance.openTime?.openDays }} &nbsp; {{
+                                detailInstance.openTime?.openHours }}</p>
                         </div>
                     </div>
                 </section>
@@ -413,30 +594,6 @@ hotels.push({
                                     <div>
                                         <a-timeline mode="alternate">
                                             <a-timeline-item v-for="route of routeItem.routes">{{ route.timing }}:{{ route.content }}</a-timeline-item>
-                                            <!-- <a-timeline-item color="green">Solve initial network problems
-                                                2015-09-01</a-timeline-item>
-                                            <a-timeline-item>
-                                                <template #dot>
-                                                    <ClockCircleOutlined style="font-size: 16px" />
-                                                </template>
-                                                Sed ut perspiciatis unde omnis iste natus error sit voluptatem
-                                                accusantium
-                                                doloremque
-                                                laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore
-                                                veritatis
-                                                et
-                                                quasi architecto
-                                                beatae vitae dicta sunt explicabo.
-                                            </a-timeline-item>
-                                            <a-timeline-item color="red">Network problems being solved
-                                                2015-09-01</a-timeline-item>
-                                            <a-timeline-item>Create a services site 2015-09-01</a-timeline-item>
-                                            <a-timeline-item>
-                                                <template #dot>
-                                                    <ClockCircleOutlined style="font-size: 16px" />
-                                                </template>
-                                                Technical testing 2015-09-01
-                                            </a-timeline-item> -->
                                         </a-timeline>
                                     </div>
                                 </div>
@@ -510,12 +667,6 @@ hotels.push({
                                             <a-form-item>
                                                 <a-textarea v-model:value="value" :rows="4" />
                                             </a-form-item>
-                                            <!-- <a-form-item>
-                                                <a-button html-type="submit" :loading="submitting" type="primary"
-                                                    @click="handleSubmit">
-                                                    Add Comment
-                                                </a-button>
-                                            </a-form-item> -->
                                         </template>
                                         <a-rate v-model:value="rating" allow-half :allowClear="true" />
                                     </a-comment>
@@ -529,7 +680,7 @@ hotels.push({
                         <!-- 展示评论 -->
                         <a-tabs v-model:activeKey="activeKey">
                             <a-tab-pane key="1" tab="智能排序">
-                                <a-comment v-for="comment in commentTimeSortedData">
+                                <a-comment v-for="(comment,index) in commentRatingSortedData" :key="index">
                                     <template #actions>
                                         <span key="comment-basic-like">
                                             <a-tooltip title="Like">
@@ -578,19 +729,21 @@ hotels.push({
                                         </a-tooltip>
                                     </template>
                                 </a-comment>
-                                <a-pagination v-model:current="current1" show-quick-jumper :total="500"
-                                    @change="onChange" />
+                                <a-pagination v-model:current="currentPage1" show-quick-jumper :total="500"
+                                    @change="onChangeByLike" />
                             </a-tab-pane>
                             <a-tab-pane key="2" tab="时间排序" force-render>
-                                <a-comment v-for="comment in commentTimeSortedData">
+                                <a-comment v-for="(comment,index) in commentTimeSortedData" :key="index">
                                     <template #actions>
                                         <span key="comment-basic-like">
                                             <a-tooltip title="Like">
                                                 <template v-if="action === 'liked'">
                                                     <LikeFilled @click="like" />
+                                                    {{ comment.likeNum }}
                                                 </template>
                                                 <template v-else>
                                                     <LikeOutlined @click="like" />
+                                                    {{ comment.likeNum }}
                                                 </template>
                                             </a-tooltip>
                                             <span style="padding-left: 8px; cursor: auto">
@@ -612,27 +765,23 @@ hotels.push({
                                         </span>
                                         <span key="comment-basic-reply-to">Reply to</span>
                                     </template>
-                                    <template #author><a>Han Solo</a></template>
+                                    <template #author><a>{{ comment.username }}</a></template>
                                     <template #avatar>
-                                        <a-avatar src="https://joeschmoe.io/api/v1/random" alt="Han Solo" />
+                                        <a-avatar :src="comment.avatar" alt="Han Solo" />
                                     </template>
                                     <template #content>
                                         <p>
-                                            We supply a series of design principles, practical patterns and high quality
-                                            design
-                                            resources (Sketch and Axure), to help people create their product prototypes
-                                            beautifully and
-                                            efficiently.
+                                            {{ comment.comment }}
                                         </p>
                                     </template>
                                     <template #datetime>
-                                        <a-tooltip :title="dayjs().format('YYYY-MM-DD HH:mm:ss')">
+                                        <a-tooltip :title="comment.time">
                                             <span>{{ dayjs().fromNow() }}</span>
                                         </a-tooltip>
                                     </template>
                                 </a-comment>
-                                <a-pagination v-model:current="current1" show-quick-jumper :total="500"
-                                    @change="onChange" />
+                                <a-pagination v-model:current="currentPage2" show-quick-jumper :total="500"
+                                    @change="onChangeByTime" />
                             </a-tab-pane>
                         </a-tabs>
                     </div>
@@ -646,7 +795,7 @@ hotels.push({
                 <section class="traffic-wrapper">
                     <h2 style="margin: 0;text-align: left;padding: 20px;padding-bottom: 0;">景区交通</h2>
                     <div class="traffic-container">
-                        <div v-for="trafficCar in trafficCars" :key="trafficCar.transportId"
+                        <div v-for="(trafficCar,index) in trafficCars" :key="index"
                             style="display: flex;height: 10vh;width: 100%;margin-bottom: 10px;color: #000;">
                             <img :src="trafficCar.imageUrl" alt="" style="width: 10vh;height: 100%;object-fit: fill;">
                             <div
@@ -729,7 +878,7 @@ hotels.push({
                                 <h2>{{ hotel.name }}</h2>
                                 <div style="display: flex;width: 100%;justify-content: space-between;">
                                     <span>{{ hotel.type }}</span>
-                                    <span>￥{{ hotel.ticketPrice }}/人</span>
+                                    <span>￥{{ hotel.averageCost }}/人</span>
                                 </div>
                                 <div style="display: flex;width: 100%;">
                                     <span>地点: {{ hotel.location }}</span>
@@ -1015,6 +1164,8 @@ nav li {
     height: 100%;
     padding: 20px;
     padding-top: 10px;
+    max-height: 485px;
+    overflow-y: auto;
 }
 
 /* 食物推荐 */
@@ -1029,6 +1180,8 @@ nav li {
     height: 100%;
     padding: 20px;
     padding-top: 10px;
+    max-height: 485px;
+    overflow-y: auto;
 }
 .food-item:hover {
     cursor: pointer;
@@ -1046,6 +1199,8 @@ nav li {
     height: 100%;
     padding: 20px;
     padding-top: 10px;
+    max-height: 485px;
+    overflow-y: auto;
 }
 .show-item:hover {
     cursor: pointer;
@@ -1063,6 +1218,8 @@ nav li {
     height: 100%;
     padding: 20px;
     padding-top: 10px;
+    max-height: 485px;
+    overflow-y: auto;
 }
 .hotel-item:hover {
     cursor: pointer;

@@ -60,7 +60,7 @@ for (let i = 0; i < 100; i++) {
 }
 //获取投诉记录信息
 //请求服务器资源的路径
-const serverURL = 'http://192.168.0.1:8080'
+const serverURL = 'http://localhost:8080'
 onBeforeMount(()=>{
   axios({
     method: 'get',
@@ -89,6 +89,8 @@ const save = key => {
 const cancel = key => {
   delete editableData[key];
 };
+const selectDate = ref();
+const selectType = ref();
 </script>
 
 <template>
@@ -96,6 +98,22 @@ const cancel = key => {
   <!-- data-source属性设置表格中的数据 -->
   <!-- bordered属性设置表格的边框是否显示 -->
   <div class="tableDiv">
+    <a-select
+      v-model:value="selectType"
+      :options="options"
+      mode="tags"
+      size="large"
+      placeholder="选择订单类型"
+      style="width: 200px"
+    ></a-select>
+    <a-select
+      v-model:value="selectDate"
+      :options="options"
+      mode="tags"
+      size="large"
+      placeholder="选择日期"
+      style="width: 200px"
+    ></a-select>
     <a-table :columns="columns" :data-source="dataSource" :scroll="{ x:1300, y:520 }" bordered>
     <template #bodyCell="{ column, text, record }">
       <template v-if="['attachment', 'content'].includes(column.dataIndex)">

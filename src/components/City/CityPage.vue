@@ -4,11 +4,70 @@ import {
     RightCircleOutlined
  } from '@ant-design/icons-vue';
 import router from '../../router';
-function goToTest() {
+import axios from 'axios';
+import { message } from 'ant-design-vue';
+import { onBeforeMount, ref } from 'vue';
+import { useRecommendDataStore } from '../../store/recommendDataStore';
+// 从store中读取推荐城市信息
+const recommandData = useRecommendDataStore()
+const recommendCityList = recommandData.recommendDataInfo.recommendCity
+const recommendSceneList = recommandData.recommendDataInfo.recommendScene
+//读取城市图片
+const styleList = ref([]);
+const adviceList = ref([])
+onBeforeMount(() => {
+//获取城市旅游攻略
+  for (let i = 0; i < recommendCityList.length; i++) {
+    styleList.value.push(`background-image: url(${recommendCityList[i].imageUrl})`);
+  }
+  axios({
+    method:'get',
+    url: 'http://localhost:8080/cities/cityAdvice',
+    header: {
+      'Content-Type':'application/x-www-form-urlencoded'
+    },
+  }).then((result) => {
+    console.log("获取旅游攻略");
+    console.log(result);
+    adviceList.value = result.data.data
+  }).catch(function(error){
+    console.log(error);
+  })
+
+});
+//跳转城市详情页
+// !!!!!!
+// 将CityDeatil设置成一级路由且使用router.push()的参数必须通过name来获取页面  否则页面可以跳转但是内容为空
+function goToCityDetail(cityName) {
     console.log('跳转前');
-    //router.push('/mainPage/test')
-    window.location.assign('http://localhost:5173/#/test')
+    router.push({ name : 'cityDetail', params: { cityName : cityName } })
     console.log('跳转后');
+}
+//目标城市
+const targetCity = ref('')
+//搜索指定的城市显示详细信息
+function searchCity() {
+    axios({
+        method: 'get',
+        url: `http://localhost:8080/cities/city?city_name=${targetCity.value}`,
+        headers: {  
+            'Content-Type': 'application/x-www-form-urlencoded'  
+        },
+    }).then((result)=>{
+        console.log(result);
+        if(result.data.status === '0'){
+            router.push({ name : 'cityDetail', params: { cityName : cityName } })
+        }else{
+            message.error({
+                content:()=> `${result.data.msg}`,
+                style: {
+                marginTop: '10vh',
+                }
+            })
+        }
+    }).catch(function(error){
+        console.log(error);
+    })
 }
 </script>
 
@@ -27,17 +86,10 @@ function goToTest() {
                         <right-circle-outlined />
                     </div>
                 </template>
-                <div>
-                    <img src="../../assets/image/city/city1.png" alt="" class="city-main-image">
-                </div>
-                <div>
-                    <img src="../../assets/image/city/city2.png" alt="" class="city-main-image">
-                </div>
-                <div>
-                    <img src="../../assets/image/city/city3.png" alt="" class="city-main-image">
-                </div>
-                <div>
-                    <img src="../../assets/image/city/city1.png" alt="" class="city-main-image">
+                <div v-for="(item,index) in recommendCityList" :key="index">
+                    <div>
+                        <img :src=item.imageUrl alt="" class="city-main-image">
+                    </div>
                 </div>
             </a-carousel>
         </div>
@@ -48,9 +100,12 @@ function goToTest() {
     <section class="search-wrapper" style="top: -50%; transform: translateY(-50%);">
         <div class="search-container">
             <div class="search-content" style="background: rgba(19, 53, 123, 0.8);">
-                <input class="search-input" type="text" placeholder="Eg: 北京">
+                <input class="search-input" type="text" placeholder="Eg: 北京" :value="targetCity">
                 <button type="button" class="search-button"
-                    style="top: 50%; right: 46px; transform: translateY(-50%);">Search</button>
+                    style="top: 50%; right: 46px; transform: translateY(-50%);"
+                    @click="searchCity">
+                    Search
+                </button>
             </div>
         </div>
     </section>
@@ -60,118 +115,58 @@ function goToTest() {
         <h2 class="hot-city-title">
             热门城市推荐
         </h2>
-        <!-- <div v-for="(index,item) in recommendCityList" :key="index">
+        <div v-for="(item,index) in recommendCityList" :key="index">
             <div class="hot-city-content" v-if="index%2===0">
                 <div
                     style="width: 40%;height: 100%;margin-left: 20px;margin-right: 30px;box-sizing: border-box;overflow: hidden;">
-                    <a class="hot-city-image" style="background-image: url('/src/assets/image/city/city1.png');">
-                    </a>
+                    <!-- <a class="hot-city-image" :style=styleList[index] >
+                        
+                    </a> -->
+                    <!-- style="background-image: url(item.imageUrl);" -->
+                    <img class="hot-city-image" :src=item.imageUrl @click="goToCityDetail(item.name)" >
                 </div>
                 <div class="hot-city-description">
                     <h4 class="hot-city-name">
-                        上海
+                        {{ item.name }}
                     </h4>
                     <p class="hot-city-introduction">
-                        <span>l</span>orem ipsum dolor sit amet, consectetur adipiscing elit. Duis blandit et nunc id
-                        pulvinar. Praesent eleifend, diam id venenatis commodo, orci mi molestie tortor, ac facilisis
-                        odio magna non tortor. Nunc odio dui, fermentum vel fringilla vitae, facilisis at risus. Integer
-                        eget pellentesque enim, ac laoreet dolor. Ut in lectus et risus sollicitudin convallis. Nullam
-                        at vulputate tortor, quis suscipit ex. Donec nec ipsum sit amet orci blandit auctor.
+                        <span>{{ item.description.substring(0,1) }}</span>{{ item.description.substring(1,item.description.length-1) }}
                     </p>
                 </div>
             </div>
             <div class="hot-city-content" v-else>
                 <div class="hot-city-description">
                     <h4 class="hot-city-name" style="float: right;">
-                        上海
+                        {{ item.name }}
                     </h4>
                     <p class="hot-city-introduction" style="float: right;">
-                        <span>l</span>orem ipsum dolor sit amet, consectetur adipiscing elit. Duis blandit et nunc id
-                        pulvinar. Praesent eleifend, diam id venenatis commodo, orci mi molestie tortor, ac facilisis
-                        odio magna non tortor. Nunc odio dui, fermentum vel fringilla vitae, facilisis at risus. Integer
-                        eget pellentesque enim, ac laoreet dolor. Ut in lectus et risus sollicitudin convallis. Nullam
-                        at vulputate tortor, quis suscipit ex. Donec nec ipsum sit amet orci blandit auctor.
+                        <span>{{ item.description.substring(0,1) }}</span>{{ item.description.substring(1,item.description.length-1) }}
                     </p>
                 </div>
                 <div
                     style="width: 40%;height: 100%;margin-left: 30px;margin-right: 20px;box-sizing: border-box;overflow: hidden;">
-                    <a class="hot-city-image" style="background-image: url('/src/assets/image/city/city1.png');">
-                    </a>
+                    <!-- <a class="hot-city-image" :style=styleList[index] >
+                        
+                    </a> -->
+                    <!-- style="background-image: url(item.imageUrl)" -->
+                    <img class="hot-city-image" :src=item.imageUrl @click="goToCityDetail(item.name)" >
                 </div>
             </div>
-        </div> -->
-            <div class="hot-city-content">
-                <div
-                    style="width: 40%;height: 100%;margin-left: 20px;margin-right: 30px;box-sizing: border-box;overflow: hidden;">
-                    <a class="hot-city-image" style="background-image: url('/src/assets/image/city/city1.png');" @click="goToTest">
-                    </a>
-                </div>
-                <div class="hot-city-description">
-                    <h4 class="hot-city-name">
-                        上海
-                    </h4>
-                    <p class="hot-city-introduction">
-                        <span>l</span>orem ipsum dolor sit amet, consectetur adipiscing elit. Duis blandit et nunc id
-                        pulvinar. Praesent eleifend, diam id venenatis commodo, orci mi molestie tortor, ac facilisis
-                        odio magna non tortor. Nunc odio dui, fermentum vel fringilla vitae, facilisis at risus. Integer
-                        eget pellentesque enim, ac laoreet dolor. Ut in lectus et risus sollicitudin convallis. Nullam
-                        at vulputate tortor, quis suscipit ex. Donec nec ipsum sit amet orci blandit auctor.
-                    </p>
-                </div>
-            </div>
-            <div class="hot-city-content">
-                <div class="hot-city-description">
-                    <h4 class="hot-city-name" style="float: right;">
-                        上海
-                    </h4>
-                    <p class="hot-city-introduction" style="float: right;">
-                        <span>l</span>orem ipsum dolor sit amet, consectetur adipiscing elit. Duis blandit et nunc id
-                        pulvinar. Praesent eleifend, diam id venenatis commodo, orci mi molestie tortor, ac facilisis
-                        odio magna non tortor. Nunc odio dui, fermentum vel fringilla vitae, facilisis at risus. Integer
-                        eget pellentesque enim, ac laoreet dolor. Ut in lectus et risus sollicitudin convallis. Nullam
-                        at vulputate tortor, quis suscipit ex. Donec nec ipsum sit amet orci blandit auctor.
-                    </p>
-                </div>
-                <div
-                    style="width: 40%;height: 100%;margin-left: 30px;margin-right: 20px;box-sizing: border-box;overflow: hidden;">
-                    <a class="hot-city-image" style="background-image: url('/src/assets/image/city/city1.png');">
-                    </a>
-                </div>
-            </div>
-            <div class="hot-city-content">
-                <div
-                    style="width: 40%;height: 100%;margin-left: 20px;margin-right: 30px;box-sizing: border-box;overflow: hidden;">
-                    <a class="hot-city-image" style="background-image: url('/src/assets/image/city/city2.png');">
-                    </a>
-                </div>
-                <div class="hot-city-description">
-                    <h4 class="hot-city-name">
-                        上海
-                    </h4>
-                    <p class="hot-city-introduction">
-                        <span>l</span>orem ipsum dolor sit amet, consectetur adipiscing elit. Duis blandit et nunc id
-                        pulvinar. Praesent eleifend, diam id venenatis commodo, orci mi molestie tortor, ac facilisis
-                        odio magna non tortor. Nunc odio dui, fermentum vel fringilla vitae, facilisis at risus. Integer
-                        eget pellentesque enim, ac laoreet dolor. Ut in lectus et risus sollicitudin convallis. Nullam
-                        at vulputate tortor, quis suscipit ex. Donec nec ipsum sit amet orci blandit auctor.
-                    </p>
-                </div>
-            </div>
-        <!-- </div> -->
+        </div>
     </section>
 
     <!-- 城市热门景点 -->
     <section class="city-scenenary-wrapper">
         <h2 class="city-scenenary-title">
-            Gallery
+            城市热门景点
         </h2>
         <div class="city-scenenary-container">
             <div class="city-scenenary-box">
                 <div class="image-content" style="height: 30%;">
-                    <img class="city-scenenary-image" src="../../assets/image/city/scene.jpg" alt="">
+                    <img class="city-scenenary-image" :src=recommendSceneList[0].imageUrl alt="">
                     <div class="city-scenenary-introduction">
                         <h2 class="city-scenenary-name">
-                            长城
+                            {{ recommendSceneList[0].name }}
                         </h2>
                         <button class="details-button">
                             View Details
@@ -179,10 +174,10 @@ function goToTest() {
                     </div>
                 </div>
                 <div class="image-content" style="height: 38%;">
-                    <img class="city-scenenary-image" src="../../assets/image/city/scene.jpg" alt="">
+                    <img class="city-scenenary-image" :src=recommendSceneList[1].imageUrl alt="">
                     <div class="city-scenenary-introduction">
                         <h2 class="city-scenenary-name">
-                            长城
+                            {{ recommendSceneList[1].name }}
                         </h2>
                         <button class="details-button">
                             View Details
@@ -190,10 +185,10 @@ function goToTest() {
                     </div>
                 </div>
                 <div class="image-content" style="height: 24%;">
-                    <img class="city-scenenary-image" src="../../assets/image/city/scene.jpg" alt="">
+                    <img class="city-scenenary-image" :src=recommendSceneList[2].imageUrl alt="">
                     <div class="city-scenenary-introduction">
                         <h2 class="city-scenenary-name">
-                            长城
+                            {{ recommendSceneList[2].name }}
                         </h2>
                         <button class="details-button">
                             View Details
@@ -203,10 +198,10 @@ function goToTest() {
             </div>
             <div class="city-scenenary-box">
                 <div class="image-content" style="height: 60%;">
-                    <img class="city-scenenary-image" src="../../assets/image/city/scene.jpg" alt="">
+                    <img class="city-scenenary-image" :src=recommendSceneList[3].imageUrl alt="">
                     <div class="city-scenenary-introduction">
                         <h2 class="city-scenenary-name">
-                            长城
+                            {{ recommendSceneList[3].name }}
                         </h2>
                         <button class="details-button">
                             View Details
@@ -214,10 +209,10 @@ function goToTest() {
                     </div>
                 </div>
                 <div class="image-content" style="height: 34%;">
-                    <img class="city-scenenary-image" src="../../assets/image/city/scene.jpg" alt="">
+                    <img class="city-scenenary-image" :src=recommendSceneList[0].imageUrl alt="">
                     <div class="city-scenenary-introduction">
                         <h2 class="city-scenenary-name">
-                            长城
+                            {{ recommendSceneList[3].name }}
                         </h2>
                         <button class="details-button">
                             View Details
@@ -230,47 +225,17 @@ function goToTest() {
 
     <!-- 旅游攻略 -->
     <section class="city-tactics-wrapper">
+        <h2 class="city-tactics-headtitle"> 
+            城市旅游攻略
+        </h2>
         <div class="city-tactics-container">
             <div class="city-tactics-box">
-                <div class="tactics-content">
+                <div class="tactics-content" v-for="(item,index) in adviceList" :key="index">
                     <div class="city-tactics-icon"></div>
                     <div class="city-tactics-introduction">
-                        <h3 class="city-tactics-title">Integer tincidunt. Cras dapibus</h3>
+                        <h3 class="city-tactics-title">{{ item.title }}</h3>
                         <p class="city-tactics-description">
-                            honcus, sem quam semper libero, sit ametadipiscing sem neque sed ipsum. sem quam semper
-                            libero, sit amet adipiscing
-                        </p>
-                    </div>
-                </div>
-                <div class="tactics-content">
-                    <div class="city-tactics-icon"></div>
-                    <div class="city-tactics-introduction">
-                        <h3 class="city-tactics-title">Integer tincidunt. Cras dapibus</h3>
-                        <p class="city-tactics-description">
-                            honcus, sem quam semper libero, sit ametadipiscing sem neque sed ipsum. sem quam semper
-                            libero, sit amet adipiscing
-                        </p>
-                    </div>
-                </div>
-            </div>
-            <div class="city-tactics-box">
-                <div class="tactics-content">
-                    <div class="city-tactics-icon"></div>
-                    <div class="city-tactics-introduction">
-                        <h3 class="city-tactics-title">Integer tincidunt. Cras dapibus</h3>
-                        <p class="city-tactics-description">
-                            honcus, sem quam semper libero, sit ametadipiscing sem neque sed ipsum. sem quam semper
-                            libero, sit amet adipiscing
-                        </p>
-                    </div>
-                </div>
-                <div class="tactics-content">
-                    <div class="city-tactics-icon"></div>
-                    <div class="city-tactics-introduction">
-                        <h3 class="city-tactics-title">Integer tincidunt. Cras dapibus</h3>
-                        <p class="city-tactics-description">
-                            honcus, sem quam semper libero, sit ametadipiscing sem neque sed ipsum. sem quam semper
-                            libero, sit amet adipiscing
+                            {{ item.description }}
                         </p>
                     </div>
                 </div>
@@ -326,7 +291,7 @@ function goToTest() {
     </section>
 
     <!--  -->
-    <section style="width: 100%;height: 40vh;background: transparent;">
+    <section style="width: 100%;height: 20vh;background: transparent;">
 
     </section>
 </template>
@@ -434,7 +399,7 @@ function goToTest() {
 /* 热门城市推荐 */
 .hot-city-wrapper {
     width: 100%;
-    height: 120vh;
+    height: 200vh;
 }
 .hot-city-title {
     width: 100%;
@@ -509,6 +474,7 @@ function goToTest() {
     width: 100%;
     height: 140vh;
     padding: 4% 0;
+    margin-top: 10px;
 }
 .city-scenenary-title {
     height: 10%;
@@ -599,10 +565,20 @@ function goToTest() {
 }
 
 /* 旅游攻略 */
+.city-tactics-headtitle {
+    width: 100%;
+    height: 10vh;
+    margin-bottom: 0;
+    font-size: 47px;
+    font-weight: 800;
+    color: #000;
+    opacity: 1;
+}
+
 .city-tactics-wrapper {
     width: 100%;
     height: 65vh;
-    padding: 10% 0 4% 0;
+    padding: 1% 0 4% 0;
 }
 .city-tactics-container {
     width: 80%;
@@ -612,7 +588,7 @@ function goToTest() {
     display: flex;
 }
 .city-tactics-box {
-    width: 50%;
+    width: 100%;
     height: 100%;
     padding: 0 15px;
     display: flex;
@@ -638,6 +614,7 @@ function goToTest() {
 }
 .city-tactics-introduction {
     position: relative;
+    width: 100%;
     top: -4px;
 }
 .city-tactics-title {
@@ -651,10 +628,11 @@ function goToTest() {
 .city-tactics-description {
     margin: 0;
     font-size: 15px;
+    width: 100%;
     font-weight: normal;
     line-height: 1.8;
     color: #9a9a9a;
-    max-width: 396px;
+    /* max-width: 396px; */
     margin-top: 15px;
 }
 

@@ -22,7 +22,7 @@ const noticeList = ref([
 ])
 //在挂载组件之前获取数据
 //请求服务器的路径
-const serverURL = 'http://192.168.40.121:8080/EmergencyInfos';
+const serverURL = 'http://localhost:8080/EmergencyInfos';
 
 onBeforeMount(()=>{
   //发送异步请求
@@ -30,7 +30,7 @@ onBeforeMount(()=>{
     method: 'get',
     url: serverURL,
     headers: {
-      'Content-Type': 'application/json',
+      'Content-Type': 'application/',
     }
   }).then((result)=>{
     console.log(result);
@@ -44,7 +44,7 @@ onBeforeMount(()=>{
 </script>
 
 <template>
-  <a-collapse v-model:activeKey="activeKey" accordion>
+  <a-collapse v-model:activeKey="activeKey" accordion class="noticeBox">
     <a-collapse-panel v-for="(item,index) in noticeList" :key="index" :header="item.title">
       <p>{{ item.content }}</p>
       <p>{{ item.date }}</p>
@@ -53,5 +53,7 @@ onBeforeMount(()=>{
 </template>
 
 <style scoped>
-
+::v-deep(.noticeBox .ant-collapse) {
+  height: 100%;
+}
 </style>

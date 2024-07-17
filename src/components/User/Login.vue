@@ -13,7 +13,7 @@ const userData = reactive({
 })
 const userStore = useUserStore()
 
-const serverURL = `http://192.168.40.121:8080`
+const serverURL = `http://localhost:8080`
 //登录
 function login() {
   console.log(userData);
@@ -30,7 +30,7 @@ function login() {
       'Content-Type': 'application/x-www-form-urlencoded'  
     },
     data: new URLSearchParams(params).toString(),
-    withCredentials: true
+    withCredentials: false
   }).then((result)=>{
     console.log(result);
     //登录成功
@@ -41,8 +41,11 @@ function login() {
           marginTop: '10vh',
         }
       })
+      //登录成功后存储用户信息
       userStore.setUserInfo(result.data.data);
-      router.push("/mainPage");
+      localStorage.setItem("username",result.data.data.username)
+      //登录成功后跳转到主页面
+      router.push("/mainPage/overview");
     }else{
       //登录失败
       message.error({
@@ -71,24 +74,24 @@ function getValidateCode() {
   }
   axios({
     method: 'post',
-    url: serverURL+'/user/verifyCode',
+    url: serverURL+'/user/verifyCode/login',
     headers: {
       'Content-Type': 'application/x-www-form-urlencoded'
     },
     data: new URLSearchParams(params).toString(),
-    withCredentials: true
+    withCredentials: false
   }).then((result)=>{
     console.log(result);
-    if(result.status === 0){
+    if(result.data.status === 0){
       message.success({
-      content: ()=> `${result.data.msg}`,
+      content: ()=> `${result.data.data}`,
       style: {
         marginTop: '10vh'
       }
       })
     }else{
       message.error({
-        content: ()=> `${result.data.msg}`,
+        content: ()=> `${result.data.data}`,
         style: {
           marginTop: '10vh'
         }
@@ -105,49 +108,50 @@ function getValidateCode() {
     <!-- 背景图片 -->
     <img src="../../assets/image/bg1.jpg" class="bg">
     <!-- 登录框 -->
-    <div class="login">
-      <h2>登录</h2>
-      <h3>用户名</h3>
-      <div class="inputbox">
-        <input type="text" placeholder="Username" v-model="userData.username">
+      <div class="login">
+        <h2>登录</h2>
+        <h3>账号</h3>
+        <div class="inputbox">
+          <input type="text" placeholder="Username" v-model="userData.username">
+        </div>
+        <h3>密码</h3>
+        <div class="inputbox">
+          <a-input-password
+            class="passwordInput"
+            v-model:value="userData.password"
+            placeholder="Input Password"
+            :visibility-toggle="true"
+            font-size="1.25em"
+            color="#8f2c24"
+          />
+        </div>
+        <h3>验证码</h3>
+        <div class="inputbox">
+          <a-input-search
+              v-model:value="userData.validateCode"
+              placeholder="请输入验证码"
+              size="large"
+              @search="getValidateCode"
+            >
+              <template #enterButton>
+                <a-button>获取验证码</a-button>
+              </template>
+            </a-input-search>
+        </div>
+        <div class="inputbox">
+          <input type="submit" value="登录" id="btn" @click="login">
+        </div>
+        <!-- 额外选项 -->
+        <div class="options">
+          <a @click="resetPassword">忘记密码</a> | 
+          <a @click="registerUser">注册新用户</a>
+        </div>
       </div>
-      <h3>密码</h3>
-      <div class="inputbox">
-        <a-input-password
-          class="passwordInput"
-          v-model:value="userData.password"
-          placeholder="Input Password"
-          :visibility-toggle="true"
-          font-size="1.25em"
-          color="#8f2c24"
-        />
-      </div>
-      <h3>验证码</h3>
-      <div class="inputbox">
-        <a-input-search
-            v-model:value="userData.validateCode"
-            placeholder="请输入验证码"
-            size="large"
-            @search="getValidateCode"
-          >
-            <template #enterButton>
-              <a-button>获取验证码</a-button>
-            </template>
-          </a-input-search>
-      </div>
-      <div class="inputbox">
-        <input type="submit" value="登录" id="btn" @click="login">
-      </div>
-      <!-- 额外选项 -->
-      <div class="options">
-        <a @click="resetPassword">忘记密码</a> | 
-        <a @click="registerUser">注册新用户</a>
-      </div>
-    </div>
   </section>
 </template>
 
 <style scoped>
+
 * {
   margin: 0 0 0 0;
   padding: 0;
@@ -261,4 +265,55 @@ section .bg {
   height: 60px;
 }
 
+/* 流光动画 */
+.borderLine{
+  position: absolute;
+  top: 0;
+  inset: 0;
+}
+@keyframes animate {
+  0%{
+    transform:rotate(0deg);
+  }
+  100%{
+    transform: rotate(360deg);
+  }
+
+
+}
+.box::before,
+.box::after,
+.borderLine::before,
+.borderLine::after{
+  content: "";
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 380px;
+  height: 420px;
+  background: linear-gradient(
+    0deg,transparent,transparent,
+    #45f3ff,#45f3ff,#45f3ff
+  );
+  z-index: 1;
+  transform-origin: bottom right;
+  animation: animate 6s linear infinite;
+}
+.box::after{
+  animation-delay: -3s;
+}
+.borderLine::before{
+  background: linear-gradient(
+    0deg,transparent,transparent,
+    #ff2770,#ff2770,#ff2770
+  );
+  animation-delay: -1.5s;
+}
+.borderLine::after {
+  background: linear-gradient(
+    0deg,transparent,transparent,
+    #ff2770,#ff2770,#ff2770
+  );
+  animation-delay: -4.5s;
+}
 </style>

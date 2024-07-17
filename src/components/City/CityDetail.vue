@@ -1,96 +1,34 @@
 <script setup>
-import { h, ref ,defineComponent ,reactive } from 'vue';
+import { h, ref ,defineComponent ,toRefs, onBeforeMount } from 'vue';
 import dayjs from 'dayjs';
+import axios from 'axios';
 import relativeTime from 'dayjs/plugin/relativeTime';
-import { 
-    UserOutlined,
-    CarryOutOutlined, 
-    BellOutlined,
-    PhoneOutlined,
-    HomeOutlined,
-    StarOutlined, 
-    MessageOutlined,
-    LikeFilled, 
-    LikeOutlined, 
-    DislikeFilled, 
-    DislikeOutlined,
-    RightSquareOutlined,
-    RightCircleOutlined,
-    ClockCircleOutlined
-} from '@ant-design/icons-vue';
+import { message } from 'ant-design-vue';
 import { styleProviderProps } from 'ant-design-vue/es/_util/cssinjs/StyleContext';
-const navItems = ref([
-  {
-    key: 'user',
-    icon: () => h(UserOutlined),
-    label: '用户',
-    title: '用户',
-    children: [
-      {
-        type: 'group',
-        // label: 'Item 1',
-        children: [
-          {
-            label: '个人信息',
-            key: 'info',
-          },
-          {
-            label: '账户余额',
-            key: 'account',
-          },
-        ],
-      },
-    ],
-  },
-  {
-    key: 'order',
-    icon: () => h(CarryOutOutlined),
-    label: '订单',
-    title: '订单',
-  },
-  {
-    key: 'message',
-    icon: () => h(BellOutlined),
-    label: '消息通知',
-    title: '消息通知',
-  },
-  {
-    key: 'contact',
-    icon: () => h(PhoneOutlined),
-    label: '联系我们',
-    title: '联系我们',
-  },
-]);
+import {
+    HomeOutlined,
+    RightCircleOutlined,
+    LikeFilled,
+    LikeOutlined,
+    DislikeFilled,
+    DislikeOutlined,
 
-
+} from  '@ant-design/icons-vue';
 // 面包屑导航
 const navLast = {
     URL : '',
     name : '景区'
 }
-
-
+//接收CityPage传递来的参数
+const cityName = defineProps(['cityName'])
 // 详情展示
-let detailInstance = {}
-const navContent = detailInstance.name;
-detailInstance = {
-    "cityId": 2,
-    "name": "北京",
-    "imageUrl": "[https://dimg04.c-ctrip.com/images/0100j1200046x94ebB936_R_1600_10000.jpg]",
-    "description": "北京是一座迷人的城市，既有古典风韵，又具时尚气息。小胡同、老茶馆、新潮酒吧街、繁华商业区，无限的摩登元素与老北京地道的京味儿相互交融，构筑了北京城博大精深的文化底蕴和正统而不失清雅的生活方式。",
-    "mustVisit": "[1,3,6,2,8]"
-}
-detailInstance.mustVisit=detailInstance.mustVisit.replace(/[\[\]]/,'').split(/[,，]/)
-
-// 图片展示处理
-let pattern = /[\]\[]*/
-detailInstance.imageUrl = detailInstance.imageUrl.replace(pattern,'').split(',')
+const detailInstance = ref({})
+const navContent = detailInstance.value.name;
 
 function getImgUrl(i){
-    return detailInstance.imageUrl[i];
+    return detailInstance.value.imageUrl[i];
 }
 const visible = ref(false);
-
 
 // 获取评论数量
 function getCommentCount() {
@@ -102,30 +40,12 @@ function getStatusDescription() {
 }
 
 // 游玩线路部分
-let travelRoutes = []
-travelRoutes.push({
-    "cityName": "成都",
-    "involvedAttractions": "成都大熊猫基地, 宽窄巷子, 锦里古街",
-    "description": "成都经典一日游，从大熊猫的憨态可掬到古街的历史韵味。",
-    "content": "上午：参观成都大熊猫基地，看大熊猫和小熊猫。中午：宽窄巷子品尝成都小吃。下午：锦里古街体验三国文化和购物。",
-    "recommendation": 4.9,
-    "imageUrl": "http://image.com/chengdu-classic-tour.jpg",
-    "days": 1
-})
-travelRoutes.push({
-    "cityName": "成都",
-    "involvedAttractions": "都江堰, 青城山",
-    "description": "探索世界文化遗产，感受古代中国的智慧和自然美景。",
-    "content": "上午：游览都江堰，了解古代水利工程。下午：青城山徒步，探访道教名山。",
-    "recommendation": 4.8,
-    "imageUrl": "http://image.com/dujiangyan-qingchengshan-tour.jpg",
-    "days": 1
-})
-for(const route of travelRoutes) {
+const travelRoutes = ref([])
+for(const route of travelRoutes.value) {
     route.routes = []
-    let sections = route.content.split(/[;；]/).filter(item => item !== '')
+    let sections = route.content.split(/[;]/).filter(item => item !== '')
     for(const section of sections) {
-        let [ timing , content ] = section.split(/[:：]/);
+        let [ timing , content ] = section.split(/[:]/);
         route.routes.push({
             'timing'  : timing,
             'content' : content
@@ -133,47 +53,19 @@ for(const route of travelRoutes) {
     }
 }
 
-
 // 游玩攻略部分
-let travelTactics = []
-travelTactics.push({
-    "guideId": 1,
-    "attractionName": "故宫博物院",
-    "title": "故宫一日游",
-    "guideContent": "故宫，又称紫禁城，是明、清两代的皇宫，拥有丰富的文化遗产和建筑艺术。建议游客从午门进入，依次参观太和殿、中和殿、保和殿等主要建筑，体验皇家气派。",
-    "recommendation": "4.9",
-    "imageUrl": "http://image.com/forbidden-city-guide.jpg",
-    "days": 1,
-    "avgCost": 300,
-    "tags": "文化古迹, 历史建筑"
-})
-travelTactics.push({
-    "guideId": 2,
-    "attractionName": "长城（八达岭段）",
-    "title": "不到长城非好汉",
-    "guideContent": "八达岭长城是万里长城中最为壮观的一段，也是最具代表性的景点之一。游客可以选择缆车或徒步攀登，欣赏长城的雄伟壮观和周围山峦的自然美景。",
-    "recommendation": "4.8",
-    "imageUrl": "http://image.com/badaling-greatwall-guide.jpg",
-    "days": 1,
-    "avgCost": 200,
-    "tags": "自然风光, 历史文化"
-})
-for(const item of travelTactics) {
-    item.tags = item.tags.split(/[,，]/)
+const travelTactics = ref([])
+
+for(const item of travelTactics.value) {
+    item.tags = item.tags.split(/[,]/)
 }
 function getTravelTactics() {
     return ;
 }
 
 // 用户评论部分
-const commentRatingSortedData = [];
-const commentTimeSortedData = [];
-// const pagination = {
-//   onChange: page => {
-//     console.log(page);
-//   },
-//   pageSize: 6,
-// };
+const commentRatingSortedData = ref([]);
+const commentTimeSortedData = ref([]);
 
 dayjs.extend(relativeTime);
 const likes = ref(0);
@@ -226,81 +118,237 @@ const handleSubmit = () => {
   }, 1000);
 };
 const rating = ref(2.5);
-
 // 城市推荐景区
-let sceneList = []
-sceneList.push(
-    {
-        "id": 34,
-        "name": "维多利亚港",
-        "type": "旅游景区",
-        "description": "世界著名的海港，享有‘东方之珠’的美誉",
-        "level": 5,
-        "rating": 4.9,
-        "ticketPrice": "80.00",
-        "contactNumber": "00852-12345678",
-        "imageUrl": "[https://dimg04.c-ctrip.com/images/10020y000000m5j4vCC02_C_1600_1200.jpg,https://dimg04.c-ctrip.com/images/100d0z000000naxy05131_R_1600_10000.jpg,https://dimg04.c-ctrip.com/images/100g0z000000mjpqy60D9_R_1600_10000.jpg]",
-        "features": "夜景, 灯光音乐汇演",
-        "routeInfo": "通畅",
-        "openTime": {
-          "openHours": "全天开放",
-          "openDays": "全年开放"
-        }
-    },
-    {
-        "id": 35,
-        "name": "香港迪士尼乐园",
-        "type": "旅游景区",
-        "description": "迪士尼主题乐园，提供超过百项的游乐设施及娱乐体验",
-        "level": 5,
-        "rating": 4.8,
-        "ticketPrice": "80.00",
-        "contactNumber": "00852-23456789",
-        "imageUrl": "[https://dimg04.c-ctrip.com/images/01004120009xe630d8500_R_1600_10000.jpg,https://dimg04.c-ctrip.com/images/0EQ2f12000cbrtpxh6E10_R_1600_10000.jpg,https://dimg04.c-ctrip.com/images/01014120009xe4p8lAD77_R_1600_10000.jpg]",
-        "features": "亲子活动, 娱乐设施",
-        "routeInfo": "拥挤",
-        "openTime": {
-          "openHours": "全天开放",
-          "openDays": "1月1日不开放"
-        }
-    }
-)
-
+const sceneList = ref([])
 // 食物列表
-let foods = []
-foods.push({
-    "foodId": 9,
-    "name": "沙茶面",
-    "type": "面食",
-    "cuisine": "闽南菜",
-    "description": "香辣可口，搭配丰富的海鲜和肉类",
-    "priceRange": "低",
-    "rating": 4.6,
-    "address": "厦门市思明区",
-    "openingHours": "全周 08:00-22:00",
-    "contactNumber": "0592-12345678",
-    "imageUrl": "https://img1.fjdaily.com/app/images/2022-11/14/0f6e280a-a5f0-465c-ae9a-6c69dad7141f.jpg.2",
-    "averageCost": 30,
-    "features": "闽南特色，香辣美味",
-    "number": 2
-})
+const foods = ref([])
 // 附近演出列表
-let shows = []
-shows.push({
-    "eventId": 3,
-      "name": "国际艺术节开幕式",
-      "type": "艺术节",
-      "description": "汇聚世界各地艺术家的艺术节开幕式，包含多种艺术形式的表演。",
-      "location": "上海东方艺术中心",
-      "time": "2024-07-20 19:30:00",
-      "ticketPrice": 680,
-      "imageUrl": "https://dimg04.c-ctrip.com/images/100l1f000001gqe13EF30_C_1600_1200.jpg"
-})
-
+const shows = ref([])
 // 附近酒店列表
-let hotels = []
-hotels.push({
-
+const hotels = ref([])
+//选中展示游玩路线/游玩攻略中的一栏
+const activeRouteKey = ref()
+const activeTacticsKey = ref()
+//搜索目标城市
+const targetCity = ref('')
+function onSearch() {
+    axios({
+        method: 'post',
+        url: `http://localhost:8080/cities/city?city_name=${targetCity.value}`,
+        headers: {  
+            'Content-Type': 'application/x-www-form-urlencoded'  
+        },
+    }).then((result)=>{
+        //可能有点问题  还没测试
+        if(result.data.status === '0'){
+            router.push({ name : 'cityDetail', params: { cityName : cityName } })
+        }else{
+            message.error({
+                content:()=> `${result.data.msg}`,
+                style: {
+                marginTop: '10vh',
+                }
+            })
+        }
+    }).catch(function(error){
+        console.log(error);
+    })
+}
+//评论排序类型
+const commentOrderType = ref()
+//在加载页面前获取数据
+onBeforeMount(()=>{
+    //根据城市名获取城市信息
+    axios({
+        method: 'get',
+        url: `http://localhost:8080/cities/city?city_name=${cityName.cityName}`,
+        headers: {
+            'Content-Type' : 'application/x-www-form-urlencoded'
+        },
+    }).then((result)=>{
+        detailInstance.value = result.data.data
+        //必玩景点数组处理
+        detailInstance.value.mustVisit = detailInstance.value.mustVisit.replace(/[\[\]]/,'').split('、')
+        // 图片数组处理
+        let pattern = /[\[\]]/g
+        detailInstance.value.imageUrl = detailInstance.value.imageUrl.replace(pattern,'').split(',')
+    }).catch(function(error){
+        console.log(error);
+    })
+    //根据城市名获取城市相关景区
+    axios({
+        method: 'get',
+        url: `http://localhost:8080/cities/scenicSpots?city_name=${cityName.cityName}`,
+        headers: {
+            'Content-Type' : 'application/x-www-form-urlencoded'
+        },
+    }).then((result)=>{
+        sceneList.value = result.data.data
+        //处理列表中各个景点的imageUrl的值
+        let pattern = /[\[\]]/g
+        for(let i = 0; i < sceneList.value.length; i++){
+            sceneList.value[i].imageUrl = sceneList.value[i].imageUrl.replace(pattern,'').split(',')[0]
+        }
+    }).catch(function(error){
+        console.log(error);
+    })
+    //根据城市名获取附近酒店
+    axios({
+        method: 'get',
+        url: `http://localhost:8080/hotels/searchHotelByCity?city_name=${cityName.cityName}`,
+        headers: {
+            'Content-Type' : 'application/x-www-form-urlencoded'
+        },
+    }).then((result)=>{
+        console.log(result);
+        if(result.data.status === 0){
+            hotels.value = result.data.data
+        }else{
+            message.error({
+                content: () => '系统繁忙,请稍后再试',
+                style: {
+                    marginTop: '10vh'
+                }
+            })
+        }
+    }).catch(function(error){
+        console.log(error);
+    })
+    //根据城市名获取附近美食
+    axios({
+        method: 'get',
+        url: `http://localhost:8080/cities/foods?city_name=${cityName.cityName}`,
+        headers: {
+            'Content-Type' : 'application/x-www-form-urlencoded'
+        },
+    }).then((result)=>{
+        if(result.data.status === 0){
+            foods.value = result.data.data
+        }else{
+            message.error({
+                content: () => '系统繁忙,请稍后再试',
+                style: {
+                    marginTop: '10vh'
+                }
+            })
+        }
+    }).catch(function(error){
+        console.log(error);
+    })
+    //根据城市名查询附近演出
+    axios({
+        method: 'get',
+        url: `http://localhost:8080/events/findByCity?city_name=${cityName.cityName}`,
+        headers: {
+            'Content-Type' : 'application/x-www-form-urlencoded'
+        },
+    }).then((result)=>{
+        if(result.data.status === 0){
+            shows.value = result.data.data
+        }else{
+            message.error({
+                content: () => '系统繁忙,请稍后再试',
+                style: {
+                    marginTop: '10vh'
+                }
+            })
+        }
+    }).catch(function(error){
+        console.log(error);
+    })
+    //根据城市名查询城市游玩路线
+    axios({
+        method: 'get',
+        url: `http://localhost:8080/route/city?city_name=${cityName.cityName}`,
+        headers: {
+            'Content-Type' : 'application/x-www-form-urlencoded'
+        },
+    }).then((result)=>{
+        if(result.data.status === 0){
+            travelRoutes.value = result.data.data
+        }else{
+            message.error({
+                content: () => '系统繁忙,请稍后再试',
+                style: {
+                    marginTop: '10vh'
+                }
+            })
+        }
+    }).catch(function(error){
+        console.log(error);
+    })
+    //根据城市名查询游玩攻略
+    axios({
+        method: 'get',
+        url: `http://localhost:8080/travelGuides/city?city_name=${cityName.cityName}`,
+        headers: {
+            'Content-Type' : 'application/x-www-form-urlencoded'
+        },
+    }).then((result)=>{
+        if(result.data.status === 0){
+            travelTactics.value = result.data.data
+            console.log("游玩攻略");
+            console.log(travelTactics);
+            console.log(travelTactics.value);
+        }else{
+            message.error({
+                content: () => '系统繁忙,请稍后再试',
+                style: {
+                    marginTop: '10vh'
+                }
+            })
+        }
+    }).catch(function(error){
+        console.log(error);
+    })
+    //根据城市名获取用户评论(默认评论排序是智能排序)
+    axios({
+        method: 'get',
+        url: `http://localhost:8080/travelGuides/city?city_name=${cityName.cityName}`,
+        headers: {
+            'Content-Type' : 'application/x-www-form-urlencoded'
+        },
+    }).then((result)=>{
+        if(result.data.status === 0){
+            commentRatingSortedData.value = result.data.data
+            console.log("评分排序评论");
+            console.log(commentRatingSortedData);
+            console.log(commentRatingSortedData.value);
+        }else{
+            message.error({
+                content: () => '系统繁忙,请稍后再试',
+                style: {
+                    marginTop: '10vh'
+                }
+            })
+        }
+    }).catch(function(error){
+        console.log(error);
+    })
+    //根据城市名获取用户评论(按时间排序)
+    axios({
+        method: 'get',
+        url: `http://localhost:8080/travelGuides/city?city_name=${cityName.cityName}`,
+        headers: {
+            'Content-Type' : 'application/x-www-form-urlencoded'
+        },
+    }).then((result)=>{
+        if(result.data.status === 0){
+            commentTimeSortedData.value = result.data.data
+            console.log("评分排序评论");
+            console.log(commentTimeSortedData);
+            console.log(commentTimeSortedData.value);
+        }else{
+            message.error({
+                content: () => '系统繁忙,请稍后再试',
+                style: {
+                    marginTop: '10vh'
+                }
+            })
+        }
+    }).catch(function(error){
+        console.log(error);
+    })
 })
 </script>
 
@@ -314,12 +362,12 @@ hotels.push({
                 <span style="font-size: 28px;">TouristSystem</span>
             </div>
             <div class="search-box">
-                <a-input-search v-model:value="value" placeholder="input search text" size="medium" enter-button
+                <a-input-search v-model:value="targetCity" placeholder="请输入目标城市" size="medium" enter-button
                     @search="onSearch" />
             </div>
-            <a-menu class="detail-menu" v-model:selectedKeys="current" mode="horizontal" :items="navItems" />
         </a-layout-header>
         <a-layout-content style="padding: 0 50px;display: flex;flex-wrap: wrap;">
+            <!-- 面包屑导航栏 -->
             <a-breadcrumb style="height: 80px;display: flex;align-items: center;padding-left: 100px;">
                 <a-breadcrumb-item href="">
                     <home-outlined />
@@ -331,23 +379,15 @@ hotels.push({
             </a-breadcrumb>
             <section class="info-wrapper">
                 <div class="info-image-container">
-                    <a-carousel arrows dots-class="slick-dots slick-thumb" dot-position="right">
+                    <a-carousel arrows dots-class="slick-dots slick-thumb" dot-position="right" autoplay>
                         <template #customPaging="props">
                             <a>
                                 <img :src="getImgUrl(props.i)" />
                             </a>
                         </template>
-                        <div v-for="imageItem in detailInstance.imageUrl.length" :key="imageItem">
-                            <img :src="getImgUrl(imageItem - 1)" />
+                        <div v-for="(imageItem,index) in detailInstance.imageUrl" :key="index">
+                            <img :src="imageItem" />
                         </div>
-                        <!-- <a-image :preview="{ visible: false }" v-for="item in imgUrl.length" :key="item"
-                                class="img-preview" :src="getImgUrl(item - 1)" @click="visible = true" />
-                            <div >
-                                <a-image-preview-group :preview="{ visible, onVisibleChange: vis => (visible = vis) }">
-                                    <a-image v-for="item in imgUrl.length" :key="item" class="img-preview"
-                                        :src="getImgUrl(item - 1)" />
-                                </a-image-preview-group>
-                            </div> -->
                     </a-carousel>
                 </div>
                 <div class="info-content-container">
@@ -367,8 +407,9 @@ hotels.push({
 
                     <div style="text-align: left;margin: 10px 0;">
                         <span style="margin-right: 20px;width: 80px;display: inline-block;">必逛景点:</span>
-                        <span v-for="(mustItem,index) of detailInstance.mustVisit" :key="index">{{ mustItem[index]
-                            }}</span>
+                        <span v-for="(mustItem,index) of detailInstance.mustVisit" :key="index" style="margin-right: 10px;">
+                            {{ mustItem }}
+                        </span>
                     </div>
 
                     <div style="position: absolute;bottom: 0;">
@@ -380,26 +421,11 @@ hotels.push({
 
             <!-- 左部区域 -->
             <section class="left-area-wrapper">
-                <!-- 描述信息 -->
-                <!-- <section class="description-wrapper">
-                    <div class="description-container">
-                        <div class="introduction-container">
-                            <h2>介绍</h2>
-                            <p>{{ detailInstance.description }}</p>
-                        </div>
-                        <div class="time-container">
-                            <h2>开放时间</h2>
-                            <p style="min-height: 4vh;margin: 0;">{{ detailInstance.openTime.openDays }} &nbsp; {{
-                                detailInstance.openTime.openHours }}</p>
-                        </div>
-                    </div>
-                </section> -->
-
                 <!-- 游玩线路 -->
                 <section class="route-wrapper">
                     <h2 style="margin: 0;text-align: left;padding: 20px;padding-bottom: 0;">相关游玩路线</h2>
                     <div class="route-container">
-                        <a-collapse v-model:activeKey="activeKey" :bordered="false"
+                        <a-collapse v-model:activeKey="activeRouteKey" :bordered="false"
                             style="background: rgb(255, 255, 255)">
                             <template #expandIcon="{ isActive }">
                                 <RightCircleOutlined :rotate="isActive ? 90 : 0" />
@@ -415,32 +441,9 @@ hotels.push({
                                     </div>
                                     <div>
                                         <a-timeline mode="alternate">
-                                            <a-timeline-item v-for="route of routeItem.routes">{{ route.timing }}:{{
-                                                route.content }}</a-timeline-item>
-                                            <!-- <a-timeline-item color="green">Solve initial network problems
-                                                2015-09-01</a-timeline-item>
-                                            <a-timeline-item>
-                                                <template #dot>
-                                                    <ClockCircleOutlined style="font-size: 16px" />
-                                                </template>
-                                                Sed ut perspiciatis unde omnis iste natus error sit voluptatem
-                                                accusantium
-                                                doloremque
-                                                laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore
-                                                veritatis
-                                                et
-                                                quasi architecto
-                                                beatae vitae dicta sunt explicabo.
+                                            <a-timeline-item v-for="(item,index) in routeItem.routes" :key="index">
+                                                {{ item.timing }}:{{item.content }}
                                             </a-timeline-item>
-                                            <a-timeline-item color="red">Network problems being solved
-                                                2015-09-01</a-timeline-item>
-                                            <a-timeline-item>Create a services site 2015-09-01</a-timeline-item>
-                                            <a-timeline-item>
-                                                <template #dot>
-                                                    <ClockCircleOutlined style="font-size: 16px" />
-                                                </template>
-                                                Technical testing 2015-09-01
-                                            </a-timeline-item> -->
                                         </a-timeline>
                                     </div>
                                 </div>
@@ -453,7 +456,7 @@ hotels.push({
                 <section class="tactics-wrapper">
                     <h2 style="margin: 0;text-align: left;padding: 20px;padding-bottom: 0;">游玩攻略</h2>
                     <div class="tactics-container">
-                        <a-collapse v-model:activeKey="activeKey" :bordered="false"
+                        <a-collapse v-model:activeKey="activeTacticsKey" :bordered="false"
                             style="background: rgb(255, 255, 255)">
                             <template #expandIcon="{ isActive }">
                                 <RightCircleOutlined :rotate="isActive ? 90 : 0" />
@@ -467,8 +470,8 @@ hotels.push({
                                             style="height: 50%;width: 100%;display: flex;justify-content: space-between;">
                                             <h2>{{ tacticsItem.title }}</h2>
                                             <div style="padding-top: 5px;">
-                                                <a-tag color="#f50" v-for="tag in tacticsItem.tags"
-                                                    style="height: 25px;line-height: 25px;">{{ tag }}</a-tag>
+                                                <a-tag color="#f50" v-for="(item,index) in tacticsItem.tags" :key="index"
+                                                    style="height: 25px;line-height: 25px;">{{ item }}</a-tag>
                                             </div>
                                         </div>
                                         <div
@@ -531,9 +534,9 @@ hotels.push({
                             </div>
                         </div>
                         <!-- 展示评论 -->
-                        <a-tabs v-model:activeKey="activeKey">
+                        <a-tabs v-model:activeKey="commentOrderType">
                             <a-tab-pane key="1" tab="智能排序">
-                                <a-comment v-for="comment in commentTimeSortedData">
+                                <a-comment v-for="(comment,index) in commentRatingSortedData" :key="index">
                                     <template #actions>
                                         <span key="comment-basic-like">
                                             <a-tooltip title="Like">
@@ -586,7 +589,7 @@ hotels.push({
                                     @change="onChange" />
                             </a-tab-pane>
                             <a-tab-pane key="2" tab="时间排序" force-render>
-                                <a-comment v-for="comment in commentTimeSortedData">
+                                <a-comment v-for="(comment,index) in commentTimeSortedData" :key="index">
                                     <template #actions>
                                         <span key="comment-basic-like">
                                             <a-tooltip title="Like">
@@ -650,9 +653,9 @@ hotels.push({
                 <section class="scene-wrapper">
                     <h2 style="margin: 0;text-align: left;padding: 20px;padding-bottom: 0;">著名景点</h2>
                     <div class="scene-container">
-                        <a href="" class="scene-item" v-for="scene in sceneList" :key="scene.id"
+                        <a href="" class="scene-item" v-for="(scene,index) in sceneList" :key="index"
                             style="display: flex;height: 12vh;width: 100%;margin-bottom: 10px;color: #000;">
-                            <img :src="scene.imageUrl[0]" alt="" style="width: 12vh;height: 100%;object-fit: fill;">
+                            <img :src="scene.imageUrl" alt="" style="width: 12vh;height: 100%;object-fit: fill;">
                             <div
                                 style="width: calc(100% - 12vh);height: 100%;padding-left: 10px;text-align: left;display: flex;flex-direction: column;">
                                 <h2>{{ scene.name }}</h2>
@@ -671,7 +674,7 @@ hotels.push({
                                     <span style="padding-right: 20px;">{{ scene.number }}条点评</span>
                                 </div>
                                 <div style="display: flex;width: 100%;">
-                                    <span>营业时间: {{ scene.openTime.openingHours }}</span>
+                                    <span>营业时间: {{ scene.openingHours }}</span>
                                 </div>
                             </div>
                         </a>
@@ -743,14 +746,14 @@ hotels.push({
                                 style="width: calc(100% - 12vh);height: 100%;padding-left: 10px;text-align: left;display: flex;flex-direction: column;">
                                 <h2>{{ hotel.name }}</h2>
                                 <div style="display: flex;width: 100%;justify-content: space-between;">
-                                    <span>{{ hotel.type }}</span>
-                                    <span>￥{{ hotel.ticketPrice }}/人</span>
+                                    <span>{{ hotel.rating }}</span>
+                                    <span>￥{{ hotel.averageCost }}/人</span>
                                 </div>
                                 <div style="display: flex;width: 100%;">
-                                    <span>地点: {{ hotel.location }}</span>
+                                    <span>地点: {{ hotel.address }}</span>
                                 </div>
                                 <div style="display: flex;width: 100%;">
-                                    <span>时间: {{ hotel.time }}</span>hotel
+                                    <span>时间: 全天</span>
                                 </div>
                             </div>
                         </a>
@@ -759,16 +762,14 @@ hotels.push({
             </section>
 
         </a-layout-content>
-
-        <a-layout-footer :style="{ textAlign: 'center' }">
-            Tourist System ©2024 Created by CSU-SoftwareEngineer-2204
-        </a-layout-footer>
     </a-layout>
 
 </template>
 
 <style scoped>
-
+.layout {
+    margin-top: 80px;
+}
 .detail-header {
     padding: 0 150px 0 100px;
     position: relative;
@@ -1021,7 +1022,7 @@ nav li {
 .scene-wrapper {
     /* display: inline-block; */
     width: 100%;
-    height: 50vh;
+    height: 60vh;
     background-color: #fff;
 }
 .scene-container {
@@ -1029,6 +1030,8 @@ nav li {
     height: 100%;
     padding: 20px;
     padding-top: 10px;
+    max-height: 485px;
+    overflow-y: auto;
 }
 .scene-item:hover {
     cursor: pointer;
@@ -1046,6 +1049,8 @@ nav li {
     height: 100%;
     padding: 20px;
     padding-top: 10px;
+    overflow-y: auto;
+    max-height: 485px;
 }
 .food-item:hover {
     cursor: pointer;
@@ -1054,7 +1059,7 @@ nav li {
 /* 演出推荐 */
 .show-wrapper {
     width: 100%;
-    height: 60vh;
+    height: 40vh;
     margin-top: 4vh;
     background-color: #fff;
 }
@@ -1080,6 +1085,8 @@ nav li {
     height: 100%;
     padding: 20px;
     padding-top: 10px;
+    overflow-y: auto;
+    max-height: 485px;
 }
 .hotel-item:hover {
     cursor: pointer;

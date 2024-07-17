@@ -1,11 +1,34 @@
 <script setup>
-import { reactive, ref } from 'vue';
-import router from "../../router"
-import { message } from 'ant-design-vue';
-import { LoadingOutlined } from '@ant-design/icons-vue'
-import axios from 'axios'
-//定义省市信息
-const regionList = [
+  import { ref, reactive } from 'vue';
+  import { useUserStore } from '../../store/userStore'
+  import { PlusOutlined } from '@ant-design/icons-vue'
+  import { message } from 'ant-design-vue';
+  import axios from 'axios';
+  // import {
+  //   LoadingOutlined,
+  //   plusOutlined
+  // } from '@ant-design/icons-vue';
+  const userStore =  useUserStore();
+  //true--表示不能修改   false--表示可以修改
+  const componentDisabled = ref(true);
+  //用户个人信息
+  const userInfo = ref({
+    userId : userStore.userInfo.userId,
+    username : userStore.userInfo.username,
+    password : userStore.userInfo.password,
+    email : userStore.userInfo.email,
+    phone : userStore.userInfo.phone,
+    nickname : userStore.userInfo.nickname,
+    avatar : userStore.userInfo.avatar,
+    gender : userStore.userInfo.gender,
+    address : userStore.userInfo.address,
+    age : userStore.userInfo.age,
+    bio : userStore.userInfo.bio,
+    token : userStore.userInfo.token,
+    role : userStore.userInfo.role
+  })
+  //地区信息
+  const regionList = [
   {
     value: '北京',
     label: '北京',
@@ -1625,412 +1648,194 @@ const regionList = [
     label: '中国澳门',
   },
 ]
-//接收表单数据
-const registerUserData = reactive({
-  nickname: '',
-  password: '',
-  gender: '男',
-  age: '',
-  confirmpassword: '',
-  email: '',
-  bio: '',
-  address: '北京',
-  phone: '',
-  phone: '',
-  validateCode: ''
-})
-const usernameMsg = ref('')
-const passwordMsg = ref('')
-const validateCodeMsg = ref('')
-const emailMsg = ref('')
-//请求服务器地址
-const serverURL = 'http://localhost:8080'
-//注册
-function register() {
+  //取消修改时还原原信息
+  function restoreUserInfo() {
+    userInfo.value.userId = userStore.userInfo.userId,
+    userInfo.value.username = userStore.userInfo.username,
+    userInfo.value.password = userStore.userInfo.password,
+    userInfo.value.email = userStore.userInfo.email,
+    userInfo.value.phone = userStore.userInfo.phone,
+    userInfo.value.nickname = userStore.userInfo.nickname,
+    userInfo.value.avatar = userStore.userInfo.avatar,
+    userInfo.value.gender = userStore.userInfo.gender,
+    userInfo.value.address = userStore.userInfo.address,
+    userInfo.value.age = userStore.userInfo.age,
+    userInfo.value.bio = userStore.userInfo.bio,
+    userInfo.value.token = userStore.userInfo.token,
+    userInfo.value.role = userStore.userInfo.role
+  }
+  const labelCol = {
+    style: {
+      width: '150px',
+    },
+  };
+  const wrapperCol = {
+    span: 14,
+  };
+  //请求服务器地址
+  const serverURL = 'http://localhost:8080'
+  // 提交修改个人信息
+function submitModifyInfo() {
   const params = {
-    username: registerUserData.username,
-    nickname: registerUserData.nickname,
-    password: registerUserData.password,
-    gender: registerUserData.gender,
-    age: registerUserData.age,
-    email: registerUserData.email,
-    bio: registerUserData.bio,
-    address: registerUserData.address,
-    phone: registerUserData.phone,
-    verifyCode: registerUserData.validateCode 
+    username: userInfo.username,
+    nickname: userInfo.nickname,
+    password: userInfo.password,
+    gender: userInfo.gender,
+    age: userInfo.age,
+    email: userInfo.email,
+    bio: userInfo.bio,
+    address: userInfo.address,
+    phone: userInfo.phone, 
+    avatar: userInfo.avatar
   }
   axios({
     method: 'post',
-    url: serverURL+'/user/register',
+    url: serverURL + '/user/modifyUserInfo',
     headers: {
       'Content-Type': 'application/x-www-form-urlencoded'
     },
     data: new URLSearchParams(params).toString(),
-  }).then((result)=>{
-    console.log(result);
-    //注册成功
-    if(result.data.status === 0){
+  }).then((result) => {
+    //修改成功
+    if(result.data.status === '0'){
+      //修改成功后还需要修改store中的个人信息
+      userStore.setUserInfo(params)
+      console.log("修改后用户信息");
+      console.log(userStore.userInfo);
       message.success({
-        content: () => `${result.data.msg}`,
-        style: {
-          marginTop: '10vh',
-        }
-      })
-      router.push("/login");
-    }else{
-      //注册失败
-      message.error({
-        content:()=> `${result.data.msg}`,
-        style: {
-          marginTop: '10vh',
-        }
-      })
-    }
-    
-  }).catch(function(error){
-    console.log(error);
-  })
-}
-//返回登录界面
-function returnLogin() {
-  router.push('/login')
-}
-//检查用户名是否已经存在
-function isUsernameExit() {
-  const params = {
-    username: registerUserData.username
-  }
-  axios({
-    method: 'post',
-    url: serverURL+'/user/checkUser',
-    headers: {
-      'Content-Type': 'application/x-www-form-urlencoded'
-    },
-    data: new URLSearchParams(params).toString()
-  }).then((result)=>{
-    console.log(result);
-    //请求成功
-    if(result.data.status === 12){
-      usernameMsg.value =  result.data.msg
-    }else{
-      console.log("请求失败,"+result);
-    }
-  }).catch(function(error){
-    console.log(error);
-  })
-}
-//检查两次密码是否一致
-function checkPassword() {
-  if(registerUserData.password !== registerUserData.confirmpassword){
-    passwordMsg.value = '两次输入密码不一致'
-  }
-}
-//重置表单信息
-function resetForm() {
-  registerUserData.value.username = '';
-  registerUserData.value.nickname = '';
-  registerUserData.value.password = '';
-  registerUserData.value.gender = '';
-  registerUserData.value.age = '';
-  registerUserData.value.address = '';
-  registerUserData.value.confirmPassword= '';
-  registerUserData.value.email = '';
-  registerUserData.value.phone = '';
-  // registerUserData.value.avatar = '';
-  registerUserData.value.bio = '';
-  registerUserData.value.validateCode = '';
-}
-//获取验证码
-function getValidateCode() {
-  const params = {
-    email:registerUserData.email
-  }
-  axios({
-    method: 'post',
-    url: serverURL+'/user/verifyCode/register',
-    headers: {
-      'Content-Type': 'application/x-www-form-urlencoded'
-    },
-    data: new URLSearchParams(params).toString()
-  }).then((result)=>{
-    console.log(result);
-    if(result.data.status === 0){
-      message.success({
-      content: ()=> `${result.data.data}`,
+      content: ()=> `${result.data.msg}`,
       style: {
         marginTop: '10vh'
       }
       })
     }else{
       message.error({
-        content: ()=> `${result.data.data}`,
+        content: ()=> `${result.data.msg}`,
         style: {
           marginTop: '10vh'
         }
       })
     }
+
+    console.log(result);
   }).catch(function(error){
     console.log(error);
   })
 }
-//上传图片
+//表格是否可以修改
+function changeDisabled() {
+  //true--表示不能修改   false--表示可以修改
+  componentDisabled.value = componentDisabled.value ? false : true;
+  if(componentDisabled.value === true){
+    //取消修改后还原数据
+    restoreUserInfo()
+  }
+}
+
+const loading = ref(false)
+//将图片转成base64编码
 function getBase64(img, callback) {
   const reader = new FileReader();
   reader.addEventListener('load', () => callback(reader.result));
   reader.readAsDataURL(img);
 }
-const fileList = ref([]);
-const loading = ref(false);
-const imageUrl = ref('');
-const handleChange = info => {
-  if (info.file.status === 'uploading') {
+//上传图片前的处理
+function beforeUpload(file){
+  const isJpgOrPng = file.type === 'image/jpeg' || file.type === 'image/png' || file.type === 'image/gif' || file.type === 'image/jpg';
+    if (!isJpgOrPng) {
+      return this.$message.error('请上传正确的图片格式!');
+    }
+    const isLt2M = file.size / 1024 / 1024 < 2;
+    if (!isLt2M) {
+      return this.$message.error('图片大小必须小于2MB!');
+    }
+}
+//上传图片
+function avatarUpload(info) {
+  if(info.file.status === 'uploading') {
     loading.value = true;
     return;
   }
-  if (info.file.status === 'done') {
-    // Get this url from response in real world.
+  if(info.file.status === 'done') {
     getBase64(info.file.originFileObj, base64Url => {
-      imageUrl.value = base64Url;
+      userInfo.value.avatar = base64Url;
       loading.value = false;
-    });
+    })
   }
-  if (info.file.status === 'error') {
+  if(info.file.status === 'error') {
     loading.value = false;
-    message.error('upload error');
+    message.error('上传失败,请稍后再试')
   }
-};
-const beforeUpload = file => {
-  const isJpgOrPng = file.type === 'image/jpeg' || file.type === 'image/png';
-  if (!isJpgOrPng) {
-    message.error('You can only upload JPG file!');
-  }
-  const isLt2M = file.size / 1024 / 1024 < 2;
-  if (!isLt2M) {
-    message.error('Image must smaller than 2MB!');
-  }
-  return isJpgOrPng && isLt2M;
-};
-//表单布局
-const layout = {
-  labelCol: {
-    span: 5,
-  },
-  wrapperCol: {
-    span: 16,
-  },
-};
+}
 </script>
 
 <template>
-  <section style="height: 150%">
-    <!-- 背景图片 -->
-    <img src="../../assets/image/bg1.jpg" class="bg">
-    <!-- 注册框 -->
-    <div class="login">
-      <h2>注册</h2>
-      <a-form
-        ref="formRef"
-        :model="registerUserData"
-        labelAlign="right"
-        v-bind="layout"
-        style="height: 100%;"
-      >
-        <!-- <a-form-item ref="name" label="用户名" name="name" class="formitemStyle">
-          <a-input v-model:value="registerUserData.username" @blur="isUsernameExit" placeholder="请输入用户名" style="height: 40px;"/>
-          <div><p style="color: #f51427;">{{ usernameMsg }}</p></div>
-        </a-form-item> -->
-        
-        <a-form-item ref="name" label="昵称" name="name" class="formitemStyle">
-          <a-input v-model:value="registerUserData.nickname"  placeholder="请输入昵称" style="height: 40px;"/>
-        </a-form-item>
-
-        <a-form-item ref="name" label="bio" name="name" class="formitemStyle">
-          <a-input v-model:value="registerUserData.bio"  placeholder="请输入bio" style="height: 40px;"/>
-        </a-form-item>
-
-        <a-form-item
-          label="密码"
-          name="password"
-          class="formitemStyle"
-        >
-          <a-input-password v-model:value="registerUserData.password" placeholder="请输入密码" style="height: 40px;"/>
-        </a-form-item>
-
-        <a-form-item
-          label="确认密码"
-          name="password"
-          class="formitemStyle"
-        >
-          <a-input-password v-model:value="registerUserData.confirmpassword" placeholder="再次输入密码" style="height: 40px;" @blur="checkPassword"/>
-          <div><p style="color: #f51427;">{{ passwordMsg }}</p></div>
-        </a-form-item>
-
-        <a-form-item label="性别" class="formitemStyle">
-          <a-radio-group v-model:value="registerUserData.gender" style="align-items: flex-start;">
-            <a-radio value="男">男</a-radio>
-            <a-radio value="女">女</a-radio>
-          </a-radio-group>
-        </a-form-item>
-
-        <a-form-item ref="name" label="年龄" name="name" class="formitemStyle">
-          <a-input v-model:value="registerUserData.age" size="large" placeholder="请输入年龄" style="height: 40px;"/>
-        </a-form-item>
-
-        <a-form-item ref="name" label="地区" name="name" class="formitemStyle">
-          <a-cascader
-            v-model:value="registerUserData.address"
-            style="width: 100%;"
-            size="large"
-            :options="regionList"
-            placeholder="请选择地区"
-          />
-        </a-form-item>
-
-        <a-form-item ref="name" label="邮箱" name="name" class="formitemStyle">
-          <a-input v-model:value="registerUserData.email" size="large" placeholder="请输入邮箱" style="height: 40px;"/>
-          <div><p style="color: #f51427;">{{ emailMsg }}</p></div>
-        </a-form-item>
-
-        <a-form-item ref="name" label="电话" name="name" class="formitemStyle">
-          <a-input v-model:value="registerUserData.phone"  placeholder="请输入电话号码" style="height: 40px;"/>
-        </a-form-item>
-
-        <a-form-item label="验证码" class="formitemStyle">
-          <a-input-search
-            v-model:value="registerUserData.validateCode"
-            placeholder="请输入验证码"
-            size="large"
-            @search="getValidateCode"
-          >
-            <template #enterButton>
-              <a-button>获取验证码</a-button>
-            </template>
-          </a-input-search>
-          <div><p style="color: #f51427;">{{ validateCodeMsg }}</p></div>
-        </a-form-item>
-        
-        <a-form-item :wrapper-col="{ span: 14, offset: 5 }">
-          <a-button type="primary" @click="register" >注册用户</a-button>
-          <a-button style="margin-left: 10px" @click="resetForm" >重置信息</a-button>
-        </a-form-item>
-      </a-form>
-      <a @click="returnLogin" style="margin-top: 50px;">已有账户,返回登录</a>
-    </div>
-  </section>
+  <div class="formContainer">
+    <a-form
+    :label-col="labelCol"
+    :wrapper-col="wrapperCol"
+    layout="horizontal"
+    :disabled="componentDisabled"
+    style="max-width: 700px;"
+    >
+      <a-form-item label="用户名">
+        <a-input v-model:value="userInfo.username" />
+      </a-form-item>
+      <a-form-item label="昵称">
+        <a-input v-model:value="userInfo.nickname" />
+      </a-form-item>
+      <a-form-item label="性别">
+        <a-radio-group v-model:value="userInfo.gender">
+          <a-radio value="男">男</a-radio>
+          <a-radio value="女">女</a-radio>
+        </a-radio-group>
+      </a-form-item>
+      <a-form-item label="年龄">
+        <a-input v-model:value="userInfo.age" />
+      </a-form-item>
+      <a-form-item label="电话号码">
+        <a-input v-model:value="userInfo.phone" />
+      </a-form-item>
+      <a-form-item label="描述">
+        <a-input v-model:value="userInfo.bio" />
+      </a-form-item>
+      <a-form-item label="地区">
+        <a-cascader
+          v-model:value="userInfo.address"
+          style="width: 100%;"
+          size="large"
+          :options="regionList"
+          placeholder="请选择地区"
+        />
+      </a-form-item>
+      <a-form-item label="描述">
+        <a-textarea :rows="4" v-model:value="userInfo.bio"/>
+      </a-form-item>
+      
+      <a-form-item label="上传头像">
+        <!-- user/avatar -->
+        <a-upload list-type="picture-card" :show-upload-list="false" :before-upload="beforeUpload" @change="avatarUpload">
+          <img v-if="userInfo.avatar" :src="userInfo.avatar" alt="avatar" />
+          <div v-else>
+            <loading-outlined v-if="loading"></loading-outlined>
+            <plus-outlined v-else></plus-outlined>
+            <div class="ant-upload-text">Upload</div>
+          </div>
+        </a-upload>
+      </a-form-item>
+    </a-form>
+  </div>
+  <div style="margin-bottom: 5px;">
+    <a-button @click="changeDisabled" >{{ componentDisabled ? '修改信息' : '取消修改' }}</a-button>
+    <a-button @click="submitModifyInfo" >提交修改</a-button>
+  </div>
 </template>
 
 <style scoped>
-
-* {
-  margin: 0 0 0 0;
-  padding: 0;
-  box-sizing: border-box;
-  font-family: 'Poppins', sans-serif;
-}
-section {
-  position: relative;
-  width: 100%;
-  height: 100vh;
-  max-height: 100%;
+.formContainer {
   display: flex;
   justify-content: center;
   align-items: center;
-  overflow-x: hidden;
-}
-section .bg {
-  position: absolute;
-  background-size: cover;
-  background-position: center;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 130%;
-  object-fit: cover;
-}
-.login {
-  position: relative;
-  width: 500px;
-  height: 110%;
-  padding: 30px;
-  margin-top: 20%;
-  border-radius: 20px;
-  background: rgba(255, 255, 255,0.25);
-  backdrop-filter: blur(3px);
-  display: flex;
-  flex-direction: column;
-  gap: 15px;
-  box-shadow: 0 25px 50px rgba(0, 0, 0, 0.2);
-}
-.login h2 {
-  position: relative;
-  width:100%;
-  text-align: center;
-  font-size: 2.5em;
-  font-weight:600;
-  color:#8f2c24;
-  margin-bottom: 3px;
-}
-.login h3 {
-  position: relative;
-  width: 100%;
-  text-align: left;
-  font-size: 1em;
-  font-weight: 100;
-  color: #8f2c24;
-  margin-bottom: 3px;
-}
-span .ant-input-wrapper {
-  height:100%
-}
-.login .passwordInput {
-  height: 80%;
-  position: relative;
-  width: 100%;
-  padding: 10px 20px;
-  outline: none;
-  font-size:1.25em;
-  color:#8f2c24;
-  border-radius: 5px;
-  background: #fff;
-  border:none;
-  margin-bottom: 3px;
-}
-.login .inputbox input {
-  position: relative;
-  width: 100%;
-  height: 80%;
-  padding: 15px 20px;
-  outline: none;
-  font-size:1.25em;
-  color:#8f2c24;
-  border-radius: 5px;
-  background: #fff;
-  border:none;
-}
-.login .option {
-  position: relative;
-}
-.formitemStyle {
-  margin: 2px 0 2px 0;
-  height: 9%
-}
-
-:deep(.ant-upload) {
-  height: 40px;
-}
-
-.avatar-uploader > .ant-upload {
-  background: #8f2c24;
-  width: 128px;
-  height: 30px;
-}
-.ant-upload-select-picture-card i {
-  font-size: 32px;
-  color: #8f2c24;
-}
-
-.ant-upload-select-picture-card .ant-upload-text {
-  margin-top: 8px;
-  color: #8f2c24;
+  min-height: 80vh; /* 使用视口高度 */
 }
 </style>

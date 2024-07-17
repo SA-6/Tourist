@@ -17,6 +17,7 @@ import router from '../router'
 import { useUserStore } from '../store/userStore'
 import { message } from 'ant-design-vue';
 import axios from 'axios';
+import UserDetail from './User/UserDetail.vue';
 //使用pinia中定义的store
 const userStore = useUserStore()
 //读取用户数据
@@ -36,19 +37,19 @@ const items = reactive([
     title: '主页',
   },
   {
-    key: '/mainPage/hotelPage',
+    key: '/mainPage/hotel/hotelPage',
     icon: () => h(BankOutlined),
     label: '酒店',
     title: '酒店',
   },
   {
-    key: '/mainPage/scenePage',
+    key: '/mainPage/scene/scenePage',
     icon: () => h(PictureOutlined),
     label: '景区',
     title: '景区',
   },
   {
-    key: '/mainPage/cityPage',
+    key: '/mainPage/city/cityPage',
     icon: () => h(EnvironmentOutlined),
     label: '城市',
     title: '城市',
@@ -60,12 +61,12 @@ const items = reactive([
     title: '投诉',
     children: [
       {
-        key: '/mainPage/complainRecord',
+        key: '/mainPage/complain/complainRecord',
         label: '记录',
         title: '记录',
       },
       {
-        key: '/mainPage/complainAdd',
+        key: '/mainPage/complain/complainAdd',
         label: '添加',
         title: '添加',
       },
@@ -90,39 +91,140 @@ const backgroundStyle = ref('transparent');
 const btnStyle = ref('transparent')
 //设置布局的高度
 const ALayOutHeight = ref('300%')
+//设置头部导航栏是否可见
+const isVisible = ref(true)
 // 服务器请求路径
-const serverURL = 'http://192.168.40.121:8080'
+const serverURL = 'http://192.168.51.153:8080'
 //选择菜单项后触发的事件
 function selectMenuItem(item) {
-  console.log(item.key);
   current.value = [item.key];
-}
-
-watchEffect(() => {
-  changeRouterView(current.value[0])
-})
-
-function changeRouterView(key) {
-  if(['/mainPage/complainRecord', '/mainPage/complainAdd', '/mainPage/notice'].includes(key)){
-    console.log("进入判断，调整高度");
-    layoutContentStyle.value.marginTop = '80px';
-    ALayOutHeight.value = '100%';
-    btnStyle.value = '#76EEC6'
-    if(!layoutContentStyle.value.isHeightSet){
-      layoutContentStyle.value.isHeightSet = true;
-      layoutContentStyle.value.height = '90%';
-    }
+  //changeRouterView(current.value[0])
+  if(item.key === '/logout'){
+    //退出登录 清空用户信息
+    userStore.clearUserInfo()
+    localStorage.clear()
+    router.push('/mainPage/overview')
   }else{
-    btnStyle.value = 'transparent';
-    layoutContentStyle.value.marginTop = '0';
-    ALayOutHeight.value = '500%'
-    if(layoutContentStyle.value.isHeightSet){
-      delete layoutContentStyle.value.height
-      layoutContentStyle.value.isHeightSet = false
-    }
+    router.push(item.key)
   }
-  router.push(key);
+  
 }
+
+// function changeRouterView(key) {
+//   switch (key) {
+//     case '/mainPage/complain/complainRecord':
+//     case '/mainPage/complain/complainAdd':
+//     case '/mainPage/notice':
+//     case '/mainPage/user/userDetail':
+//       layoutContentStyle.value.marginTop = '80px';
+//       ALayOutHeight.value = '100%';
+//       btnStyle.value = '#76EEC6';
+//       if (!layoutContentStyle.value.isHeightSet) {
+//         layoutContentStyle.value.isHeightSet = true;
+//         layoutContentStyle.value.height = '90%';
+//       }
+//       break;
+//     case '/mainPage/city/cityPage':
+//       btnStyle.value = 'transparent';
+//       layoutContentStyle.value.marginTop = '0';
+//       ALayOutHeight.value = '600%';
+//       if (layoutContentStyle.value.isHeightSet) {
+//         delete layoutContentStyle.value.height;
+//         layoutContentStyle.value.isHeightSet = false;
+//       }
+//       break;
+//     case '/logout':
+//       //退出登录 清空用户信息
+//       userStore.clearUserInfo()
+//       break;
+//     default:
+//       btnStyle.value = 'transparent';
+//       layoutContentStyle.value.marginTop = '0';
+//       ALayOutHeight.value = '400%';
+//       if (layoutContentStyle.value.isHeightSet) {
+//         delete layoutContentStyle.value.height;
+//         layoutContentStyle.value.isHeightSet = false;
+//       }
+//       break;
+//   }
+//   router.push(key);
+// }
+
+// 添加路由守卫
+router.beforeEach((to, from, next) => {
+  let sign = false;
+  switch (to.path) {
+    case '/mainPage/complain/complainRecord':
+    case '/mainPage/complain/complainAdd':
+    case '/mainPage/notice':
+    case '/mainPage/user/userDetail':
+      layoutContentStyle.value.marginTop = '80px';
+      ALayOutHeight.value = '100%';
+      btnStyle.value = '#76EEC6';
+      if (!layoutContentStyle.value.isHeightSet) {
+        layoutContentStyle.value.isHeightSet = true;
+        layoutContentStyle.value.height = '90%';
+      }
+      sign = true
+      break;
+    case '/mainPage/city/cityPage':
+      btnStyle.value = 'transparent';
+      layoutContentStyle.value.marginTop = '0';
+      ALayOutHeight.value = '600%';
+      if (layoutContentStyle.value.isHeightSet) {
+        delete layoutContentStyle.value.height;
+        layoutContentStyle.value.isHeightSet = false;
+      }
+      sign = true
+      break;
+    case '/mainPage/hotel/hotelPage':
+      btnStyle.value = 'transparent';
+      layoutContentStyle.value.marginTop = '0';
+      ALayOutHeight.value = '483%';
+      if (layoutContentStyle.value.isHeightSet) {
+        delete layoutContentStyle.value.height;
+        layoutContentStyle.value.isHeightSet = false;
+      }
+      sign = true
+      break;
+      case '/mainPage/scene/scenePage':
+      btnStyle.value = 'transparent';
+      layoutContentStyle.value.marginTop = '0';
+      ALayOutHeight.value = '530%';
+      if (layoutContentStyle.value.isHeightSet) {
+        delete layoutContentStyle.value.height;
+        layoutContentStyle.value.isHeightSet = false;
+      }
+      sign = true
+      break;
+    case '/mainPage/city/cityDetail':
+    case '/mainPage/hotel/hotelDetail':
+    case '/mainPage/hotel/hotelReserve':
+    case '/mainPage/scene/sceneDetail':
+      console.log("case判断");
+      isVisible.value = false;
+      ALayOutHeight.value = '400%'
+      if (!layoutContentStyle.value.isHeightSet) {
+          layoutContentStyle.value.isHeightSet = true;
+          layoutContentStyle.value.height = '400%';
+      }else{
+        layoutContentStyle.value.height = '400%'
+      }
+      sign = true
+      break;
+    default:
+      btnStyle.value = 'transparent';
+      layoutContentStyle.value.marginTop = '0';
+      ALayOutHeight.value = '400%';
+      if (layoutContentStyle.value.isHeightSet) {
+        delete layoutContentStyle.value.height;
+        layoutContentStyle.value.isHeightSet = false;
+      }
+      sign = true
+      break;
+  }
+  next();
+});
 
 // 滚动条监听事件
 // window.addEventListener('scroll',function(){
@@ -143,24 +245,6 @@ function changeRouterView(key) {
 function login() {
   router.push("/login")
 }
-
-onMounted(()=>{
-  console.log(userInfo);
-})
-const handleMenuClick = e => {
-  console.log(e);
-  if(e.key === '0'){
-    console.log("跳转登录页面");
-    router.push("/login")
-  }else if(e.key === '1'){
-    //跳转个人信息页面
-    console.log("跳转个人信息页面");
-    router.push("/mainPage/userInfo")
-  }else{
-    //退出登录 清空用户信息
-    userStore.clearUserInfo()
-  }
-};
 // 显示聊天机器人
 const open = ref(false)
 function showChatBot() {
@@ -196,12 +280,27 @@ function sendInfoToBot() {
       console.log(JSON.stringify(response));
   });
 }
+function afterOpenChange() {
+
+}
+
 </script>
 
 <template>
   <!-- 页面整体布局 -->
   <a-layout :style="{height: ALayOutHeight}">
-    <a-layout-header :style="{ position: 'fixed', zIndex: 10, width: '100%', height: '80px', background: 'transparent', padding: '0 0 0 0', display: 'flex', background: 'transparent', backdropFilter: 'blur(10px)'}">
+    <a-layout-header :style="
+      { position: 'fixed', 
+        zIndex: 10, 
+        width: '100%', 
+        height: '80px', 
+        background: 'transparent', 
+        padding: '0 0 0 0', 
+        display: 'flex', 
+        background: 'transparent', 
+        backdropFilter: 'blur(10px)',
+        }"
+        v-show="isVisible">
       <!-- LOGO -->
       <div class="logo">
         <img src="../../src/assets/image/mtfy.jpg" />
@@ -222,26 +321,29 @@ function sendInfoToBot() {
         <template v-else>
           未登录用户
         </template>
-        {{userInfo.nickname}}
         <template #overlay>
-          <a-menu @click="handleMenuClick">
-            <a-menu-item key="0">
+          <a-menu @click="selectMenuItem">
+            <a-menu-item key="/login" v-if="userInfo.username !== '' ? false : true">
               <ContactsOutlined />
               登录
             </a-menu-item>
             <template v-if="userInfo.username !== '' ? true : false">
-              <a-menu-item key="1">
+              <a-menu-item key="/mainPage/user/userDetail">
                 <UserOutlined />
                 个人信息
               </a-menu-item>
-              <a-menu-item key="2">
+              <a-menu-item key="/logout">
                 <UserOutlined />
                 退出登录
               </a-menu-item>
             </template>
           </a-menu>
         </template>
-      <template #icon><a-avatar src="https://www.antdv.com/assets/logo.1ef800a8.svg" size="large"/></template>
+        <!-- https://www.antdv.com/assets/logo.1ef800a8.svg -->
+      <template #icon>
+        <a-avatar :src="userInfo.avatar === '' ? 'https://www.antdv.com/assets/logo.1ef800a8.svg' : userInfo.avatar" 
+          size="large"/>
+        </template>
     </a-dropdown-button>
     </a-layout-header>
     <a-layout-content :style="layoutContentStyle">
