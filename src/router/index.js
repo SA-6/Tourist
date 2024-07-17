@@ -20,13 +20,7 @@ import ComplainAdd from '../components/Complain/ComplainAdd.vue'
 import CityPage from '../components/City/CityPage.vue'
 import CityDetail from '../components/City/CityDetail.vue'
 import Notice from '../components/Notice/Notice.vue'
-<<<<<<< HEAD
 import UserDetail from '../components/User/UserDetail.vue'
-// import Test from '../components/Test.vue'
-=======
-import UserInfo from '../components/User/UserInfo.vue'
-import Test from '../components/Test.vue'
->>>>>>> 32daa192ca3494f31845c4ce5f586e32c37187f9
 import ResetPassword from '../components/User/ResetPassword.vue'
 //设置路由
 const routes = [
@@ -70,11 +64,6 @@ const routes = [
         component: SceneDetail,
         props: true
       },
-      // {
-      //   path: 'scene/sceneDetail',
-      //   name: 'sceneDetail',
-      //   component: SceneDetail,
-      // },
       {
         path: 'city/cityPage',
         name: 'cityPage',
@@ -116,14 +105,6 @@ const routes = [
         name: 'hotelReserve',
         component: HotelReserve
       },
-<<<<<<< HEAD
-=======
-      {
-        path: 'hotelDetail',
-        name: 'hotelDetail',
-        component: HotelDetail
-      },
->>>>>>> 32daa192ca3494f31845c4ce5f586e32c37187f9
     ]
   },
 ]

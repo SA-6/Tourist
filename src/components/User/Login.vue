@@ -115,39 +115,6 @@ function getValidateCode() {
           <input type="text" placeholder="Username" v-model="userData.username">
         </div>
         <h3>密码</h3>
-        <div class="inputbox">
-          <a-input-password
-            class="passwordInput"
-            v-model:value="userData.password"
-            placeholder="Input Password"
-            :visibility-toggle="true"
-            font-size="1.25em"
-            color="#8f2c24"
-          />
-        </div>
-        <h3>验证码</h3>
-        <div class="inputbox">
-          <a-input-search
-              v-model:value="userData.validateCode"
-              placeholder="请输入验证码"
-              size="large"
-              @search="getValidateCode"
-            >
-              <template #enterButton>
-                <a-button>获取验证码</a-button>
-              </template>
-            </a-input-search>
-        </div>
-        <div class="inputbox">
-          <input type="submit" value="登录" id="btn" @click="login">
-        </div>
-        <!-- 额外选项 -->
-        <div class="options">
-          <a @click="resetPassword">忘记密码</a> | 
-          <a @click="registerUser">注册新用户</a>
-        </div>
-      </div>
-      <h3>密码</h3>
       <div class="inputbox">
         <a-input-password
           class="passwordInput"
@@ -181,6 +148,7 @@ function getValidateCode() {
         <a @click="registerUser">注册新用户</a>
       </div>
     </div>
+     
   </section>
 </template>
 
