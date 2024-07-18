@@ -12,6 +12,11 @@ import {
     LikeOutlined,
     DislikeFilled,
     DislikeOutlined,
+    UserOutlined,
+    CarryOutOutlined,
+    BellOutlined,
+    PhoneOutlined
+
 
 } from  '@ant-design/icons-vue';
 
@@ -63,7 +68,10 @@ const navLast = {
     name : '景区'
 }
 //接收CityPage传递来的参数
-const cityName = defineProps(['cityName'])
+const cityParams = defineProps({
+    cityName: String,
+    cityId: Number
+})
 // 详情展示
 const detailInstance = ref({})
 const navContent = detailInstance.value.name;
@@ -84,27 +92,10 @@ function getStatusDescription() {
 
 // 游玩线路部分
 const travelRoutes = ref([])
-for(const route of travelRoutes.value) {
-    route.routes = []
-    let sections = route.content.split(/[;]/).filter(item => item !== '')
-    for(const section of sections) {
-        let [ timing , content ] = section.split(/[:]/);
-        route.routes.push({
-            'timing'  : timing,
-            'content' : content
-        })
-    }
-}
 
 // 游玩攻略部分
 const travelTactics = ref([])
 
-for(const item of travelTactics.value) {
-    item.tags = item.tags.split(/[,]/)
-}
-function getTravelTactics() {
-    return ;
-}
 
 // 用户评论部分
 const commentRatingSortedData = ref([]);
@@ -112,19 +103,23 @@ const commentTimeSortedData = ref([]);
 
 dayjs.extend(relativeTime);
 const likes = ref(0);
-const dislikes = ref(0);
-const action = ref();
-const like = () => {
-  likes.value = 1;
-  dislikes.value = 0;
-  action.value = 'liked';
+const action = ref([]);
+const like = (index) => {
+  if(action.value[index]  === 'liked'){
+    likes.value = likes.value - 1;
+    action.value[index] = '';
+  }else{
+    likes.value = likes.value + 1;
+    action.value[index] = 'liked';
+  }
 };
-const dislike = () => {
-  likes.value = 0;
-  dislikes.value = 1;
-  action.value = 'disliked';
+const dislike = (index) => {
+    if(action.value[index] === 'disliked'){
+        action.value[index] = ''
+    }else{
+        action.value[index] = 'disliked';
+    }
 };
-
 const current1 = ref(1);
 const current2 = ref(2);
 const onChange = pageNumber => {
@@ -199,12 +194,12 @@ function onSearch() {
 }
 //评论排序类型
 const commentOrderType = ref()
-//在加载页面前获取数据
-onBeforeMount(()=>{
-    //根据城市名获取城市信息
+
+//根据城市名获取城市信息
+function getCityDetailInfo(){
     axios({
         method: 'get',
-        url: `http://localhost:8080/cities/city?city_name=${cityName.cityName}`,
+        url: `http://localhost:8080/cities/city?city_name=${cityParams.cityName}`,
         headers: {
             'Content-Type' : 'application/x-www-form-urlencoded'
         },
@@ -218,10 +213,12 @@ onBeforeMount(()=>{
     }).catch(function(error){
         console.log(error);
     })
-    //根据城市名获取城市相关景区
+}
+//根据城市名获取城市相关景区
+function getSceneByCityName(){
     axios({
         method: 'get',
-        url: `http://localhost:8080/cities/scenicSpots?city_name=${cityName.cityName}`,
+        url: `http://localhost:8080/cities/scenicSpots?city_name=${cityParams.cityName}`,
         headers: {
             'Content-Type' : 'application/x-www-form-urlencoded'
         },
@@ -235,10 +232,12 @@ onBeforeMount(()=>{
     }).catch(function(error){
         console.log(error);
     })
-    //根据城市名获取附近酒店
+}
+//根据城市名获取附近酒店
+ function getHotelByCityName(){
     axios({
         method: 'get',
-        url: `http://localhost:8080/hotels/searchHotelByCity?city_name=${cityName.cityName}`,
+        url: `http://localhost:8080/hotels/searchHotelByCity?city_name=${cityParams.cityName}`,
         headers: {
             'Content-Type' : 'application/x-www-form-urlencoded'
         },
@@ -257,10 +256,12 @@ onBeforeMount(()=>{
     }).catch(function(error){
         console.log(error);
     })
-    //根据城市名获取附近美食
+ }
+//根据城市名获取附近美食
+ function getFoodByCityName(){
     axios({
         method: 'get',
-        url: `http://localhost:8080/cities/foods?city_name=${cityName.cityName}`,
+        url: `http://localhost:8080/cities/foods?city_name=${cityParams.cityName}`,
         headers: {
             'Content-Type' : 'application/x-www-form-urlencoded'
         },
@@ -278,10 +279,12 @@ onBeforeMount(()=>{
     }).catch(function(error){
         console.log(error);
     })
-    //根据城市名查询附近演出
+ }
+//根据城市名查询附近演出
+ function getShowByCityName(){
     axios({
         method: 'get',
-        url: `http://localhost:8080/events/findByCity?city_name=${cityName.cityName}`,
+        url: `http://localhost:8080/events/findByCity?city_name=${cityParams.cityName}`,
         headers: {
             'Content-Type' : 'application/x-www-form-urlencoded'
         },
@@ -299,16 +302,29 @@ onBeforeMount(()=>{
     }).catch(function(error){
         console.log(error);
     })
-    //根据城市名查询城市游玩路线
+ }
+//根据城市名查询城市游玩路线
+ function getRouteByCityName(){
     axios({
         method: 'get',
-        url: `http://localhost:8080/route/city?city_name=${cityName.cityName}`,
+        url: `http://localhost:8080/route/city?city_name=${cityParams.cityName}`,
         headers: {
             'Content-Type' : 'application/x-www-form-urlencoded'
         },
     }).then((result)=>{
         if(result.data.status === 0){
             travelRoutes.value = result.data.data
+            for (const route of travelRoutes.value) {
+                route.routes = []
+                let sections = route.content.split(/[。]/).filter(item => item !== '')
+                for (const section of sections) {
+                    let [timing, content] = section.split(/[:]/);
+                    route.routes.push({
+                        'timing': timing,
+                        'content': content
+                    })
+                }
+            }
         }else{
             message.error({
                 content: () => '系统繁忙,请稍后再试',
@@ -320,16 +336,24 @@ onBeforeMount(()=>{
     }).catch(function(error){
         console.log(error);
     })
-    //根据城市名查询游玩攻略
+ }
+//根据城市名查询游玩攻略
+function  getTacticsByCityName(){
     axios({
         method: 'get',
-        url: `http://localhost:8080/travelGuides/city?city_name=${cityName.cityName}`,
+        url: `http://localhost:8080/travelGuides/city?city_name=${cityParams.cityName}`,
         headers: {
             'Content-Type' : 'application/x-www-form-urlencoded'
         },
     }).then((result)=>{
         if(result.data.status === 0){
             travelTactics.value = result.data.data
+            for (const item of travelTactics.value) {
+                item.tags = item.tags.split(/[,]/)
+            }
+            function getTravelTactics() {
+                return;
+            }
             console.log("游玩攻略");
             console.log(travelTactics);
             console.log(travelTactics.value);
@@ -344,14 +368,18 @@ onBeforeMount(()=>{
     }).catch(function(error){
         console.log(error);
     })
-    //根据城市名获取用户评论(默认评论排序是智能排序)
+}
+//根据城市名获取用户评论(默认评论排序是智能排序)
+ function getUserCommentByRating(){
     axios({
         method: 'get',
-        url: `http://localhost:8080/travelGuides/city?city_name=${cityName.cityName}`,
+        url: `http://localhost:8080/cities/${cityParams.cityId}/comment/like`,
         headers: {
             'Content-Type' : 'application/x-www-form-urlencoded'
         },
     }).then((result)=>{
+        console.log("城市高赞评论");
+        console.log(result);
         if(result.data.status === 0){
             commentRatingSortedData.value = result.data.data
             console.log("评分排序评论");
@@ -368,19 +396,22 @@ onBeforeMount(()=>{
     }).catch(function(error){
         console.log(error);
     })
-}
+ }
 //根据城市名获取用户评论(按时间排序)
 function getUserCommentByTime() {
     axios({
         method: 'get',
-        url: `http://localhost:8080/travelGuides/city?city_name=${cityName.cityName}`,
+        // /cities/{id}/comment/like
+        url: `http://localhost:8080/cities/${cityParams.cityId}/comment/time`,
         headers: {
             'Content-Type' : 'application/x-www-form-urlencoded'
         },
     }).then((result)=>{
+        console.log("城市时间评论");
+        console.log(result);
         if(result.data.status === 0){
             commentTimeSortedData.value = result.data.data
-            console.log("评分排序评论");
+            console.log("时间排序评论");
             console.log(commentTimeSortedData);
             console.log(commentTimeSortedData.value);
         }else{
@@ -506,7 +537,7 @@ onBeforeMount(()=>{
                                     <div style="width: 20%;height: 100%;">
                                         {{ routeItem.description }}
                                     </div>
-                                    <div>
+                                    <div style="width: 80%;height: 100%;">
                                         <a-timeline mode="alternate">
                                             <a-timeline-item v-for="(item,index) in routeItem.routes" :key="index">
                                                 {{ item.timing }}:{{item.content }}
@@ -607,48 +638,42 @@ onBeforeMount(()=>{
                                     <template #actions>
                                         <span key="comment-basic-like">
                                             <a-tooltip title="Like">
-                                                <template v-if="action === 'liked'">
-                                                    <LikeFilled @click="like" />
+                                                <template v-if="action[index] === 'liked'">
+                                                    <LikeFilled @click="like(index)" />
                                                 </template>
                                                 <template v-else>
-                                                    <LikeOutlined @click="like" />
+                                                    <LikeOutlined @click="like(index)" />
                                                 </template>
                                             </a-tooltip>
                                             <span style="padding-left: 8px; cursor: auto">
-                                                {{ likes }}
+                                                {{ action[index] === 'disliked' ? comment.cityReview.likeNum : comment.cityReview.likeNum + 1 }}
                                             </span>
                                         </span>
                                         <span key="comment-basic-dislike">
                                             <a-tooltip title="Dislike">
-                                                <template v-if="action === 'disliked'">
-                                                    <DislikeFilled @click="dislike" />
+                                                <template v-if="action[index] === 'disliked'">
+                                                    <DislikeFilled @click="dislike(index)" />
                                                 </template>
                                                 <template v-else>
-                                                    <DislikeOutlined @click="dislike" />
+                                                    <DislikeOutlined @click="dislike(index)" />
                                                 </template>
                                             </a-tooltip>
-                                            <span style="padding-left: 8px; cursor: auto">
-                                                {{ dislikes }}
-                                            </span>
+                                            
                                         </span>
                                         <span key="comment-basic-reply-to">Reply to</span>
                                     </template>
-                                    <template #author><a>Han Solo</a></template>
+                                    <template #author><a>{{ comment.username }}</a></template>
                                     <template #avatar>
-                                        <a-avatar src="https://joeschmoe.io/api/v1/random" alt="Han Solo" />
+                                        <a-avatar :src="comment.avatar" alt="Han Solo" />
                                     </template>
                                     <template #content>
                                         <p>
-                                            We supply a series of design principles, practical patterns and high quality
-                                            design
-                                            resources (Sketch and Axure), to help people create their product prototypes
-                                            beautifully and
-                                            efficiently.
+                                            {{ comment.cityReview.comment }}
                                         </p>
                                     </template>
                                     <template #datetime>
-                                        <a-tooltip :title="dayjs().format('YYYY-MM-DD HH:mm:ss')">
-                                            <span>{{ dayjs().fromNow() }}</span>
+                                        <a-tooltip :title="comment.cityReview.time">
+                                            <span>{{ comment.cityReview.time }}</span>
                                         </a-tooltip>
                                     </template>
                                 </a-comment>
@@ -660,48 +685,44 @@ onBeforeMount(()=>{
                                     <template #actions>
                                         <span key="comment-basic-like">
                                             <a-tooltip title="Like">
-                                                <template v-if="action === 'liked'">
-                                                    <LikeFilled @click="like" />
+                                                <template v-if="action[index] === 'liked'">
+                                                    <LikeFilled @click="like(index)" />
                                                 </template>
                                                 <template v-else>
-                                                    <LikeOutlined @click="like" />
+                                                    <LikeOutlined @click="like(index)" />
                                                 </template>
                                             </a-tooltip>
                                             <span style="padding-left: 8px; cursor: auto">
-                                                {{ likes }}
+                                                {{ action[index] === 'disliked' ? comment.cityReview.likeNum : comment.cityReview.likeNum + 1 }}
                                             </span>
                                         </span>
                                         <span key="comment-basic-dislike">
                                             <a-tooltip title="Dislike">
-                                                <template v-if="action === 'disliked'">
-                                                    <DislikeFilled @click="dislike" />
+                                                <template v-if="action[index] === 'disliked'">
+                                                    <DislikeFilled @click="dislike(index)" />
                                                 </template>
                                                 <template v-else>
-                                                    <DislikeOutlined @click="dislike" />
+                                                    <DislikeOutlined @click="dislike(index)" />
                                                 </template>
                                             </a-tooltip>
-                                            <span style="padding-left: 8px; cursor: auto">
+                                            <!-- <span style="padding-left: 8px; cursor: auto">
                                                 {{ dislikes }}
-                                            </span>
+                                            </span> -->
                                         </span>
                                         <span key="comment-basic-reply-to">Reply to</span>
                                     </template>
-                                    <template #author><a>Han Solo</a></template>
+                                    <template #author><a>{{ comment.username }}</a></template>
                                     <template #avatar>
-                                        <a-avatar src="https://joeschmoe.io/api/v1/random" alt="Han Solo" />
+                                        <a-avatar :src="comment.avatar" alt="Han Solo" />
                                     </template>
                                     <template #content>
                                         <p>
-                                            We supply a series of design principles, practical patterns and high quality
-                                            design
-                                            resources (Sketch and Axure), to help people create their product prototypes
-                                            beautifully and
-                                            efficiently.
+                                            {{ comment.cityReview.comment }}
                                         </p>
                                     </template>
                                     <template #datetime>
-                                        <a-tooltip :title="dayjs().format('YYYY-MM-DD HH:mm:ss')">
-                                            <span>{{ dayjs().fromNow() }}</span>
+                                        <a-tooltip :title="comment.cityReview.time">
+                                            <span>{{ comment.cityReview.time }}</span>
                                         </a-tooltip>
                                     </template>
                                 </a-comment>

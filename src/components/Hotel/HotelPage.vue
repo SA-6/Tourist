@@ -14,7 +14,6 @@ import router from '../../router'
 import axios from 'axios';
 
 const baseURL = `http://localhost:8080`
-
 axios.defaults.baseURL = baseURL
 
 
@@ -78,6 +77,7 @@ let recommendHotels = reactive({
 
 // 在组件加载前获取数据
 onMounted(async()=>{
+  console.log("AAAAA");
   // 获取用于界面展示的5个酒店
   await getRecommendHotels()
 })
@@ -98,7 +98,7 @@ async function getRecommendHotels() {
 
 async function onSearchButtonClicked() {
   // console.log(secondCity.value);
-  router.push({
+  await router.push({
     name: 'hotelReserve',
     query: {
       province: province.value,
@@ -117,15 +117,6 @@ async function onSearchButtonClicked() {
         <div>
           <video src="../../assets/video/hotel-bg.mp4" class="hotel-bg-video" autoplay loop muted></video>
         </div>
-        <!-- <div>
-          <img src="../../assets/image/hotelPage1.jpg" class="hotel-main-image">
-        </div>
-        <div>
-          <img src="../../assets/image/hotelPage2.png" class="hotel-main-image">
-        </div>
-        <div>
-          <img src="https://www.pygmy-elephant.com/static/img/home_header.jpg" class="hotel-main-image">
-        </div> -->
 
       </a-carousel>
     </div>
@@ -173,9 +164,8 @@ async function onSearchButtonClicked() {
 
   <!-- 推荐酒店 -->
   <section class="recommendation-wrapper">
-    <div style="height: 12%;margin-bottom: 0;">
-      <h2 style="height: 100%; font-size: 320%;margin-bottom: 0%;padding-top: 50px;">热门酒店</h2>
-      <!-- <p style="display: block;height: 35%;margin: 1% 0 0 0;padding: 0 20%;">这是一段关于推荐酒店内容的介绍</p> -->
+    <div style="height: 8%;margin-bottom: 0;">
+      <h2 style="height: 100%; font-size: 320%;margin-bottom: 0%;padding-top: 20px;">酒店：旅行中的温馨驿站</h2>
     </div>
     <div class="recommendation-container">
       <a-card hoverable class="card-style-top" style="margin-left: 3%;">
@@ -183,11 +173,11 @@ async function onSearchButtonClicked() {
           <img alt="first" style="height: 100%;" :src="recommendHotels.datas[0].imageUrl" />
         </template>
         <a-card-meta style="text-align: left;" :title="recommendHotels.datas[0].name"></a-card-meta>
-        <div>{{ recommendHotels.datas[0].starRating }}</div>
-        <div>{{ recommendHotels.datas[0].rating }}/5</div>
+        <div><a-rate :value="recommendHotels.datas[0].starRating" disabled /></div>
+        <div><span style="font-size: 18px;font-weight: 600;color: rgb(22, 119, 255);">{{ recommendHotels.datas[0].rating }}</span>/5</div>
         <div style="display: flex;justify-content: space-between;">
-          <span>联系方式:{{ recommendHotels.datas[0].contactNumber }}</span>
-          <span>￥{{ recommendHotels.datas[0].averageCost }}</span>
+          <span style="margin-top: 2px;font-size: 16px;">联系方式:{{ recommendHotels.datas[0].contactNumber }}</span>
+          <span style="font-size: 24px;font-weight: 700;color: rgb(22, 119, 255);">￥{{ recommendHotels.datas[0].averageCost }}</span>
         </div>
       </a-card>
       <a-card hoverable class="card-style-top" style="margin-right: 3%;">
@@ -195,11 +185,11 @@ async function onSearchButtonClicked() {
           <img alt="second" style="height: 100%;" :src="recommendHotels.datas[1].imageUrl" />
         </template>
         <a-card-meta style="text-align: left;" :title="recommendHotels.datas[1].name"></a-card-meta>
-        <div>{{ recommendHotels.datas[1].starRating }}</div>
-        <div>{{ recommendHotels.datas[1].rating }}/5</div>
+        <div><a-rate :value="recommendHotels.datas[1].starRating" disabled /></div>
+        <div><span style="font-size: 18px;font-weight: 600;color: rgb(22, 119, 255);">{{ recommendHotels.datas[1].rating }}</span>/5</div>
         <div style="display: flex;justify-content: space-between;">
-          <span>联系方式:{{ recommendHotels.datas[1].contactNumber }}</span>
-          <span>￥{{ recommendHotels.datas[1].averageCost }}</span>
+          <span style="margin-top: 2px;font-size: 16px;">联系方式:{{ recommendHotels.datas[1].contactNumber }}</span>
+          <span style="font-size: 24px;font-weight: 700;color: rgb(22, 119, 255);">￥{{ recommendHotels.datas[1].averageCost }}</span>
         </div>
       </a-card>
       <a-card hoverable class="card-style-bottom">
@@ -207,11 +197,11 @@ async function onSearchButtonClicked() {
           <img alt="example" style="height: 100%;" :src="recommendHotels.datas[2].imageUrl" />
         </template>
         <a-card-meta style="text-align: left;" :title="recommendHotels.datas[2].name"></a-card-meta>
-        <div>{{ recommendHotels.datas[2].starRating }}</div>
-        <div>{{ recommendHotels.datas[2].rating }}/5</div>
+        <div><a-rate :value="recommendHotels.datas[2].starRating" disabled /></div>
+        <div><span style="font-size: 18px;font-weight: 600;color: rgb(22, 119, 255);">{{ recommendHotels.datas[2].rating }}</span>/5</div>
         <div style="display: flex;justify-content: space-between;">
-          <span>联系方式:{{ recommendHotels.datas[2].contactNumber }}</span>
-          <span>￥{{ recommendHotels.datas[2].averageCost }}</span>
+          <span style="margin-top: 2px;font-size: 16px;">联系方式:{{ recommendHotels.datas[2].contactNumber }}</span>
+          <span style="font-size: 24px;font-weight: 700;color: rgb(22, 119, 255);">￥{{ recommendHotels.datas[2].averageCost }}</span>
         </div>
       </a-card>
       <a-card hoverable class="card-style-bottom">
@@ -219,11 +209,11 @@ async function onSearchButtonClicked() {
           <img alt="example" style="height: 100%;" :src="recommendHotels.datas[3].imageUrl" />
         </template>
         <a-card-meta style="text-align: left;" :title="recommendHotels.datas[3].name"></a-card-meta>
-        <div>{{ recommendHotels.datas[3].starRating }}</div>
-        <div>{{ recommendHotels.datas[3].rating }}/5</div>
+        <div><a-rate :value="recommendHotels.datas[3].starRating" disabled /></div>
+        <div><span style="font-size: 18px;font-weight: 600;color: rgb(22, 119, 255);">{{ recommendHotels.datas[3].rating }}</span>/5</div>
         <div style="display: flex;justify-content: space-between;">
-          <span>联系方式:{{ recommendHotels.datas[3].contactNumber }}</span>
-          <span>￥{{ recommendHotels.datas[3].averageCost }}</span>
+          <span style="margin-top: 2px;font-size: 16px;">联系方式:{{ recommendHotels.datas[3].contactNumber }}</span>
+          <span style="font-size: 24px;font-weight: 700;color: rgb(22, 119, 255);">￥{{ recommendHotels.datas[3].averageCost }}</span>
         </div>
       </a-card>
       <a-card hoverable class="card-style-bottom">
@@ -231,11 +221,11 @@ async function onSearchButtonClicked() {
           <img alt="example" style="height: 100%; padding: 0%;margin: 0;" :src="recommendHotels.datas[4].imageUrl" />
         </template>
         <a-card-meta style="text-align: left;" :title="recommendHotels.datas[4].name"></a-card-meta>
-        <div>{{ recommendHotels.datas[4].starRating }}</div>
-        <div>{{ recommendHotels.datas[4].rating }}/5</div>
+        <div><a-rate :value="recommendHotels.datas[4].starRating" disabled /></div>
+        <div><span style="font-size: 18px;font-weight: 600;color: rgb(22, 119, 255);">{{ recommendHotels.datas[4].rating }}</span>/5</div>
         <div style="display: flex;justify-content: space-between;">
-          <span>联系方式:{{ recommendHotels.datas[4].contactNumber }}</span>
-          <span>￥{{ recommendHotels.datas[4].averageCost }}</span>
+          <span style="margin-top: 2px;font-size: 16px;">联系方式:{{ recommendHotels.datas[4].contactNumber }}</span>
+          <span style="font-size: 24px;font-weight: 700;color: rgb(22, 119, 255);">￥{{ recommendHotels.datas[4].averageCost }}</span>
         </div>
       </a-card>
     </div>
@@ -244,62 +234,61 @@ async function onSearchButtonClicked() {
   <!-- 打包旅行 -->
   <section class="package-wrapper">
     <div style="height: 12%;">
-      <h2 style="height: 60%; font-size: 320%;margin-bottom: 0%;margin-top: 50px;">Package tour</h2>
-      <!-- <p style="display: block;height: 35%;margin: 1% 0 0 0;padding: 0 20%;">这是一段关于跟团旅游内容的介绍</p> -->
+      <h2 style="height: 60%; font-size: 320%;margin-bottom: 0%;margin-top: 0px;">多种风格的出行方式</h2>
     </div>
     <div class="package-container">
       <div class="package-content" style="margin-left: 80px;">
-        <a class="package-image" href="" style="background-image: url('/src/assets/image/package2.png');">
+        <router-link class="package-image" :to="{ name : 'cityDetail', params: { cityName : '上海',cityId : 7 } }" style="background-image: url('/src/assets/image/hotel/page1.jpg');">
           <img style="width: 100%;height: 100%;display: none;overflow-clip-margin: content-box;overflow: clip;"
-            src="../../assets/image/package2.png" alt="">
-        </a>
+            src="../../assets/image/hotel/page1.jpg" alt="">
+        </router-link>
         <div class="package-info-top">
-          <p class="package-place">shanghai</p>
-          <p class="package-tour">Maldives Escape incl. Airfare</p>
+          <p class="package-place">上海</p>
+          <p class="package-tour">东方明珠的璀璨之旅</p>
         </div>
         <div class="package-info-bottom">
           <span class="package-date">
             7 Days / 8 Nights
           </span>
-          <a class="package-view" href="">
+          <router-link class="package-view" :to="{ name : 'cityDetail', params: { cityName : '上海',cityId : 7 } }">
             View tour
-          </a>
+          </router-link>
         </div>
       </div>
       <div class="package-content">
-        <a class="package-image" href="" style="background-image: url('/src/assets/image/hotelPage1.jpg');">
+        <router-link class="package-image" :to="{ name : 'cityDetail', params: { cityName : '北京',cityId : 2 } }" style="background-image: url('/src/assets/image/hotel/page2.png');">
           <img style="width: 100%;height: 100%;display: none;overflow-clip-margin: content-box;overflow: clip;"
-            src="../../assets/image/hotelPage1.jpg" alt="">
-        </a>
+            src="../../assets/image/hotel/page2.png" alt="">
+        </router-link>
         <div class="package-info-top">
-          <p class="package-place">Bangkok</p>
-          <p class="package-tour">Maldives Escape incl. Airfare</p>
+          <p class="package-place">北京</p>
+          <p class="package-tour">古都魅力之旅</p>
         </div>
         <div class="package-info-bottom">
           <span class="package-date">
-            7 Days / 8 Nights
+            3 Days / 4 Nights
           </span>
-          <a class="package-view" href="">
+          <router-link class="package-view" :to="{ name : 'cityDetail', params: { cityName : '北京',cityId : 2 } }">
             View tour
-          </a>
+          </router-link>
         </div>
       </div>
       <div class="package-content" style="margin-right: 80px;">
-        <a class="package-image" href="" style="background-image: url('/src/assets/image/hotelPage1.jpg');">
+        <router-link class="package-image" :to="{ name : 'cityDetail', params: { cityName : '成都',cityId : 6 } }" style="background-image: url('/src/assets/image/hotel/page3.png');">
           <img style="width: 100%;height: 100%;display: none;overflow-clip-margin: content-box;overflow: clip;"
-            src="../../assets/image/hotelPage1.jpg" alt="">
-        </a>
+            src="../../assets/image/hotel/page3.png" alt="">
+        </router-link>
         <div class="package-info-top">
-          <p class="package-place">Beijing</p>
-          <p class="package-tour">Maldives Escape incl. Airfare</p>
+          <p class="package-place">成都</p>
+          <p class="package-tour">天府之国的悠闲时光</p>
         </div>
         <div class="package-info-bottom">
           <span class="package-date">
-            7 Days / 8 Nights
+            5 Days / 4 Nights
           </span>
-          <a class="package-view" href="">
+          <router-link class="package-view" :to="{ name : 'cityDetail', params: { cityName : '成都',cityId : 6 } }">
             View tour
-          </a>
+          </router-link>
         </div>
       </div>
     </div>
@@ -315,15 +304,13 @@ async function onSearchButtonClicked() {
     <div class="travel-container">
       <div class="guide-title">
         <h5 style="font-size: 24px;margin: 0;font-weight: 500;">
-          Ready to go?
+          准备好了？
         </h5>
         <h2 style="font-size: 40px;margin: 0;font-weight: 300;transform: up;">
-          Travel guides
+          旅行指引
         </h2>
-        <p style="font-size: 16px;z-index: 2;margin: 20px 0;padding-right: 45%;">
-          Cambodia's geography has played a substantial role in shaping its history. Its central location along the
-          Indochinese Peninsula and relatively flat terrain facilitated the rise of the Khmer Empire which flourished
-          from its base in Angkor for over 500 years
+        <p style="font-size: 18px;z-index: 2;margin: 20px 0;padding-right: 45%;">
+          中国的地理环境在塑造其丰富的历史和文化中发挥了重要作用。中国广袤而多样的地形，从西部白雪皑皑的喜马拉雅山脉延伸到东部富饶的长江流域，对于世界上最古老且持续不断的文明之一的发展至关重要。中国沿古代丝绸之路的战略位置，以及诸如长城这样的强大自然屏障，不仅影响了中国历史的进程，还促进了从秦汉到唐宋等各个朝代的繁荣，每个朝代都为今天中国自豪维护的文化和历史遗产留下了不可磨灭的印记。
         </p>
       </div>
 
@@ -386,6 +373,7 @@ async function onSearchButtonClicked() {
   display: flex;
   justify-content: space-around;
   position: relative;
+  background-color: #fff;
 }
 /* 地点部分 */
 .province-container {
@@ -494,7 +482,7 @@ async function onSearchButtonClicked() {
 /* 酒店推荐部分 */
 .recommendation-wrapper {
   width: 100%;
-  height: 130vh;
+  height: 160vh;
   background-image: url(/src/assets/image/hotelPage3.jpg);
   background-attachment: fixed;
   background-repeat: no-repeat;
@@ -522,7 +510,7 @@ async function onSearchButtonClicked() {
   
 }
 .card-style-bottom {
-  height: 38%;
+  height: 45%;
   width: 30%;
   margin: 1% 0 5% 0;
 }
@@ -540,7 +528,7 @@ async function onSearchButtonClicked() {
   height: 110vh;
   padding-top: 45px;
   padding-bottom: 75px;
-  
+  background-color: rgb(207, 207, 207);
 }
 .package-container {
   position: relative;
@@ -549,6 +537,7 @@ async function onSearchButtonClicked() {
   display: flex;
   justify-content: space-around;
   transition-property: transform;
+  
   /* margin: 0 5%; */
   padding: 0 2%;
 }

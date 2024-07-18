@@ -99,26 +99,11 @@ function getStatusDescription() {
 // 游玩线路部分
 const travelRoutes = ref([])
 
-for(const route of travelRoutes.value) {
-    route.routes = []
-    let sections = route.content.split(/[;；]/).filter(item => item !== '')
-    for(const section of sections) {
-        let [ timing , content ] = section.split(/[:：]/);
-        route.routes.push({
-            'timing'  : timing,
-            'content' : content
-        })
-    }
-}
+
 
 // 游玩攻略部分
 const travelTactics = ref([])
-for(const item of travelTactics.value) {
-    item.tags = item.tags.split(/[,，]/)
-}
-function getTravelTactics() {
-    return ;
-}
+
 
 // 用户评论部分
 const commentRatingSortedData = ref([]);
@@ -402,8 +387,19 @@ function getRouteBySceneName() {
             'Content-Type' : 'application/x-www-form-urlencoded'
         },
     }).then((result)=>{
-        if(result.data.status === 0){
+        if (result.data.status === 0) {
             travelRoutes.value = result.data.data
+            for (const route of travelRoutes.value) {
+                route.routes = []
+                let sections = route.content.split(/[。]/).filter(item => item !== '')
+                for (const section of sections) {
+                    let [timing, content] = section.split(/[:：]/);
+                    route.routes.push({
+                        'timing': timing,
+                        'content': content
+                    })
+                }
+            }
         }else{
             message.error({
                 content: () => '系统繁忙,请稍后再试',
@@ -427,6 +423,12 @@ function getTacticsBySceneName() {
     }).then((result)=>{
         if(result.data.status === 0){
             travelTactics.value = result.data.data
+            for (const item of travelTactics.value) {
+                item.tags = item.tags.split(/[,，]/)
+            }
+            function getTravelTactics() {
+                return;
+            }
         }else{
             message.error({
                 content: () => '系统繁忙,请稍后再试',
@@ -792,8 +794,8 @@ onBeforeMount(()=>{
                                         </p>
                                     </template>
                                     <template #datetime>
-                                        <a-tooltip :title="comment.time">
-                                            <span>{{ comment.time }}</span>
+                                        <a-tooltip :title="comment.scenicReview.time">
+                                            <span>{{ comment.scenicReview.time }}</span>
                                         </a-tooltip>
                                     </template>
                                 </a-comment>
@@ -837,12 +839,12 @@ onBeforeMount(()=>{
                                     </template>
                                     <template #content>
                                         <p>
-                                            {{ comment.comment }}
+                                            {{ comment.scenicReview.comment }}
                                         </p>
                                     </template>
                                     <template #datetime>
-                                        <a-tooltip :title="comment.time">
-                                            <span>{{ dayjs().fromNow() }}</span>
+                                        <a-tooltip :title="comment.scenicReview.time">
+                                            <span>{{ comment.scenicReview.time }}</span>
                                         </a-tooltip>
                                     </template>
                                 </a-comment>

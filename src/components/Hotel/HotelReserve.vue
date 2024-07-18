@@ -13,7 +13,7 @@ import router from '../../router'
 import { RouterLink, useRoute, useRouter } from 'vue-router';
 const route = useRoute()
 
-const baseURL = `http://192.168.104.141:8080`
+const baseURL = `http://localhost:8080`
 axios.defaults.baseURL = baseURL
 
 // defineProps([''])
@@ -202,7 +202,7 @@ const isShow = computed(()=>{
 const handleAreaChange = (tag, areaChecked) => {
   console.log(tag, areaChecked);
 };
-const handleStarChange = async(tag, starChecked) => {
+const handleStarChange = (tag, starChecked) => {
   if (starChecked === true){
     starSelectTags.forEach((value, index) => {
       if (starTagsData[index] !== tag) {
@@ -224,7 +224,7 @@ const handleStarChange = async(tag, starChecked) => {
   // hotelData.value = cityHotels.datas
   // hotelList.value = cityHotels.datas
 };
-const handleCostChange = async(tag, costChecked) => {
+const handleCostChange = (tag, costChecked) => {
   if (costChecked === true){
     costSelectTags.forEach((value, index) => {
       if (costTagsData[index] !== tag) {
@@ -364,6 +364,16 @@ async function onLoadMore(controlIndex) {
   });
   console.log(hotelData.value);
 };
+function onLinkClicked(name,id) {
+  router.push({
+    name : 'hotelDetail',
+    query : {
+      name : name,
+      hotelId : id
+    }
+  })
+}
+
 
 onMounted(async() => {
   initLoading.value = false;
@@ -371,7 +381,7 @@ onMounted(async() => {
   hotelData.value = cityHotels.datas
   hotelList.value = cityHotels.datas
   
-  console.log(hotelData.value);
+  console.log("AAAA",hotelData.value);
 });
 
 
@@ -478,7 +488,8 @@ const historyActiveKey = ref(['1']);
       <div class="hotel-list-area">
         <!-- 已选择的所有标签区域 -->
         <div class="all-choosed-tags-area"
-          style="width: 100%;height: 5vh;display: flex;background-color: #fff;margin-bottom: 10px;padding: 10px;" v-show="isShow">
+          style="width: 100%;height: 5vh;display: flex;background-color: #fff;margin-bottom: 10px;padding: 10px;"
+          v-show="isShow">
           <span style="margin-left: 10px;">已选标签：</span>
           <a-tag closable v-for="(tag, index) in allChoosedTags" :key="index" @close="closeTags(tag)"
             style="border-radius: 0;background-color: rgb(233, 242, 254);color: rgb(40, 125, 250);border: none;">
@@ -504,27 +515,15 @@ const historyActiveKey = ref(['1']);
                   <a-list-item-meta class="hotel-list-content" style="text-align: left;" :key="item.hotelId">
                     <template #title>
                       <!-- 这里换成router-link随后导到详情界面 -->
-                      <RouterLink :to="{
-                        name  : 'hotelDetail',
-                        query : {
-                          name : item.name,
-                          hotelId : item.hotelId
-                        }
-                      }" style="font-size: 20px;margin: 0;font-weight: 800;">
+                      <a @click="onLinkClicked(item.name,item.hotelId)" style="font-size: 20px;margin: 0;font-weight: 800;">
                         {{ item.name }}
-                      </RouterLink>
+                      </a>
                     </template>
                     <template #avatar>
                       <!-- 使用router-link包裹 -->
-                      <RouterLink :to="{
-                        name: 'hotelDetail',
-                        query: {
-                          name: item.name,
-                          hotelId : item.hotelId
-                        }
-                      }">
+                      <a @click="onLinkClicked(item.name,item.hotelId)">
                         <a-avatar :src="item.imageUrl" style="height: 200px;width: 200px;border-radius: 0;" />
-                      </RouterLink>
+                      </a>
 
                     </template>
                     <template #description>
@@ -590,30 +589,19 @@ const historyActiveKey = ref(['1']);
                     <template #renderItem="{ item }">
                       <a-list-item class="hotel-item">
                         <a-skeleton avatar :title="false" :loading="!!item.loading" active>
-                          <a-list-item-meta class="hotelHistory-list-content" style="text-align: left;" :key="item.hotelId">
+                          <a-list-item-meta class="hotelHistory-list-content" style="text-align: left;"
+                            :key="item.hotelId">
                             <template #title>
                               <!-- 这里换成router-link随后导到详情界面 -->
-                              <router-link :to="{
-                                name : 'hotelDetail',
-                                query : {
-                                  name : item.name,
-                                  hotelId : item.hotelId
-                                }
-                              }" style="font-size: 16px;margin: 0;font-weight: 800;">
+                              <a @click="onLinkClicked(item.name,item.hotelId)" style="font-size: 16px;margin: 0;font-weight: 800;">
                                 {{ item.name }}
-                              </router-link>
+                              </a>
                             </template>
                             <template #avatar>
                               <!-- 使用router-link包裹 -->
-                              <router-link :to="{
-                                name: 'hotelDetail',
-                                query: {
-                                  name: item.name,
-                                  hotelId : item.hotelId
-                                }
-                              }">
+                              <a @click="onLinkClicked(item.name,item.hotelId)">
                                 <a-avatar :src="item.imageUrl" style="height: 88px;width: 88px;border-radius: 0;" />
-                              </router-link>
+                              </a>
                             </template>
                             <template #description>
                               <div class="history-hotel-stars" style="font-size: 6px;">
@@ -665,6 +653,7 @@ const historyActiveKey = ref(['1']);
   display: flex;
   justify-content: space-around;
   position: relative;
+  background-color: #fff;
 }
 /* 地点部分 */
 .province-container {

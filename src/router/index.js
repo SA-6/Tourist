@@ -71,7 +71,7 @@ const routes = [
         component: CityPage
       },
       {
-        path: 'city/cityDetail/:cityName',
+        path: 'city/cityDetail/:cityName/:cityId',
         name: 'cityDetail',
         component: CityDetail,
         props: true
@@ -97,18 +97,18 @@ const routes = [
         component: UserDetail
       },
       {
-        path: 'hotelPage',
+        path: 'hotel/hotelPage',
         name : 'hotelPage',
         component: HotelPage
       },
       {
-        path: 'hotelReserve',
+        path: 'hotel/hotelReserve',
         name: 'hotelReserve',
         component: HotelReserve
       },
       {
         path: 'hotel/hotelDetail',
-        name: 'hoteldetail',
+        name: 'hotelDetail',
         component: HotelDetail
       },
       {

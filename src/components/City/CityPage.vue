@@ -15,6 +15,24 @@ const recommendSceneList = recommandData.recommendDataInfo.recommendScene
 //读取城市图片
 const styleList = ref([]);
 const adviceList = ref([])
+const culturalContent = ref([
+    {
+        name : '打铁花：绚烂的民间艺术',
+        introduction : '打铁花是中国一种独特的民间艺术表演，历史悠久，起源于北宋。表演者将熔化的铁水泼向空中，铁花四溅，形成璀璨夺目的视觉效果，象征着中国古代劳动人民的智慧和创造力。这项技艺不仅是一种视觉享受，也富含深厚的文化和民俗意义，常在节日庆典中表演，用以祈求吉祥和驱邪。随着时间推移，打铁花的保护和传承成为文化保护的重要内容。',
+        image : ['../../assets/image/city/cultural1.png','../../assets/image/city/cultural2.png']
+    },
+    {
+        name : '打铁花：绚烂的民间艺术',
+        introduction : '打铁花是中国一种独特的民间艺术表演，历史悠久，起源于北宋。表演者将熔化的铁水泼向空中，铁花四溅，形成璀璨夺目的视觉效果，象征着中国古代劳动人民的智慧和创造力。这项技艺不仅是一种视觉享受，也富含深厚的文化和民俗意义，常在节日庆典中表演，用以祈求吉祥和驱邪。随着时间推移，打铁花的保护和传承成为文化保护的重要内容。',
+        image : ['../../assets/image/city/cultural1.png','../../assets/image/city/cultural2.png']
+    },
+    {
+        name : '打铁花：绚烂的民间艺术',
+        introduction : '打铁花是中国一种独特的民间艺术表演，历史悠久，起源于北宋。表演者将熔化的铁水泼向空中，铁花四溅，形成璀璨夺目的视觉效果，象征着中国古代劳动人民的智慧和创造力。这项技艺不仅是一种视觉享受，也富含深厚的文化和民俗意义，常在节日庆典中表演，用以祈求吉祥和驱邪。随着时间推移，打铁花的保护和传承成为文化保护的重要内容。',
+        image : ['../../assets/image/city/cultural1.png','../../assets/image/city/cultural2.png']
+    },
+
+])
 onBeforeMount(() => {
 //获取城市旅游攻略
   for (let i = 0; i < recommendCityList.length; i++) {
@@ -38,9 +56,9 @@ onBeforeMount(() => {
 //跳转城市详情页
 // !!!!!!
 // 将CityDeatil设置成一级路由且使用router.push()的参数必须通过name来获取页面  否则页面可以跳转但是内容为空
-function goToCityDetail(cityName) {
+function goToCityDetail(cityName,cityId) {
     console.log('跳转前');
-    router.push({ name : 'cityDetail', params: { cityName : cityName } })
+    router.push({ name : 'cityDetail', params: { cityName : cityName, cityId : cityId } })
     console.log('跳转后');
 }
 //目标城市
@@ -56,7 +74,7 @@ function searchCity() {
     }).then((result)=>{
         console.log(result);
         if(result.data.status === '0'){
-            router.push({ name : 'cityDetail', params: { cityName : cityName } })
+            router.push({ name : 'cityDetail', params: { cityName : targetCity.value, cityId : result.data.data.cityId } })
         }else{
             message.error({
                 content:()=> `${result.data.msg}`,
@@ -123,7 +141,7 @@ function searchCity() {
                         
                     </a> -->
                     <!-- style="background-image: url(item.imageUrl);" -->
-                    <img class="hot-city-image" :src=item.imageUrl @click="goToCityDetail(item.name)" >
+                    <img class="hot-city-image" :src=item.imageUrl @click="goToCityDetail(item.name,item.cityId)" >
                 </div>
                 <div class="hot-city-description">
                     <h4 class="hot-city-name">
@@ -149,7 +167,7 @@ function searchCity() {
                         
                     </a> -->
                     <!-- style="background-image: url(item.imageUrl)" -->
-                    <img class="hot-city-image" :src=item.imageUrl @click="goToCityDetail(item.name)" >
+                    <img class="hot-city-image" :src=item.imageUrl @click="goToCityDetail(item.name,item.cityId)" >
                 </div>
             </div>
         </div>
@@ -157,7 +175,7 @@ function searchCity() {
 
     <!-- 城市热门景点 -->
     <section class="city-scenenary-wrapper">
-        <h2 class="city-scenenary-title">
+        <h2 class="city-scenenary-title" style="font-weight: 800;">
             城市热门景点
         </h2>
         <div class="city-scenenary-container">
@@ -472,9 +490,9 @@ function searchCity() {
 /* 城市景点 */
 .city-scenenary-wrapper {
     width: 100%;
-    height: 140vh;
+    height: 180vh;
     padding: 4% 0;
-    margin-top: 10px;
+    margin-top: 100px;
 }
 .city-scenenary-title {
     height: 10%;
@@ -484,8 +502,9 @@ function searchCity() {
     background-color: #fff;
     color: #000;
     padding: 0 30%;
+    padding-top: 30px;
     margin: 0;
-    margin-top: 50px;
+    margin-top: 80px;
 }
 .city-scenenary-container {
     width: 80%;

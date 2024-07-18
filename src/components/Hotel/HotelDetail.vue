@@ -24,7 +24,7 @@ import router from '../../router'
 import { useRoute } from 'vue-router';
 const route = useRoute()
 
-const baseURL = `http://192.168.104.141:8080`
+const baseURL = `http://localhost:8080`
 axios.defaults.baseURL = baseURL
 
 
@@ -74,17 +74,23 @@ const navItems = ref([
 // 面包屑导航
 const navLast = {
     URL : '',
-    name : '景区'
+    name : '酒店'
 }
-//接收CityPage传递来的参数
-const cityName = defineProps(['cityName'])
-// 详情展示
-const detailInstance = ref({})
-const navContent = detailInstance.value.name;
 
-function getImgUrl(i){
-    return detailInstance.value.imageUrl[i];
+function onHomeLinkClicked() {
+    router.push({
+        name : 'overview'
+    })
 }
+function onLastLinkClicked() {
+    router.push({
+        name : 'hotelPage'
+    })
+}
+
+// 详情展示
+const navContent = route.query.name;
+
 const visible = ref(false);
 
 // 获取评论数量
@@ -130,6 +136,7 @@ async function getRoomList(hotelId,category='全部',max=10000,min=-1) {
             min      : min
         }
     })
+    console.log(response.data);
     try {
         if (response.data.status === 0) {
             return response.data.data
@@ -141,7 +148,7 @@ async function getRoomList(hotelId,category='全部',max=10000,min=-1) {
 
 // 筛选部分
 const roomsData = reactive(['单人房','双人房','套房','经济房','商务房','行政套房','豪华大床房','标准双床房','湖景房','山景套房'])
-const costData  = reactive(['100以下','100-300','300-500','500-700','700-900','900-1100','1100-1600','1600以上'])
+const costData  = reactive(['¥100以下','¥100-300','¥300-500','¥500-700','¥700-900','¥900-1100','¥1100-1600','¥1600以上'])
 
 let choosedRoom = ref()
 let choosedCost = ref()
@@ -150,17 +157,18 @@ let choosedCost = ref()
 watch(choosedRoom,async ()=>{
     const room = choosedRoom.value
     const cost = costTagToValue(choosedCost.value)
-    roomList = await getRoomList(hotelId,room,cost.max,cost.min)
-    roomData = await getRoomList(hotelId,room,cost.max,cost.min)
-    console.log(roomList);
+    roomList.value = await getRoomList(hotelId,room,cost.max,cost.min)
+    roomData.value = await getRoomList(hotelId,room,cost.max,cost.min)
+    console.log(roomList.value);
 })
 
 watch(choosedCost,async ()=>{
     const room = choosedRoom.value
     const cost = costTagToValue(choosedCost.value)
-    roomList = await getRoomList(hotelId,room,cost.max,cost.min)
-    roomData = await getRoomList(hotelId,room,cost.max,cost.min)
-    console.log(roomList);
+    console.log(cost);
+    roomList.value = await getRoomList(hotelId,room,cost.max,cost.min)
+    roomData.value = await getRoomList(hotelId,room,cost.max,cost.min)
+    console.log(roomList.value);
 })
 
 function handleRoomMenuClick(key) {
@@ -198,103 +206,251 @@ let roomList = ref([]);
 // 导航跳转
 function onAreaClicked(key) {
     console.log(1);
-    let active
+    let active,inActive
     if (key === 1){
         active = document.querySelector('.room')
+        inActive = document.querySelector('.comment')
     }else if (key === 2){
         active = document.querySelector('.comment')
+        inActive = document.querySelector('.room')
     }
 
+    console.log(active);
     if (active) {
-        active.style.borderBottom = '1px solid rgb(38, 129, 255)'; // 设置下边界颜色
+        active.style.borderBottom = '2px solid rgb(38, 129, 255)'; // 设置下边界颜色
+    }
+    if (inActive) {
+        inActive.style.borderBottom = 'none'
     }
 }
 
-// // 用户评论部分
-// const commentRatingSortedData = ref([]);
-// const commentTimeSortedData = ref([]);
+// 用户评论部分
+const commentRatingSortedData = ref([]);
+commentRatingSortedData.value.push(
+    {
+        avatar : "https://zhangyee.oss-cn-chengdu.aliyuncs.com/avatar/%E5%BC%A0%E4%BA%A6.jpg?Expires=1721827166&OSSAccessKeyId=LTAI5tR6aF8xNZS783uiHP4w&Signature=sxFv1iU39tPZFurUK23euUbAAKA%3D",
+        hotelReview : {
+            comment : '这酒店不错',
+            likeNum : 16154,
+            rating  : 5,
+            reviewId : 1,
+            hotelSpotId : 14,
+            time : "2024-07-11T16:46:28",
+            userId : 6
+        },
+        username : '张亦驰'
+    },
+    {
+        avatar : "https://zhangyee.oss-cn-chengdu.aliyuncs.com/avatar/%E5%BC%A0%E4%BA%A6.jpg?Expires=1721827166&OSSAccessKeyId=LTAI5tR6aF8xNZS783uiHP4w&Signature=sxFv1iU39tPZFurUK23euUbAAKA%3D",
+        hotelReview : {
+            comment : '这酒店不错',
+            likeNum : 16154,
+            rating  : 5,
+            reviewId : 1,
+            hotelSpotId : 14,
+            time : "2024-07-11T16:46:28",
+            userId : 6
+        },
+        username : '张亦驰'
+    },
+    {
+        avatar : "https://zhangyee.oss-cn-chengdu.aliyuncs.com/avatar/%E5%BC%A0%E4%BA%A6.jpg?Expires=1721827166&OSSAccessKeyId=LTAI5tR6aF8xNZS783uiHP4w&Signature=sxFv1iU39tPZFurUK23euUbAAKA%3D",
+        hotelReview : {
+            comment : '这酒店不错',
+            likeNum : 16154,
+            rating  : 5,
+            reviewId : 1,
+            hotelSpotId : 14,
+            time : "2024-07-11T16:46:28",
+            userId : 6
+        },
+        username : '张亦驰'
+    },
+    {
+        avatar : "https://zhangyee.oss-cn-chengdu.aliyuncs.com/avatar/%E5%BC%A0%E4%BA%A6.jpg?Expires=1721827166&OSSAccessKeyId=LTAI5tR6aF8xNZS783uiHP4w&Signature=sxFv1iU39tPZFurUK23euUbAAKA%3D",
+        hotelReview : {
+            comment : '这酒店不错',
+            likeNum : 16154,
+            rating  : 5,
+            reviewId : 1,
+            hotelSpotId : 14,
+            time : "2024-07-11T16:46:28",
+            userId : 6
+        },
+        username : '张亦驰'
+    },
+    {
+        avatar : "https://zhangyee.oss-cn-chengdu.aliyuncs.com/avatar/%E5%BC%A0%E4%BA%A6.jpg?Expires=1721827166&OSSAccessKeyId=LTAI5tR6aF8xNZS783uiHP4w&Signature=sxFv1iU39tPZFurUK23euUbAAKA%3D",
+        hotelReview : {
+            comment : '这酒店不错',
+            likeNum : 16154,
+            rating  : 5,
+            reviewId : 1,
+            hotelSpotId : 14,
+            time : "2024-07-11T16:46:28",
+            userId : 6
+        },
+        username : '张亦驰'
+    },
+    {
+        avatar : "https://zhangyee.oss-cn-chengdu.aliyuncs.com/avatar/%E5%BC%A0%E4%BA%A6.jpg?Expires=1721827166&OSSAccessKeyId=LTAI5tR6aF8xNZS783uiHP4w&Signature=sxFv1iU39tPZFurUK23euUbAAKA%3D",
+        hotelReview : {
+            comment : '这酒店不错',
+            likeNum : 16154,
+            rating  : 5,
+            reviewId : 1,
+            hotelSpotId : 14,
+            time : "2024-07-11T16:46:28",
+            userId : 6
+        },
+        username : '张亦驰'
+    }
+)
+const commentTimeSortedData = ref([]);
+commentTimeSortedData.value.push(
+    {
+        avatar : "https://zhangyee.oss-cn-chengdu.aliyuncs.com/avatar/%E5%BC%A0%E4%BA%A6.jpg?Expires=1721827166&OSSAccessKeyId=LTAI5tR6aF8xNZS783uiHP4w&Signature=sxFv1iU39tPZFurUK23euUbAAKA%3D",
+        hotelReview : {
+            comment : '这酒店不错',
+            likeNum : 16154,
+            rating  : 5,
+            reviewId : 1,
+            hotelSpotId : 14,
+            time : "2024-07-11T16:46:28",
+            userId : 6
+        },
+        username : '张亦驰'
+    },
+    {
+        avatar : "https://zhangyee.oss-cn-chengdu.aliyuncs.com/avatar/%E5%BC%A0%E4%BA%A6.jpg?Expires=1721827166&OSSAccessKeyId=LTAI5tR6aF8xNZS783uiHP4w&Signature=sxFv1iU39tPZFurUK23euUbAAKA%3D",
+        hotelReview : {
+            comment : '这酒店不错',
+            likeNum : 16154,
+            rating  : 5,
+            reviewId : 1,
+            hotelSpotId : 14,
+            time : "2024-07-11T16:46:28",
+            userId : 6
+        },
+        username : '张亦驰'
+    },
+    {
+        avatar : "https://zhangyee.oss-cn-chengdu.aliyuncs.com/avatar/%E5%BC%A0%E4%BA%A6.jpg?Expires=1721827166&OSSAccessKeyId=LTAI5tR6aF8xNZS783uiHP4w&Signature=sxFv1iU39tPZFurUK23euUbAAKA%3D",
+        hotelReview : {
+            comment : '这酒店不错',
+            likeNum : 16154,
+            rating  : 5,
+            reviewId : 1,
+            hotelSpotId : 14,
+            time : "2024-07-11T16:46:28",
+            userId : 6
+        },
+        username : '张亦驰'
+    },
+    {
+        avatar : "https://zhangyee.oss-cn-chengdu.aliyuncs.com/avatar/%E5%BC%A0%E4%BA%A6.jpg?Expires=1721827166&OSSAccessKeyId=LTAI5tR6aF8xNZS783uiHP4w&Signature=sxFv1iU39tPZFurUK23euUbAAKA%3D",
+        hotelReview : {
+            comment : '这酒店不错',
+            likeNum : 16154,
+            rating  : 5,
+            reviewId : 1,
+            hotelSpotId : 14,
+            time : "2024-07-11T16:46:28",
+            userId : 6
+        },
+        username : '张亦驰'
+    },
+    {
+        avatar : "https://zhangyee.oss-cn-chengdu.aliyuncs.com/avatar/%E5%BC%A0%E4%BA%A6.jpg?Expires=1721827166&OSSAccessKeyId=LTAI5tR6aF8xNZS783uiHP4w&Signature=sxFv1iU39tPZFurUK23euUbAAKA%3D",
+        hotelReview : {
+            comment : '这酒店不错',
+            likeNum : 16154,
+            rating  : 5,
+            reviewId : 1,
+            hotelSpotId : 14,
+            time : "2024-07-11T16:46:28",
+            userId : 6
+        },
+        username : '张亦驰'
+    },
+    {
+        avatar : "https://zhangyee.oss-cn-chengdu.aliyuncs.com/avatar/%E5%BC%A0%E4%BA%A6.jpg?Expires=1721827166&OSSAccessKeyId=LTAI5tR6aF8xNZS783uiHP4w&Signature=sxFv1iU39tPZFurUK23euUbAAKA%3D",
+        hotelReview : {
+            comment : '这酒店不错',
+            likeNum : 16154,
+            rating  : 5,
+            reviewId : 1,
+            hotelSpotId : 14,
+            time : "2024-07-11T16:46:28",
+            userId : 6
+        },
+        username : '张亦驰'
+    }
+)
 
-// dayjs.extend(relativeTime);
-// const likes = ref(0);
-// const dislikes = ref(0);
-// const action = ref();
-// const like = () => {
-//   likes.value = 1;
-//   dislikes.value = 0;
-//   action.value = 'liked';
-// };
-// const dislike = () => {
-//   likes.value = 0;
-//   dislikes.value = 1;
-//   action.value = 'disliked';
-// };
 
-// const current1 = ref(1);
-// const current2 = ref(2);
-// const onChange = pageNumber => {
-//   console.log('Page: ', pageNumber);
-// };
+dayjs.extend(relativeTime);
+const likes = ref(0);
+const action = ref([]);
+//评论点赞
+const like = (index) => {
+  if(action.value[index]  === 'liked'){
+    likes.value = likes.value - 1;
+    action.value[index] = '';
+  }else{
+    likes.value = likes.value + 1;
+    action.value[index] = 'liked';
+  }
+};
+//不喜欢评论
+const dislike = (index) => {
+    if(action.value[index] === 'disliked'){
+        action.value[index] = ''
+    }else{
+        action.value[index] = 'disliked';
+    }
+};
 
-// // 发表评论
-// const open = ref(false);
-// const showDrawer = () => {
-//   open.value = true;
-// };
-// const onClose = () => {
-//   open.value = false;
-// };
-// const submitting = ref(false);
-// const commentContent = ref('');
-// const handleSubmit = () => {
-//   if (!value.value) {
-//     return;
-//   }
-//   submitting.value = true;
-//   setTimeout(() => {
-//     submitting.value = false;
-//     comments.value = [
-//       {
-//         author: 'Han Solo',
-//         avatar: 'https://joeschmoe.io/api/v1/random',
-//         content: commentContent.value,
-//         datetime: dayjs().fromNow(),
-//       },
-//       ...comments.value,
-//     ];
-//     value.value = '';
-//   }, 1000);
-// };
-// const rating = ref(2.5);
+const current1 = ref(1);
+const current2 = ref(2);
+const onChange = pageNumber => {
+  console.log('Page: ', pageNumber);
+};
 
-// //搜索目标城市
-// const targetCity = ref('')
-// function onSearch() {
-//     axios({
-//         method: 'post',
-//         url: `http://localhost:8080/cities/city?city_name=${targetCity.value}`,
-//         headers: {  
-//             'Content-Type': 'application/x-www-form-urlencoded'  
-//         },
-//     }).then((result)=>{
-//         //可能有点问题  还没测试
-//         if(result.data.status === '0'){
-//             router.push({ name : 'cityDetail', params: { cityName : cityName } })
-//         }else{
-//             message.error({
-//                 content:()=> `${result.data.msg}`,
-//                 style: {
-//                 marginTop: '10vh',
-//                 }
-//             })
-//         }
-//     }).catch(function(error){
-//         console.log(error);
-//     })
-// }
-// //评论排序类型
-// const commentOrderType = ref()
+// 发表评论
+const open = ref(false);
+const showDrawer = () => {
+  open.value = true;
+};
+const onClose = () => {
+  open.value = false;
+};
+const submitting = ref(false);
+const commentContent = ref('');
+const handleSubmit = () => {
+  if (!value.value) {
+    return;
+  }
+  submitting.value = true;
+  setTimeout(() => {
+    submitting.value = false;
+    comments.value = [
+      {
+        author: 'Han Solo',
+        avatar: 'https://joeschmoe.io/api/v1/random',
+        content: commentContent.value,
+        datetime: dayjs().fromNow(),
+      },
+      ...comments.value,
+    ];
+    value.value = '';
+  }, 1000);
+};
+const rating = ref(2.5);
+
 // //在加载页面前获取数据
 onMounted(async ()=>{
+    console.log("请求加载详情页");
     initLoading.value = false;
 
     hotelData.datas = await getHotelInfo(hotelId)
@@ -305,54 +461,6 @@ onMounted(async ()=>{
     roomList.value = await getRoomList(hotelId)
     
     console.log(roomList.value);
-    //根据城市名获取用户评论(默认评论排序是智能排序)
-    // axios({
-    //     method: 'get',
-    //     url: `http://localhost:8080/travelGuides/city?city_name=${cityName.cityName}`,
-    //     headers: {
-    //         'Content-Type' : 'application/x-www-form-urlencoded'
-    //     },
-    // }).then((result)=>{
-    //     if(result.data.status === 0){
-    //         commentRatingSortedData.value = result.data.data
-    //         console.log("评分排序评论");
-    //         console.log(commentRatingSortedData);
-    //         console.log(commentRatingSortedData.value);
-    //     }else{
-    //         message.error({
-    //             content: () => '系统繁忙,请稍后再试',
-    //             style: {
-    //                 marginTop: '10vh'
-    //             }
-    //         })
-    //     }
-    // }).catch(function(error){
-    //     console.log(error);
-    // })
-    // //根据城市名获取用户评论(按时间排序)
-    // axios({
-    //     method: 'get',
-    //     url: `http://localhost:8080/travelGuides/city?city_name=${cityName.cityName}`,
-    //     headers: {
-    //         'Content-Type' : 'application/x-www-form-urlencoded'
-    //     },
-    // }).then((result)=>{
-    //     if(result.data.status === 0){
-    //         commentTimeSortedData.value = result.data.data
-    //         console.log("评分排序评论");
-    //         console.log(commentTimeSortedData);
-    //         console.log(commentTimeSortedData.value);
-    //     }else{
-    //         message.error({
-    //             content: () => '系统繁忙,请稍后再试',
-    //             style: {
-    //                 marginTop: '10vh'
-    //             }
-    //         })
-    //     }
-    // }).catch(function(error){
-    //     console.log(error);
-    // })
 })
 </script>
 
@@ -374,11 +482,11 @@ onMounted(async ()=>{
         <a-layout-content style="padding: 0 50px;display: flex;flex-wrap: wrap;">
             <!-- 面包屑导航栏 -->
             <a-breadcrumb style="height: 80px;display: flex;align-items: center;padding-left: 100px;">
-                <a-breadcrumb-item href="">
-                    <home-outlined />
+                <a-breadcrumb-item @click="onHomeLinkClicked()">
+                    <home-outlined class="home-link" />
                 </a-breadcrumb-item>
-                <a-breadcrumb-item :href="navLast.URL">
-                    <span>{{ navLast.name }}</span>
+                <a-breadcrumb-item @click="onLastLinkClicked()">
+                    <span class="last-link">{{ navLast.name }}</span>
                 </a-breadcrumb-item>
                 <a-breadcrumb-item>{{ navContent }}</a-breadcrumb-item>
             </a-breadcrumb>
@@ -417,11 +525,11 @@ onMounted(async ()=>{
                     <div
                         style="height: 20%;display: flex;text-align: right;justify-content: flex-end;padding: 5px;align-items: flex-end;">
                         <div style="text-align: right;padding-bottom: 5px;margin-right: 8px;">
-                            <h2 style="display: inline;color: rgb(40, 125, 250);font-weight: 700;">￥{{ hotelData.datas.averageCost }}&nbsp
+                            <h2 style="display: inline;color: rgb(40, 125, 250);font-weight: 700;">￥{{
+                                hotelData.datas.averageCost }}&nbsp
                             </h2>起
                         </div>
-                        <a href="#room-list"
-                            style="height: 50%;border-radius: 3px;background-color: rgb(40, 125, 250);color: #fff;font-weight: 700;font-size: 18px;
+                        <a href="#room-list" style="height: 50%;border-radius: 3px;background-color: rgb(40, 125, 250);color: #fff;font-weight: 700;font-size: 18px;
                             display: flex;align-items: center; padding: 10px;outline: none;">选择房间</a>
                     </div>
                     <div
@@ -430,10 +538,12 @@ onMounted(async ()=>{
                             <div style="display: flex;justify-content: flex-start;height: 30%;line-height: 20px;">
                                 <span
                                     style="height: 100%;width: 35%;background-color: rgb(73, 120, 206);color: #fff;
-                                    font-weight: 800;font-size: 20px;display: flex;align-items: center;justify-content: center;">{{ hotelData.datas.rating }}</span>
+                                    font-weight: 800;font-size: 20px;display: flex;align-items: center;justify-content: center;">{{
+                                    hotelData.datas.rating }}</span>
                             </div>
                             <div style="margin:7px;">
-                                <div style="font-size: 14px;color: rgb(133, 146, 166);">共{{ hotelData.datas.reviewAmounts }}条点评</div>
+                                <div style="font-size: 14px;color: rgb(133, 146, 166);">共{{
+                                    hotelData.datas.reviewAmounts }}条点评</div>
                             </div>
                             <div>
                                 <a-tag color="orange" v-for="(tag,index) in facilities" :key="index"
@@ -445,7 +555,7 @@ onMounted(async ()=>{
                                 position: relative;left: 14px;background-color: rgb(245, 249, 255);">
                             </div>
                             <div style="height: 80%;width: 80%;">
-                                <span 
+                                <span
                                     style="background-color: rgb(245, 249, 255);display: block; width: 100%;height: 100%;padding: 15px 10px;border-radius: 3px;z-index: 3;">
                                     {{ hotelData.datas.description }}
                                 </span>
@@ -480,9 +590,11 @@ onMounted(async ()=>{
                 <section class="choice-wrapper"
                     style="height: 5vh;width: 100%;background-color: #fff;text-align: left;padding-left: 20px;display: flex;">
                     <a class="room" style="display: inline-block;height: 100%;width: 10%;margin-right: 20px;background: transparent;
-                        display: flex;justify-content: center;align-items: center;font-size: 20px;color: #000;" key="1" @click="onAreaClicked(key)">房间</a>
+                        display: flex;justify-content: center;align-items: center;font-size: 20px;color: #000;" href="#room-list"
+                        @click="onAreaClicked(1)">房间</a>
                     <a class="comment" style="display: inline-block;height: 100%;width: 10%;margin-right: 20px;background: transparent;
-                        display: flex;justify-content: center;align-items: center;font-size: 20px;color: #000;" key="2" @click="onAreaclicked(key)">点评</a>
+                        display: flex;justify-content: center;align-items: center;font-size: 20px;color: #000;" href="#comment-list"
+                        @click="onAreaClicked(2)">点评</a>
                 </section>
                 <div style="height: 0.2vh;background-color: rgb(240, 242, 245);"></div>
                 <!-- 房间列表 -->
@@ -496,7 +608,8 @@ onMounted(async ()=>{
                         <a-dropdown class="drop-down" style="height: 100%;" :trigger="['click']">
                             <template #overlay>
                                 <a-menu>
-                                    <a-menu-item v-for="(room,index) in roomsData" :key="index" @click="handleRoomMenuClick(index)">{{ room }}
+                                    <a-menu-item v-for="(room,index) in roomsData" :key="index"
+                                        @click="handleRoomMenuClick(index)">{{ room }}
                                     </a-menu-item>
                                 </a-menu>
                             </template>
@@ -512,7 +625,8 @@ onMounted(async ()=>{
                         <a-dropdown class="drop-down" style="height: 100%;" :trigger="['click']">
                             <template #overlay>
                                 <a-menu>
-                                    <a-menu-item v-for="(cost,index) of costData" :key="index" @click="handleCostMenuClick(index)">{{ cost }}
+                                    <a-menu-item v-for="(cost,index) of costData" :key="index"
+                                        @click="handleCostMenuClick(index)">{{ cost }}
                                     </a-menu-item>
                                 </a-menu>
                             </template>
@@ -528,17 +642,20 @@ onMounted(async ()=>{
                     </div>
                     <div style="height: 1vh;background-color: rgb(240, 242, 245);"></div>
                     <div class="room-list" style="width: 100%;padding-top: 5px;">
-                        <a-list class="demo-loadmore-list" item-layout="horizontal" :loading="initLoading" :data-source="roomList">
+                        <a-list class="demo-loadmore-list" item-layout="horizontal" :loading="initLoading"
+                            :data-source="roomList">
                             <template #renderItem="{ item }">
                                 <a-list-item class="room-item">
                                     <a-skeleton avatar :title="false" :loading="!!item.loading" active>
                                         <a-list-item-meta class="room-list-content" style="text-align: left;"
                                             :key="item.roomId">
                                             <template #title>
-                                                <a style="font-size: 20px;margin: 0;font-weight: 800;">{{ item.roomType }}</a>
+                                                <a style="font-size: 20px;margin: 0;font-weight: 800;">{{ item.roomType
+                                                    }}</a>
                                             </template>
                                             <template #avatar>
-                                                <a><a-avatar :src="item.imageUrl" style="height: 200px;width: 200px;border-radius: 0;" /></a>
+                                                <a><a-avatar :src="item.imageUrl"
+                                                        style="height: 200px;width: 200px;border-radius: 0;" /></a>
                                             </template>
                                             <template #description>
                                                 <div class="hotel-stars" style="font-size: 6px">
@@ -557,8 +674,10 @@ onMounted(async ()=>{
                                             style="width: 50%;height: 200px;display: flex;justify-content: space-between;">
                                             <div class="room-info-review"
                                                 style="width: 50%;height: 100%;display: flex;padding-top: 10px;flex-direction: column;">
-                                                <div style="height: 30%;display: flex;align-items: center;justify-content: center;">
-                                                    <span style="font-size: 20px;display: flex;align-items: center;justify-content: center;font-weight: 400;">数量</span>
+                                                <div
+                                                    style="height: 30%;display: flex;align-items: center;justify-content: center;">
+                                                    <span
+                                                        style="font-size: 20px;display: flex;align-items: center;justify-content: center;font-weight: 400;">数量</span>
                                                 </div>
                                                 <div style="width: 40%;height: 40%; font-size: 17px;align-self: center;margin-top: 20px;
                                                     color: rgb(238, 59, 40);font-weight: 800px;">
@@ -572,7 +691,7 @@ onMounted(async ()=>{
                                                         style="display: inline;color: rgb(40, 125, 250);font-weight: 700;">
                                                         ￥{{ item.price }}
                                                     </h2>
-                                                </div>  
+                                                </div>
                                                 <button
                                                     style="border-radius: 5px;background-color: rgb(40, 125, 250);color: #fff;font-weight:600;width: 50%;height: 40%;font-size: 20px;"
                                                     @click="onReserveButtClicked(item.hotelId)">预订</button>
@@ -586,7 +705,7 @@ onMounted(async ()=>{
                 </section>
 
                 <!-- 用户评论 -->
-                <section class="comment-wrapper" id="commentList">
+                <section class="comment-wrapper" id="comment-list">
                     <div class="comment-container">
                         <div class="comment-share">
                             <div style="display: flex;height: 5vh;position: relative;">
@@ -617,10 +736,10 @@ onMounted(async ()=>{
                                     </a-comment>
                                 </a-drawer>
                             </div>
-                            <div style="margin-right: 30px;text-align: left;">
+                            <!-- <div style="margin-right: 30px;text-align: left;">
                                 <span>{{ detailInstance.rating }}</span>
                                 /5分
-                            </div>
+                            </div> -->
                         </div>
                         <!-- 展示评论 -->
                         <a-tabs v-model:activeKey="commentOrderType">
@@ -629,48 +748,44 @@ onMounted(async ()=>{
                                     <template #actions>
                                         <span key="comment-basic-like">
                                             <a-tooltip title="Like">
-                                                <template v-if="action === 'liked'">
-                                                    <LikeFilled @click="like" />
+                                                <template v-if="action[index] === 'liked'">
+                                                    <LikeFilled @click="like(index)" />
                                                 </template>
                                                 <template v-else>
-                                                    <LikeOutlined @click="like" />
+                                                    <LikeOutlined @click="like(index)" />
                                                 </template>
                                             </a-tooltip>
                                             <span style="padding-left: 8px; cursor: auto">
-                                                {{ likes }}
+                                                {{ action[index] === 'disliked' ? comment.hotelReview.likeNum : comment.hotelReview.likeNum + 1 }}
                                             </span>
                                         </span>
                                         <span key="comment-basic-dislike">
                                             <a-tooltip title="Dislike">
-                                                <template v-if="action === 'disliked'">
-                                                    <DislikeFilled @click="dislike" />
+                                                <template v-if="action[index] === 'disliked'">
+                                                    <DislikeFilled @click="dislike(index)" />
                                                 </template>
                                                 <template v-else>
-                                                    <DislikeOutlined @click="dislike" />
+                                                    <DislikeOutlined @click="dislike(index)" />
                                                 </template>
                                             </a-tooltip>
-                                            <span style="padding-left: 8px; cursor: auto">
+                                            <!-- <span style="padding-left: 8px; cursor: auto">
                                                 {{ dislikes }}
-                                            </span>
+                                            </span> -->
                                         </span>
                                         <span key="comment-basic-reply-to">Reply to</span>
                                     </template>
-                                    <template #author><a>Han Solo</a></template>
+                                    <template #author><a>{{ comment.username }}</a></template>
                                     <template #avatar>
-                                        <a-avatar src="https://joeschmoe.io/api/v1/random" alt="Han Solo" />
+                                        <a-avatar :src="comment.avatar" alt="Han Solo" />
                                     </template>
                                     <template #content>
                                         <p>
-                                            We supply a series of design principles, practical patterns and high quality
-                                            design
-                                            resources (Sketch and Axure), to help people create their product prototypes
-                                            beautifully and
-                                            efficiently.
+                                            {{ comment.hotelReview.comment }}
                                         </p>
                                     </template>
                                     <template #datetime>
-                                        <a-tooltip :title="dayjs().format('YYYY-MM-DD HH:mm:ss')">
-                                            <span>{{ dayjs().fromNow() }}</span>
+                                        <a-tooltip :title="comment.hotelReview.time">
+                                            <span>{{ comment.hotelReview.time }}</span>
                                         </a-tooltip>
                                     </template>
                                 </a-comment>
@@ -682,48 +797,44 @@ onMounted(async ()=>{
                                     <template #actions>
                                         <span key="comment-basic-like">
                                             <a-tooltip title="Like">
-                                                <template v-if="action === 'liked'">
-                                                    <LikeFilled @click="like" />
+                                                <template v-if="action[index] === 'liked'">
+                                                    <LikeFilled @click="like(index)" />
                                                 </template>
                                                 <template v-else>
-                                                    <LikeOutlined @click="like" />
+                                                    <LikeOutlined @click="like(index)" />
                                                 </template>
                                             </a-tooltip>
                                             <span style="padding-left: 8px; cursor: auto">
-                                                {{ likes }}
+                                                {{ action[index] === 'disliked' ? comment.hotelReview.likeNum : comment.hotelReview.likeNum + 1 }}
                                             </span>
                                         </span>
                                         <span key="comment-basic-dislike">
                                             <a-tooltip title="Dislike">
-                                                <template v-if="action === 'disliked'">
-                                                    <DislikeFilled @click="dislike" />
+                                                <template v-if="action[index] === 'disliked'">
+                                                    <DislikeFilled @click="dislike(index)" />
                                                 </template>
                                                 <template v-else>
-                                                    <DislikeOutlined @click="dislike" />
+                                                    <DislikeOutlined @click="dislike(index)" />
                                                 </template>
                                             </a-tooltip>
-                                            <span style="padding-left: 8px; cursor: auto">
+                                            <!-- <span style="padding-left: 8px; cursor: auto">
                                                 {{ dislikes }}
-                                            </span>
+                                            </span> -->
                                         </span>
                                         <span key="comment-basic-reply-to">Reply to</span>
                                     </template>
-                                    <template #author><a>Han Solo</a></template>
+                                    <template #author><a>{{ comment.username }}</a></template>
                                     <template #avatar>
-                                        <a-avatar src="https://joeschmoe.io/api/v1/random" alt="Han Solo" />
+                                        <a-avatar :src="comment.avatar" alt="Han Solo" />
                                     </template>
                                     <template #content>
                                         <p>
-                                            We supply a series of design principles, practical patterns and high quality
-                                            design
-                                            resources (Sketch and Axure), to help people create their product prototypes
-                                            beautifully and
-                                            efficiently.
+                                            {{ comment.hotelReview.comment }}
                                         </p>
                                     </template>
                                     <template #datetime>
-                                        <a-tooltip :title="dayjs().format('YYYY-MM-DD HH:mm:ss')">
-                                            <span>{{ dayjs().fromNow() }}</span>
+                                        <a-tooltip :title="comment.time">
+                                            <span>{{ comment.time }}</span>
                                         </a-tooltip>
                                     </template>
                                 </a-comment>
@@ -834,9 +945,10 @@ nav li {
     height: 100%;
 }
 .info-content-container {
-    width: 40%;
+    width: 50%;
     height: 100%;
     position: relative;
+    margin-right: 100px;
 }
 /* 图像走马灯 */
 :deep(.slick-dots) {
@@ -980,5 +1092,14 @@ nav li {
 
 ::v-deep(.comment-container .ant-tabs-nav-list) {
     left: 75%;
+}
+
+
+/* 面包屑 */
+.home-link:hover {
+    cursor: pointer;
+}
+.last-link:hover {
+    cursor: pointer;
 }
 </style>

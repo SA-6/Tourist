@@ -90,7 +90,7 @@ const backgroundStyle = ref('transparent');
 // 设置登录按钮的背景样式
 const btnStyle = ref('transparent')
 //设置布局的高度
-const ALayOutHeight = ref('400%')
+// const ALayOutHeight = ref('400%')
 //设置头部导航栏是否可见
 const isVisible = ref(true)
 // 服务器请求路径
@@ -160,7 +160,7 @@ router.beforeEach((to, from, next) => {
     case 'userOrderList':
       isVisible.value = true
       layoutContentStyle.value.marginTop = '80px';
-      ALayOutHeight.value = '100%';
+      // ALayOutHeight.value = '100%';
       btnStyle.value = '#76EEC6';
       if (!layoutContentStyle.value.isHeightSet) {
         layoutContentStyle.value.isHeightSet = true;
@@ -172,7 +172,7 @@ router.beforeEach((to, from, next) => {
       isVisible.value = true
       btnStyle.value = 'transparent';
       layoutContentStyle.value.marginTop = '0';
-      ALayOutHeight.value = '400%';
+      // ALayOutHeight.value = '400%';
       if (layoutContentStyle.value.isHeightSet) {
         delete layoutContentStyle.value.height;
         layoutContentStyle.value.isHeightSet = false;
@@ -182,7 +182,7 @@ router.beforeEach((to, from, next) => {
       isVisible.value = true
       btnStyle.value = 'transparent';
       layoutContentStyle.value.marginTop = '0';
-      ALayOutHeight.value = '600%';
+      // ALayOutHeight.value = '600%';
       if (layoutContentStyle.value.isHeightSet) {
         delete layoutContentStyle.value.height;
         layoutContentStyle.value.isHeightSet = false;
@@ -192,29 +192,39 @@ router.beforeEach((to, from, next) => {
       isVisible.value = true
       btnStyle.value = 'transparent';
       layoutContentStyle.value.marginTop = '0';
-      ALayOutHeight.value = '483%';
+      // ALayOutHeight.value = '483%';
       if (layoutContentStyle.value.isHeightSet) {
         delete layoutContentStyle.value.height;
         layoutContentStyle.value.isHeightSet = false;
       }
       break;
-      case 'scenePage':
+    case 'scenePage':
         isVisible.value = true
       btnStyle.value = 'transparent';
       layoutContentStyle.value.marginTop = '0';
-      ALayOutHeight.value = '530%';
+      // ALayOutHeight.value = '530%';
       if (layoutContentStyle.value.isHeightSet) {
         delete layoutContentStyle.value.height;
         layoutContentStyle.value.isHeightSet = false;
       }
       break;
-    case 'cityDetail':
     case 'hotelDetail':
     case 'hotelReserve':
     case 'sceneDetail':
       console.log("case判断");
       isVisible.value = false;
-      ALayOutHeight.value = '400%'
+      // ALayOutHeight.value = '400%'
+      if (!layoutContentStyle.value.isHeightSet) {
+          layoutContentStyle.value.isHeightSet = true;
+          layoutContentStyle.value.height = '130%';
+      }else{
+        layoutContentStyle.value.height = '130%'
+      }
+      break;
+    case 'cityDetail':
+    console.log("case判断");
+      isVisible.value = false;
+      // ALayOutHeight.value = '300%'
       if (!layoutContentStyle.value.isHeightSet) {
           layoutContentStyle.value.isHeightSet = true;
           layoutContentStyle.value.height = '130%';
@@ -225,7 +235,7 @@ router.beforeEach((to, from, next) => {
     default:
       btnStyle.value = 'transparent';
       layoutContentStyle.value.marginTop = '0';
-      ALayOutHeight.value = '400%';
+      // ALayOutHeight.value = '400%';
       if (layoutContentStyle.value.isHeightSet) {
         delete layoutContentStyle.value.height;
         layoutContentStyle.value.isHeightSet = false;
@@ -259,6 +269,7 @@ const open = ref(false)
 function showChatBot() {
   open.value = true
 }
+
 //回到顶部
 function backToTop() {
   window.scrollTo({
@@ -283,9 +294,10 @@ async function query(data) {
   return result;
 }
 function sendInfoToBot() {
-  infoList.value.push(question.value)
+  infoList.value.push({role:'user',info:question.value})
   question.value = ''
   query({"inputs": question.value}).then((response) => {
+      infoList.value.push()
       console.log(JSON.stringify(response));
   });
 }
@@ -360,7 +372,7 @@ function afterOpenChange() {
     </a-dropdown-button>
     </a-layout-header>
     <a-layout-content :style="layoutContentStyle">
-      <div :style="{ background: '#fff', padding: '0', minHeight: '100%'}">
+      <div :style="{ background: '#rgb(245, 245, 245)', padding: '0',}">
 
         <router-view></router-view>
 

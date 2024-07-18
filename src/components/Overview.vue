@@ -24,6 +24,7 @@ function getRecommendInfo() {
   }).then((result)=>{
     console.log(result);
     if(result.data.status === 0){
+      // console.log("BBBBB");
       recommendCity.value = result.data.data.popularCitiesList;
       recommendScene.value = result.data.data.scenicSpotsList;
       recommendHotel.value = result.data.data.hotelsList;
@@ -72,11 +73,11 @@ function getRecommendInfo() {
 }
 //跳转城市详情页
 function getCityInfo(cityId,cityName) {
-  router.push({ name : 'cityDetail', params: { cityName : cityName } })
+  router.push({ name : 'cityDetail', params: { cityName : cityName, cityId : cityId } })
 }
 //跳转酒店详情页
 function getHotelInfo(hotelId,hotelName) {
-  router.push({ name : 'hotelDetail', params: { hotelName : hotelName } })
+  router.push({ name : 'hotelDetail', query: { hotelId : hotelId } })
 }
 //跳转景区详情页
 function getSceneInfo(sceneId,sceneName) {

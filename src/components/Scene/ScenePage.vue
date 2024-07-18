@@ -165,9 +165,9 @@ onMounted(()=>{
           <div style="display: flex; flex-direction: row;" v-if="index%2==0">
             <div style="width: 100%;flex: 0 0 50%;height: 40%;" class="explore-image">
               <img :src="scene.imageUrl" alt=""
-                style="width: 100%;height: 100%;">
+                style="width: 100%;height: 100%;max-height: 400px;object-fit: cover;">
             </div>
-            <div style="padding: 30px;text-align: left;position: relative;flex: 0 0 50%;height: 50%;"
+            <div style="padding: 30px;text-align: left;position: relative;flex: 0 0 50%;"
               class="explore-introduction">
               <div style="height: 90%;">
                 <h1>{{ scene.name }}</h1>
@@ -188,7 +188,7 @@ onMounted(()=>{
             </div>
           </div>
           <div style="display: flex; flex-direction: row;" v-else>
-            <div style="padding: 30px;text-align: left;position: relative;flex: 0 0 50%;height: 50%;"
+            <div style="padding: 30px;text-align: left;position: relative;flex: 0 0 50%;"
               class="explore-introduction">
               <div style="height: 90%;">
                 <h1>{{ scene.name }}</h1>
@@ -202,14 +202,14 @@ onMounted(()=>{
               <hr>
               <div style="display: flex;justify-content: space-between; width: 100%;position: absolute;bottom: 20px;">
                 <span>{{ scene.openingDays }}-{{ scene.openingHours }}</span>
-                <a style="position: relative;right: 70px;">Read More
+                <a style="position: relative;right: 70px;" @click="showDetail(scene.name,scene.scenicSpotId)">Read More
                   <RightCircleOutlined style="position: relative;left: 5px;top: 2px;" />
                 </a>
               </div>
             </div>
             <div style="width: 100%;flex: 0 0 50%;height: 50%;" class="explore-image">
               <img :src="scene.imageUrl" alt=""
-                style="width: 100%;height: 100%;">
+                style="width: 100%;height: 100%;max-height: 400px;object-fit: cover;">
             </div>
           </div>
         </div>
@@ -218,7 +218,7 @@ onMounted(()=>{
   </section>
 
   <!-- 季节特色部分 -->
-  <section class="season-wrapper" style="width: 100%;margin-top: 100px;">
+  <section class="season-wrapper" style="width: 100%;margin-top: 150px;">
     <div class="season-container" style="margin: 0 13vw;padding: 20px;height: 100%;">
       <div class="season-header" style="padding: 0 50px">
         <h2 style="font-size: 60px;">四季风光</h2>
